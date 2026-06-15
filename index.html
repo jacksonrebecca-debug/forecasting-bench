@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Forecasting Bench</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+:root{
+  --ground:#0E1218;--panel:#171D27;--panel-2:#1E2530;--line:#2B333F;
+  --ink:#E9ECF2;--muted:#8A95A6;--faint:#5A6475;
+  --signal:#E8B04B;--signal-dim:#7a5e2a;--truth:#4FB3A6;
+  --shadow:rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--ground);color:var(--ink);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{min-height:100vh;display:flex;justify-content:center;padding:46px 18px 70px}
+.wrap{width:100%;max-width:700px}
+
+.hero{display:flex;gap:26px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.hero-text{flex:1;min-width:260px}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--signal);margin-bottom:14px}
+h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:42px;letter-spacing:-.025em;line-height:1;margin-bottom:18px}
+.thesis{color:var(--muted);font-size:16px;line-height:1.6;max-width:48ch}
+.thesis b{color:var(--ink);font-weight:600}
+.sigil{flex:none}
+
+.cards{margin-top:40px;display:flex;flex-direction:column;gap:16px}
+a.inst{display:block;text-decoration:none;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px 26px;transition:.18s;box-shadow:0 8px 30px var(--shadow)}
+a.inst:hover{border-color:var(--signal);transform:translateY(-2px)}
+a.inst:focus-visible{outline:2px solid var(--signal);outline-offset:3px}
+.inst-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.inst-no{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.24em;color:var(--signal-dim)}
+.inst-go{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.1em;color:var(--signal);text-transform:uppercase}
+.inst h2{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:23px;letter-spacing:-.01em;margin-bottom:8px}
+.inst p{font-size:14.5px;line-height:1.6;color:var(--muted);max-width:54ch}
+.trains{margin-top:14px;display:flex;flex-wrap:wrap;gap:7px}
+.trains span{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;color:var(--muted);background:var(--panel-2);border:1px solid var(--line);padding:5px 10px;border-radius:999px}
+
+.note{margin-top:34px;font-size:14px;line-height:1.65;color:var(--faint)}
+.note b{color:var(--muted);font-weight:600}
+.foot{margin-top:18px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;color:var(--faint);text-transform:lowercase}
+@media (max-width:560px){h1{font-size:34px}.sigil{display:none}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="hero-text">
+      <div class="eyebrow">The Forecasting Bench</div>
+      <h1>Forecasting is<br>a trainable skill.</h1>
+      <p class="thesis">Not a gift, not a gut feeling \u2014 a set of <b>specific moves</b> you can drill until they\u2019re instinct. Set a base rate before you judge the particulars. React to news in proportion to how much it actually shifts the odds. Make your confidence match reality. Two instruments for putting in the reps.</p>
+    </div>
+    <svg class="sigil" width="116" height="116" viewBox="0 0 116 116" role="img" aria-label="Calibration motif">
+      <rect x="8" y="8" width="100" height="100" rx="8" fill="none" stroke="var(--line)" stroke-width="1.5"/>
+      <line x1="18" y1="98" x2="98" y2="18" stroke="var(--truth)" stroke-width="1.4" stroke-dasharray="4 4"/>
+      <circle cx="38" cy="72" r="7" fill="rgba(232,176,75,.22)" stroke="var(--signal)" stroke-width="1.6"/>
+      <circle cx="58" cy="54" r="9" fill="rgba(232,176,75,.22)" stroke="var(--signal)" stroke-width="1.6"/>
+      <circle cx="80" cy="42" r="6" fill="rgba(232,176,75,.22)" stroke="var(--signal)" stroke-width="1.6"/>
+    </svg>
+  </div>
+
+  <div class="cards">
+    <a class="inst" href="calibration-range.html">
+      <div class="inst-top"><span class="inst-no">INSTRUMENT 01</span><span class="inst-go">Open \u2192</span></div>
+      <h2>The Calibration Range</h2>
+      <p>When you say 70%, is it true 70% of the time? Answer claims and estimate quantities, then watch a calibration curve build across every round you play \u2014 the instrument tells you plainly whether you\u2019re over- or under-confident.</p>
+      <div class="trains"><span>probabilistic reasoning</span><span>calibration</span><span>over- &amp; under-confidence</span></div>
+    </a>
+
+    <a class="inst" href="reference-class.html">
+      <div class="inst-top"><span class="inst-no">INSTRUMENT 02</span><span class="inst-go">Open \u2192</span></div>
+      <h2>The Reference Class</h2>
+      <p>Commit a gut number, then see how far it sat from the base rate \u2014 the inside view\u2019s pull made visible. Update as news arrives, scored against a Bayesian benchmark that flags when you over-react, under-react, or fall for vivid-but-empty noise.</p>
+      <div class="trains"><span>inside vs outside view</span><span>setting base rates</span><span>how much to react</span></div>
+    </a>
+  </div>
+
+  <p class="note">Built on the <b>Good Judgment\u00ae</b> Superforecasting fundamentals \u2014 the same moves the project\u2019s top forecasters drill. Your calibration history is saved on your own device; nothing leaves the browser.</p>
+  <div class="foot">no ads \u00b7 no logins \u00b7 just the reps</div>
+
+</div>
+</body>
+</html>
