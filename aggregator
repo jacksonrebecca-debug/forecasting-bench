@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Aggregator</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+:root{--ground:#0E1218;--panel:#171D27;--panel-2:#1E2530;--line:#2B333F;--ink:#E9ECF2;--muted:#8A95A6;--faint:#5A6475;--signal:#E8B04B;--signal-dim:#7a5e2a;--truth:#4FB3A6;--warn:#E07A5F;--gut:#8E7CC3;--shadow:rgba(0,0,0,.35)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--ground);color:var(--ink);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{min-height:100vh;display:flex;justify-content:center;padding:28px 18px 64px}
+.wrap{width:100%;max-width:680px}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--signal);margin-bottom:10px}
+h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:33px;letter-spacing:-.02em;line-height:1.05;margin-bottom:14px}
+.lede{color:var(--muted);font-size:15px;line-height:1.62;max-width:58ch}.lede b{color:var(--ink);font-weight:600}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;box-shadow:0 8px 30px var(--shadow)}
+.mt{margin-top:18px}.mt-l{margin-top:26px}.hr{height:1px;background:var(--line);margin:22px 0}
+button.primary{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:15px;color:#15110a;background:var(--signal);border:none;padding:13px 22px;border-radius:10px;cursor:pointer;transition:.15s}
+button.primary:hover{filter:brightness(1.07)}button.primary:disabled{opacity:.4;cursor:not-allowed}
+button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.actions{display:flex;gap:12px;align-items:center;margin-top:24px}.actions .primary{flex:1}
+.steprow{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
+.stepname{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
+.module{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--signal)}
+.qtitle{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:20px;line-height:1.34;letter-spacing:-.01em;margin-bottom:14px}
+.body-txt{font-size:14.5px;line-height:1.66;color:var(--muted)}.body-txt b{color:var(--ink);font-weight:600}
+.analyst{display:flex;gap:13px;align-items:flex-start;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:13px 15px;margin-bottom:9px}
+.analyst .est{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:22px;font-variant-numeric:tabular-nums;color:var(--signal);min-width:54px;text-align:center}
+.analyst .meat{flex:1}
+.analyst .nm{font-weight:600;font-size:13.5px;margin-bottom:2px}
+.analyst .nm span{font-family:'IBM Plex Mono',monospace;font-weight:400;font-size:10.5px;color:var(--faint);letter-spacing:.06em;margin-left:6px}
+.analyst .rs{font-size:13px;color:var(--muted);line-height:1.45}
+.readout{font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums;font-size:46px;color:var(--signal);line-height:1;margin:18px 0 2px;text-align:center}
+.readout .pct{font-size:22px;color:var(--signal-dim)}
+.readout-cap{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:14px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:3px;background:linear-gradient(90deg,var(--signal) var(--fill,50%),var(--line) var(--fill,50%));outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--signal);border:3px solid var(--ground);box-shadow:0 0 0 1px var(--signal)}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--signal);border:3px solid var(--ground)}
+.scale{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--faint);margin-top:8px}
+.barline{margin-top:16px}
+.barrow{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:13px}
+.barrow .bl{width:96px;color:var(--muted)}
+.barrow .bt{flex:1;height:22px;background:var(--ground);border-radius:5px;position:relative;overflow:hidden}
+.barrow .bt i{position:absolute;top:0;bottom:0;width:2px;}
+.barrow .bv{font-family:'IBM Plex Mono',monospace;font-size:13px;width:40px;text-align:right}
+.verdict{border-radius:10px;padding:14px 16px;margin-top:14px;font-size:14px;line-height:1.62}
+.verdict.good{background:rgba(79,179,166,.1);border:1px solid rgba(79,179,166,.4);color:var(--truth)}
+.verdict.miss{background:rgba(224,122,95,.1);border:1px solid rgba(224,122,95,.4);color:var(--warn)}
+.verdict b{font-weight:600}.verdict .ex{display:block;margin-top:6px;color:var(--muted)}
+.lesson{border-left:2px solid var(--signal);padding:4px 0 4px 16px;margin-top:18px}
+.lesson h3{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:16px;margin-bottom:8px}
+.lesson p{font-size:14px;line-height:1.66;color:var(--muted)}.lesson p b{color:var(--ink);font-weight:600}
+.foot{margin-top:30px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;color:var(--faint);line-height:1.7}
+.track{height:3px;background:var(--line);border-radius:2px;overflow:hidden;margin-bottom:22px}.track>i{display:block;height:100%;background:var(--signal);transition:width .35s}
+@media (max-width:520px){h1{font-size:27px}.qtitle{font-size:18px}.readout{font-size:38px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+/* ============================================================
+   THE AGGREGATOR  \u00b7  Instrument 08
+   A crowd of diverse, independent forecasters beats almost any
+   single member \u2014 and the smart aggregate is often more
+   confident than their average ("extremizing").
+   ============================================================ */
+
+const SCN=[
+  {id:'trial',truth:1,
+   question:'Will the Phase 2 trial hit its primary endpoint?',
+   resolution:'It hit the endpoint. (Truth = 100%.)',
+   analysts:[
+     {n:'Bench scientist',t:'mechanism',e:.55,r:'The biology is sound but the effect size in animals was modest.'},
+     {n:'Trial statistician',t:'priors',e:.70,r:'Powering looks adequate; similar designs in this class usually read out positive.'},
+     {n:'Sector PM',t:'comparables',e:.60,r:'Comparable programmes have a mixed but slightly favourable hit rate.'},
+     {n:'Ex-regulator',t:'endpoints',e:.75,r:'The chosen endpoint is forgiving and well-precedented.'},
+     {n:'Short-seller',t:'sceptic',e:.50,r:'Management has over-promised before; I trust nothing until the data.'}
+   ]},
+  {id:'incumbent',truth:0,
+   question:'Will the incumbent hold the marginal seat?',
+   resolution:'The incumbent lost. (Truth = 0%.)',
+   analysts:[
+     {n:'Pollster',t:'data',e:.40,r:'Topline has them a couple of points behind, within the margin.'},
+     {n:'Local agent',t:'ground game',e:.35,r:'Doorstep mood is sour; turnout machine looks weaker than last time.'},
+     {n:'Historian',t:'base rate',e:.45,r:'Incumbents usually have an edge, but not in a cost-of-living slump.'},
+     {n:'Economist',t:'fundamentals',e:.30,r:'Real incomes are falling \u2014 brutal for any sitting candidate.'},
+     {n:'Party optimist',t:'partisan',e:.50,r:'Our vote will come home on the day; it always does.'}
+   ]},
+  {id:'ship',truth:1,
+   question:'Will the product ship before year-end?',
+   resolution:'It shipped in December. (Truth = 100%.)',
+   analysts:[
+     {n:'Eng lead',t:'inside',e:.80,r:'Core build is done; only integration testing remains.'},
+     {n:'QA manager',t:'risk',e:.70,r:'A couple of hardware long-leads could slip, but there\u2019s float.'},
+     {n:'Ops planner',t:'history',e:.85,r:'This team has hit its last several ship dates.'},
+     {n:'Sales director',t:'pressure',e:.65,r:'Commercial pressure to ship is enormous; corners will be cut if needed.'},
+     {n:'Cynic',t:'sceptic',e:.75,r:'Software always slips a bit \u2014 but not by a whole quarter here.'}
+   ]}
+];
+
+const logit=p=>Math.log(p/(1-p));
+const inv=x=>1/(1+Math.exp(-x));
+const mean=a=>a.reduce((s,x)=>s+x,0)/a.length;
+function simpleMean(ps){return mean(ps);}
+function extremized(ps,a){return inv(a*mean(ps.map(logit)));}
+const A_EXTREME=1.6;
+
+let S={screen:'intro',si:0,agg:50,scores:[]};
+const app=document.getElementById('app');
+function h(s){const t=document.createElement('template');t.innerHTML=s.trim();return t.content.firstChild;}
+function render(){app.innerHTML='';({intro:rIntro,ask:rAsk,reveal:rReveal,done:rDone})[S.screen]();window.scrollTo&&window.scrollTo(0,0);}
+
+function rIntro(){
+  const card=h(`<div>
+    <div class="eyebrow">The Forecasting Bench \u00b7 Instrument 08</div>
+    <h1>The Aggregator</h1>
+    <p class="lede">One of forecasting\u2019s most reliable findings: a <b>crowd of diverse, independent forecasters</b> beats almost every individual in it. Their errors point in different directions and cancel. Stranger still, the best aggregate is often <b>more confident than the average view</b> \u2014 because each forecaster hedges for their own ignorance, and if they\u2019re mostly right and independent, the group collectively knows more than any of them admits. Nudging the consensus away from 50% is called <b>extremizing</b>.<br><br>You\u2019ll see a panel of analysts, combine them into one number, then meet the simple average, the extremized average, and the truth.</p>
+    <div class="actions"><button class="primary" id="go">Begin</button></div>
+    <div class="foot">Trains: wisdom of crowds \u00b7 diversity \u00b7 extremizing \u2014 and its limits.</div>
+  </div>`);
+  app.appendChild(card);card.querySelector('#go').onclick=()=>{S.screen='ask';S.si=0;S.scores=[];S.agg=50;render();};
+}
+
+function rAsk(){
+  const c=SCN[S.si];
+  const rows=c.analysts.map(a=>`<div class="analyst"><div class="est">${Math.round(a.e*100)}%</div><div class="meat"><div class="nm">${a.n}<span>${a.t}</span></div><div class="rs">${a.r}</div></div>`).join('');
+  const card=h(`<div>
+    <div class="steprow"><span class="stepname">Question ${S.si+1} / ${SCN.length}</span><span class="module">combine the panel</span></div>
+    <div class="track"><i style="width:${(S.si/SCN.length)*100}%"></i></div>
+    <div class="card">
+      <div class="qtitle">${c.question}</div>
+      ${rows}
+      <div class="readout"><span id="pv">${S.agg}</span><span class="pct">%</span></div>
+      <div class="readout-cap">your single aggregate forecast</div>
+      <input type="range" id="sl" min="2" max="98" value="${S.agg}" style="--fill:${S.agg}%">
+      <div class="scale"><span>2%</span><span>50%</span><span>98%</span></div>
+      <div class="actions"><button class="primary" id="next">Lock in &amp; compare</button></div>
+    </div>
+  </div>`);
+  app.appendChild(card);
+  const sl=card.querySelector('#sl');
+  sl.oninput=()=>{S.agg=+sl.value;card.querySelector('#pv').textContent=S.agg;sl.style.setProperty('--fill',S.agg+'%');};
+  card.querySelector('#next').onclick=()=>{S.screen='reveal';render();};
+}
+
+function bar(label,val,color,truth){
+  return `<div class="barrow"><div class="bl">${label}</div><div class="bt"><i style="left:${val}%;background:${color}"></i><i style="left:${truth}%;background:var(--truth);opacity:.5"></i></div><div class="bv" style="color:${color}">${val}%</div></div>`;
+}
+
+function rReveal(){
+  const c=SCN[S.si], ps=c.analysts.map(a=>a.e);
+  const avg=Math.round(simpleMean(ps)*100), ext=Math.round(extremized(ps,A_EXTREME)*100), truth=c.truth*100;
+  const you=S.agg;
+  const errYou=Math.abs(you-truth), errAvg=Math.abs(avg-truth), errExt=Math.abs(ext-truth);
+  // individual mean abs error
+  const indErr=Math.round(mean(ps.map(p=>Math.abs(p*100-truth))));
+  const beatN=ps.filter(p=>Math.abs(p*100-truth)>errAvg).length;
+  S.scores[S.si]={errYou,errAvg,errExt};
+  const last=S.si===SCN.length-1;
+  const good = errYou<=Math.max(errAvg,errExt)+6;
+  const card=h(`<div>
+    <div class="steprow"><span class="stepname">Question ${S.si+1} \u00b7 the reckoning</span><span class="module">${c.resolution.includes('lost')||c.truth===0?'resolved: no':'resolved: yes'}</span></div>
+    <div class="card">
+      <p class="body-txt" style="margin-bottom:14px"><b>${c.resolution}</b></p>
+      <div class="barline">
+        ${bar('You',you,'var(--gut)',truth)}
+        ${bar('Simple avg',avg,'var(--signal)',truth)}
+        ${bar('Extremized',ext,'var(--warn)',truth)}
+        ${bar('Truth',truth,'var(--truth)',truth)}
+      </div>
+      <div class="verdict ${good?'good':'miss'}">
+        <b>${good?'Good aggregation.':'The crowd had more to give.'}</b>
+        <span class="ex">The simple average (${avg}%) beat ${beatN} of the five analysts outright \u2014 the typical analyst was off by ${indErr} points, the average by only ${errAvg}. Pushing it away from the middle to ${ext}% (extremizing) landed ${errExt<errAvg?'closer still':'about the same'}. You came in ${errYou} points from the truth.</span>
+      </div>
+      <p class="body-txt mt" style="font-size:13px;color:var(--faint)">Why extremizing helps here: these analysts reason from genuinely different angles \u2014 mechanism, base rates, ground truth \u2014 so their shared signal is real and each individually under-commits. When forecasters instead echo the same source, extremizing overshoots; it\u2019s a scalpel, not a hammer.</p>
+      <div class="actions"><button class="primary" id="next">${last?'See the lesson':'Next question'}</button></div>
+    </div>
+  </div>`);
+  app.appendChild(card);
+  card.querySelector('#next').onclick=()=>{ if(last){S.screen='done';render();} else {S.si++;S.agg=50;S.screen='ask';render();} };
+}
+
+function rDone(){
+  const card=h(`<div>
+    <div class="steprow"><span class="stepname">Complete</span><span class="module">the crowd wins</span></div>
+    <div class="card">
+      <div class="lesson" style="margin-top:0"><h3>The lesson</h3><p>Aggregation is the closest thing forecasting has to a free lunch. Average a set of <b>diverse, independent</b> estimates and the individual errors \u2014 some too high, some too low \u2014 partly cancel, so the combined number reliably beats the typical member and often every member. The subtler move is <b>extremizing</b>: nudging the consensus away from 50%, because forecasters each discount for their own uncertainty, and a group of independent, roughly-right views collectively justifies more confidence than their cautious average shows. The vital caveat is the word <b>independent</b>: when your sources all read the same poll or repeat the same thesis, their agreement is an echo, not evidence, and extremizing turns into overconfidence. So weight diversity, aggregate before you agonise over your own single view, and extremize only when the agreement is genuinely arrived at from different directions.</p></div>
+      <div class="actions"><button class="primary" id="again">Run it again</button></div>
+    </div>
+    <div class="foot">Diversity cancels error \u00b7 the average beats the member \u00b7 extremize independent agreement only.</div>
+  </div>`);
+  app.appendChild(card);
+  card.querySelector('#again').onclick=()=>{S.screen='intro';render();};
+}
+
+render();
+</script>
+</body>
+</html>
