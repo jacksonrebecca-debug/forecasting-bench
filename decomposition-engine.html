@@ -226,10 +226,10 @@ function histogram(res, truth, gut){
   // axis ticks at integer powers of ten
   let ticks='';
   for(let p=Math.ceil(lo);p<=Math.floor(hi);p++){const tx=x(p);
-    ticks+=`<line x1="${tx}" y1="${yTop}" x2="${tx}" y2="${yBase}" stroke="var(--line)" stroke-width="1"/><text x="${tx}" y="${yBase+20}" text-anchor="middle" fill="var(--faint)" font-family="IBM Plex Mono" font-size="10.5">${fmtPow(p)}</text>;`}
+    ticks+=`<line x1="${tx}" y1="${yTop}" x2="${tx}" y2="${yBase}" stroke="#2B333F" stroke-width="1"/><text x="${tx}" y="${yBase+20}" text-anchor="middle" fill="#5A6475" font-family="IBM Plex Mono" font-size="10.5">${fmtPow(p)}</text>;`}
   const marker=(v,color,lab,dash)=>{const mx=x(L(v));return `<line x1="${mx}" y1="${yTop-2}" x2="${mx}" y2="${yBase}" stroke="${color}" stroke-width="2" ${dash?'stroke-dasharray="4 3"':''}/><text x="${mx}" y="${yTop+8}" text-anchor="middle" fill="${color}" font-family="IBM Plex Mono" font-size="10" transform="rotate(0)">${lab}</text>`;};
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Distribution of your estimate">
-    <line x1="${padL}" y1="${yBase}" x2="${W-padR}" y2="${yBase}" stroke="var(--line)" stroke-width="1.5"/>
+    <line x1="${padL}" y1="${yBase}" x2="${W-padR}" y2="${yBase}" stroke="#2B333F" stroke-width="1.5"/>
     ${ticks}${bars}
     ${marker(gut,'var(--gut)','gut',true)}
     ${marker(res.p50,'var(--signal)','est',false)}
