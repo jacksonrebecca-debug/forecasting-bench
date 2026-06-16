@@ -41,8 +41,9 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
 .barline{margin-top:16px}
 .barrow{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:13px}
 .barrow .bl{width:96px;color:var(--muted)}
-.barrow .bt{flex:1;height:22px;background:var(--ground);border-radius:5px;position:relative;overflow:hidden}
-.barrow .bt i{position:absolute;top:0;bottom:0;width:2px;}
+.barrow .bt{flex:1;height:22px;background:var(--ground);border-radius:5px;position:relative;overflow:visible}
+.barrow .bt .fillb{position:absolute;left:0;top:0;bottom:0;border-radius:5px;transition:width .4s ease}
+.barrow .bt .tmark{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--truth);transform:translateX(-1px);box-shadow:0 0 4px rgba(79,179,166,.7)}
 .barrow .bv{font-family:'IBM Plex Mono',monospace;font-size:13px;width:40px;text-align:right}
 .verdict{border-radius:10px;padding:14px 16px;margin-top:14px;font-size:14px;line-height:1.62}
 .verdict.good{background:rgba(79,179,166,.1);border:1px solid rgba(79,179,166,.4);color:var(--truth)}
@@ -146,7 +147,7 @@ function rAsk(){
 }
 
 function bar(label,val,color,truth){
-  return `<div class="barrow"><div class="bl">${label}</div><div class="bt"><i style="left:${val}%;background:${color}"></i><i style="left:${truth}%;background:var(--truth);opacity:.5"></i></div><div class="bv" style="color:${color}">${val}%</div></div>`;
+  return `<div class="barrow"><div class="bl">${label}</div><div class="bt"><div class="fillb" style="width:${val}%;background:${color}"></div><div class="tmark" style="left:${truth}%"></div></div><div class="bv" style="color:${color}">${val}%</div></div>`;
 }
 
 function rReveal(){
@@ -170,6 +171,7 @@ function rReveal(){
         ${bar('Extremized',ext,'var(--warn)',truth)}
         ${bar('Truth',truth,'var(--truth)',truth)}
       </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--faint);text-align:right;margin-top:2px">the teal line marks the truth</div>
       <div class="verdict ${good?'good':'miss'}">
         <b>${good?'Good aggregation.':'The crowd had more to give.'}</b>
         <span class="ex">The simple average (${avg}%) beat ${beatN} of the five analysts outright \u2014 the typical analyst was off by ${indErr} points, the average by only ${errAvg}. Pushing it away from the middle to ${ext}% (extremizing) landed ${errExt<errAvg?'closer still':'about the same'}. You came in ${errYou} points from the truth.</span>
