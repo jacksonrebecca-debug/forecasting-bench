@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Reference Class \u2014 Spinout, Sourced</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+:root{
+  --ground:#0E1218;--panel:#171D27;--panel-2:#1E2530;--line:#2B333F;
+  --ink:#E9ECF2;--muted:#8A95A6;--faint:#5A6475;
+  --signal:#E8B04B;--signal-dim:#7a5e2a;--truth:#4FB3A6;--warn:#E07A5F;--gut:#8E7CC3;
+  --shadow:rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--ground);color:var(--ink);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{min-height:100vh;display:flex;justify-content:center;padding:28px 18px 64px}
+.wrap{width:100%;max-width:680px}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--signal);margin-bottom:10px}
+.badge{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--truth);border:1px solid rgba(79,179,166,.4);border-radius:999px;padding:4px 11px;margin-bottom:14px}
+h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:32px;letter-spacing:-.02em;line-height:1.06;margin-bottom:14px}
+.lede{color:var(--muted);font-size:15px;line-height:1.62;max-width:58ch}
+.lede b{color:var(--ink);font-weight:600}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;box-shadow:0 8px 30px var(--shadow)}
+.mt{margin-top:18px}.mt-l{margin-top:26px}.hr{height:1px;background:var(--line);margin:22px 0}
+button.primary{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:15px;color:#15110a;background:var(--signal);border:none;padding:13px 22px;border-radius:10px;cursor:pointer;transition:.15s}
+button.primary:hover{filter:brightness(1.07)}
+button.primary:disabled{opacity:.4;cursor:not-allowed}
+button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.actions{display:flex;gap:12px;align-items:center;margin-top:24px}.actions .primary{flex:1}
+.steprow{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
+.stepname{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
+.module{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--signal)}
+.qtitle{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:21px;line-height:1.32;letter-spacing:-.01em;margin-bottom:14px}
+.body-txt{font-size:14.5px;line-height:1.68;color:var(--muted)}
+.body-txt b{color:var(--ink);font-weight:600}
+.readout{font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums;font-size:50px;letter-spacing:-.02em;color:var(--signal);line-height:1;margin:20px 0 2px;text-align:center}
+.readout .pct{font-size:23px;color:var(--signal-dim)}
+.readout-cap{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-bottom:16px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:3px;background:linear-gradient(90deg,var(--signal) var(--fill,50%),var(--line) var(--fill,50%));outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--signal);border:3px solid var(--ground);box-shadow:0 0 0 1px var(--signal),0 2px 6px var(--shadow)}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--signal);border:3px solid var(--ground);box-shadow:0 0 0 1px var(--signal)}
+input[type=range]:focus-visible{outline:2px solid var(--signal);outline-offset:6px}
+.scale{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--faint);margin-top:8px}
+.ref-opt{display:flex;justify-content:space-between;align-items:center;gap:14px;text-align:left;width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:14px 16px;cursor:pointer;transition:.15s;margin-bottom:10px}
+.ref-opt:hover{border-color:var(--faint)}
+.ref-opt[aria-pressed="true"]{border-color:var(--signal);background:rgba(232,176,75,.08)}
+.ref-opt .lab{font-size:14.5px;line-height:1.4}
+.ref-opt .lab .sm{display:block;font-size:12.5px;color:var(--muted);margin-top:3px}
+.ref-opt .rate{font-family:'IBM Plex Mono',monospace;font-size:22px;font-variant-numeric:tabular-nums;color:var(--signal);flex:none}
+.ref-opt .rate.hidden{color:var(--faint);font-size:15px}
+.tracklabel{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin:18px 0 6px}
+.legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.ev{background:var(--panel-2);border:1px solid var(--line);border-left:3px solid var(--signal);border-radius:10px;padding:15px 17px;margin-bottom:4px}
+.ev .src{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:7px}
+.ev .txt{font-size:15px;line-height:1.55}
+.fb{border-radius:10px;padding:14px 16px;margin-top:16px;font-size:14px;line-height:1.6}
+.fb.good{background:rgba(79,179,166,.1);border:1px solid rgba(79,179,166,.4);color:var(--truth)}
+.fb.over,.fb.noise{background:rgba(224,122,95,.1);border:1px solid rgba(224,122,95,.4);color:var(--warn)}
+.fb b{font-weight:600}.fb .ex{display:block;margin-top:6px;color:var(--muted)}
+details.deriv{margin-top:14px;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+details.deriv summary{cursor:pointer;list-style:none;padding:13px 16px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--truth);display:flex;justify-content:space-between;align-items:center}
+details.deriv summary::-webkit-details-marker{display:none}
+details.deriv summary::after{content:'+';font-size:16px;color:var(--faint)}
+details.deriv[open] summary::after{content:'\u2013'}
+details.deriv .dbody{padding:2px 16px 16px;font-size:13.5px;line-height:1.66;color:var(--muted);border-top:1px solid var(--line)}
+details.deriv .dbody b{color:var(--ink);font-weight:600}
+details.deriv .calc{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--signal);background:var(--ground);border:1px solid var(--line);border-radius:7px;padding:11px 13px;margin:11px 0;line-height:1.7;white-space:pre-wrap}
+details.deriv .lrtag{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink);background:rgba(232,176,75,.12);border:1px solid var(--signal-dim);border-radius:6px;padding:3px 9px;margin-top:4px}
+details.deriv .srcline{font-size:12px;color:var(--faint);margin-top:11px}
+.miniread{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted);margin-top:14px;text-align:center}
+.miniread b{color:var(--signal)}
+.resbadge{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--truth);margin-bottom:12px}
+.resbadge i{width:9px;height:9px;border-radius:50%;background:var(--truth)}
+.lesson{border-left:2px solid var(--signal);padding:4px 0 4px 16px;margin-top:18px}
+.lesson h3{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:16px;margin-bottom:8px}
+.lesson p{font-size:14px;line-height:1.66;color:var(--muted)}.lesson p b{color:var(--ink);font-weight:600}
+.sources{margin-top:22px}
+.sources h3{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-bottom:12px}
+.sources .s{font-size:13px;line-height:1.5;color:var(--muted);padding:9px 0;border-top:1px solid var(--line)}
+.sources .s b{color:var(--ink);font-weight:600}
+.caveat{background:rgba(224,122,95,.07);border:1px solid rgba(224,122,95,.3);border-radius:10px;padding:15px 17px;margin-top:18px;font-size:13.5px;line-height:1.6;color:var(--muted)}
+.caveat b{color:var(--warn);font-weight:600}
+.foot{margin-top:30px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;color:var(--faint);line-height:1.7}
+svg{display:block;width:100%;height:auto}
+@media (max-width:520px){h1{font-size:26px}.qtitle{font-size:19px}.readout{font-size:42px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+/* ============================================================
+   THE REFERENCE CLASS \u2014 SPINOUT, SOURCED EDITION
+   Softer ground than the election: spinout-survival data is
+   patchier, effect sizes are looser, and one signal is openly
+   contested. The honesty is the lesson.
+   ============================================================ */
+
+const SCN = {
+  module:'Sourced \u00b7 modules 1 & 2',
+  question:'Will this VC-backed university deep-tech spinout still be trading in five years?',
+  caseText:'The founder is magnetic \u2014 a former postdoc with three Nature papers and a demo that visibly impresses the room. The sector is the one every fund is chasing. The TAM slide says \u00a340bn, two angels wired money after a coffee, and part of you wants to call it a sure thing. Another part, the cynic who has watched startups die, wants to call it a long shot. Before either voice wins, anchor on what spinout data actually shows.',
+  gutPrompt:'Your gut: how likely is it still trading in five years?',
+  classes:[
+    {label:'All startups \u2014 \u201cmost of them fail, don\u2019t they?\u201d',sub:'the cynic\u2019s cliche \u2014 but the wrong class here',rate:0.20,trap:true},
+    {label:'Privately-funded university deep-tech spinouts',sub:'still trading at ~5 years',rate:0.75},
+    {label:'This founder is obviously brilliant',sub:'the inside view, not a class',rate:0.85,trap:true}
+  ],
+  bestClass:1,
+  anchor:0.75,
+  anchorNote:'Here\u2019s the surprise: funded spinouts survive far better than the \u201cmost startups fail\u201d reflex suggests. Roughly two in ten UK startups make it past year five \u2014 but for university spinouts that took private investment, the figure is far higher, and a UK sector survey found only about 17% of academic spinouts have ever ceased trading. A defensible anchor is around 75%. Both your instincts were wrong: the cynic\u2019s 20% is the wrong reference class, and the founder\u2019s brilliance is mostly already inside that 75% \u2014 everyone who gets funded is impressive.',
+  evidence:[
+    {
+      src:'Cap table \u00b7 lead investor',
+      txt:'The lead is a tier-1 fund with deep reserves and a record of bridging its companies through hard rounds.',
+      lr:1.5, kind:'up',
+      note:'A genuine de-risker \u2014 investor quality is one of the few survival factors the spinout literature consistently identifies. Update up, but modestly: the base rate is already high, so there isn\u2019t much ceiling left to climb.',
+      deriv:{
+        body:'The largest study of UK academic-spinoff survival (870 firms, 81 universities) finds survival hinges on three network actors: <b>investors, external entrepreneurs, and tech-transfer offices</b>. A tier-1 lead with reserves speaks directly to the first \u2014 follow-on capital is what keeps capital-hungry deep-tech alive through the gap years. No study reports a clean P(reserves|survive)/P(reserves|fail) ratio, so this is inferred from that determinant being robust and reserves materially lowering bridging risk.',
+        calc:'No clean published ratio \u2192 inferred from\n   \u201cinvestor quality\u201d as a robust survival determinant\nLR \u2248 1.5  (soft; ceiling-limited near a 75% base)',
+        lr:'LR \u2248 1.5   (range 1.2 \u2013 2.0)',
+        src:'Source: Prokop, Huggins & Bristow (2019), survival of academic spin-offs.'
+      }
+    },
+    {
+      src:'Team \u00b7 composition',
+      txt:'Eighteen months in, there is still no commercial co-founder. The academic founder is doing sales between lab shifts.',
+      lr:0.85, kind:'down', contested:true,
+      note:'The honest one. General startup data on solo-vs-team founders is genuinely mixed \u2014 some finds solo founders survive longer, some finds teams win. The spinout-specific evidence tips it slightly negative (a commercial partner helps academic founders), but the error bar crosses 1.0. A small nudge down is defensible \u2014 so is barely moving. Don\u2019t update hard on contested evidence.',
+      deriv:{
+        body:'This is where the data fights itself. Broad studies cut both ways: a Wharton study (\u201cSole Survivors\u201d) found companies started by solo founders <b>survive longer</b> than teams, while First Round\u2019s portfolio analysis found multi-founder teams <b>outperformed by 163%</b>. So \u201cno co-founder\u201d is not a reliable negative in general. The spinout-specific literature is what tips it: \u201cexternal entrepreneurs\u201d (commercial partners alongside the academic) are a named survival determinant. Net, a mild negative \u2014 but with an error bar that genuinely includes \u201cno effect.\u201d',
+        calc:'General solo-vs-team evidence:  contradictory\nSpinout-specific (external entrepreneur): mild positive\n   \u2192 absence \u2192 mild negative\nLR \u2248 0.85  (range 0.6 \u2013 1.05 \u2014 crosses 1.0)',
+        lr:'LR \u2248 0.85   (range 0.6 \u2013 1.05 \u00b7 direction contested)',
+        src:'Sources: Greenberg & Mollick, \u201cSole Survivors\u201d (Wharton); First Round 10-Year Project; Prokop et al. (2019).'
+      }
+    },
+    {
+      src:'Press \u00b7 profile',
+      txt:'A glowing TechCrunch profile names them \u201cthe team to watch this year.\u201d',
+      lr:1.0, kind:'noise',
+      note:'Noise. Press is the textbook vanity metric \u2014 reporters aren\u2019t customers, and coverage doesn\u2019t convert to survival in any measurable way. The right reaction is to barely move, if at all.',
+      deriv:{
+        body:'Media coverage is repeatedly flagged as a vanity metric: it feels like validation but has no reliable, measurable link to traction or survival, because press attention follows fundraising and narrative rather than causing customers. A profile tells you the story is fundable, which you already knew from the cap table \u2014 it adds essentially no independent information about whether the company is alive in five years.',
+        calc:'P(gets a profile | survives) \u2248 P(gets a profile | fails)\n   \u2192 ratio \u2248 1',
+        lr:'LR \u2248 1.0   (range 0.95 \u2013 1.1)',
+        src:'Source: startup vanity-metric literature (TechCrunch and others on press vs traction).'
+      }
+    },
+    {
+      src:'Commercial \u00b7 revenue',
+      txt:'They\u2019ve just signed a paid, contracted pilot with a strategic industrial partner.',
+      lr:1.7, kind:'up',
+      note:'The strongest signal in the set \u2014 someone is paying real money. Revenue and retention are what actually separate survivors from vanity. Update up firmly, though the high base rate again limits how far you can climb.',
+      deriv:{
+        body:'Across the \u201cvanity vs velocity\u201d literature, the metrics that genuinely predict survival are the hard ones \u2014 paying customers, revenue, retention \u2014 not reach or buzz. A signed, paid pilot with a strategic is the first real evidence of demand and a potential acquisition relationship. It\u2019s the most diagnostic single fact here, though still soft: a pilot is not yet recurring revenue, and deep-tech pilots can stall.',
+        calc:'Revenue/traction = the predictive (\u201cvelocity\u201d) signal\n   vs vanity metrics that don\u2019t predict survival\nLR \u2248 1.7  (range 1.3 \u2013 2.2; ceiling-limited)',
+        lr:'LR \u2248 1.7   (range 1.3 \u2013 2.2)',
+        src:'Source: startup metrics literature on revenue/retention vs vanity metrics.'
+      }
+    }
+  ],
+  resolution:'Five years on, the company is still trading \u2014 the likely outcome at a model probability near 87%. But look closely at what \u201cstill trading\u201d did and didn\u2019t promise: it survived as a smaller, pivoted business serving a niche the original deck never mentioned. The base rate counts zombies as survivors, and the forecast was only ever predicting that low bar \u2014 not success, not a good return, not the \u00a340bn slide.',
+  lesson:'<b>Two lessons beyond the election.</b> First, the reference class does enormous work: \u201cmost startups fail\u201d (~20%) and \u201cthis founder is brilliant\u201d (~85%) are both wrong, and the data-backed class \u2014 funded deep-tech spinouts at ~75% \u2014 sits between them. Pick the wrong class and you start the whole forecast 50 points off. Second, the evidence is far messier than the election\u2019s. The investor and revenue signals are real but soft; the \u201cno commercial co-founder\u201d worry rests on <b>contested</b> data whose honest likelihood ratio straddles 1.0 \u2014 so moving little, and saying why, is the disciplined response, not manufacturing a confident number. And notice the ceiling effect: from a 75% start, even strong good news barely moves you, because the same likelihood ratio that swings a 50/50 hard can\u2019t do much to a forecast already near the edge. That last point is why calibration lives in odds, not percentages.',
+  caveat:'<b>Far softer ground than the election.</b> The ~75% anchor blends an advocacy-flavoured law-firm figure (~9 in 10 funded spinouts still operating), a sector body\u2019s count (~17% of academic spinouts ever ceased, across all ages, not a clean 5-year cohort), and rough general-startup survival \u2014 so treat it as a wide band (~65\u201385%), not a point. \u201cStill trading\u201d counts zombies as survivors. None of the evidence ratios come from a study reporting P(evidence | survive) / P(evidence | fail); they\u2019re inferred from effect sizes and named survival determinants, and the team signal is openly contested in direction. This is the best you can honestly do from public data \u2014 hold the numbers loosely.',
+  sources:[
+    ['RAEng, \u201cSpotlight on Spinouts\u201d (2023)','Of 1,718 UK academic spinouts, ~17% had ceased trading; mean age at failure ~8 years, with the most common failure point around year 7\u20138.'],
+    ['Anderson Law (2018), via Computerworld','Around nine in ten UK spinouts that took private investment (2011\u201315) were still operating, against roughly two in ten startups generally past year five.'],
+    ['Prokop, Huggins & Bristow (2019)','Survival of 870 UK academic spin-offs depends on three network actors: investors, external (commercial) entrepreneurs, and tech-transfer offices.'],
+    ['Greenberg & Mollick, \u201cSole Survivors\u201d; First Round 10-Year Project','Contradictory findings on solo founders vs teams \u2014 the basis for treating the \u201cno co-founder\u201d signal as contested.'],
+    ['Startup vanity-metric literature','Press coverage and reach don\u2019t predict survival; revenue, retention and paying customers do.']
+  ]
+};
+
+const logit=p=>Math.log(p/(1-p));
+const clamp=p=>Math.max(0.02,Math.min(0.98,p));
+function bayesChain(anchor,lrs){const path=[anchor];let o=anchor/(1-anchor);lrs.forEach(lr=>{o*=lr;path.push(o/(1+o));});return path;}
+
+let S={};
+const app=document.getElementById('app');
+function h(s){const t=document.createElement('template');t.innerHTML=s.trim();return t.content.firstChild;}
+function render(){app.innerHTML='';({intro:rIntro,gut:rGut,refclass:rRef,bridge:rBridge,evidence:rEv,resolve:rResolve})[S.screen]();window.scrollTo&&window.scrollTo(0,0);}
+
+function instrument(v,cap,id){return `<div class="readout"><span id="${id}rv">${v}</span><span class="pct">%</span></div><div class="readout-cap">${cap}</div><input type="range" id="${id}sl" min="2" max="98" step="1" value="${v}" style="--fill:${v}%"><div class="scale"><span>2%</span><span>50%</span><span>98%</span></div>`;}
+function wire(card,id,set){const sl=card.querySelector('#'+id+'sl'),rv=card.querySelector('#'+id+'rv');sl.oninput=()=>{const v=+sl.value;rv.textContent=v;sl.style.setProperty('--fill',v+'%');set(v);};}
+function beliefTrack(markers,history){
+  const W=620,H=86,padL=18,padR=18,y=42;const x=p=>padL+p*(W-padL-padR);
+  let ticks='';for(let t=0;t<=100;t+=25){ticks+=`<line x1="${x(t/100)}" y1="${y-16}" x2="${x(t/100)}" y2="${y+16}" stroke="var(--line)" stroke-width="1"/><text x="${x(t/100)}" y="${y+32}" text-anchor="middle" fill="var(--faint)" font-family="IBM Plex Mono" font-size="10">${t}</text>`;}
+  let hist='';if(history&&history.length>1){hist='<polyline points="'+history.map(p=>`${x(p).toFixed(1)},${y}`).join(' ')+'" fill="none" stroke="var(--signal)" stroke-width="1.5" opacity="0.4"/>';}
+  const mk=markers.map(m=>`<g><line x1="${x(m.p)}" y1="${y-20}" x2="${x(m.p)}" y2="${y+20}" stroke="${m.color}" stroke-width="2"/><circle cx="${x(m.p)}" cy="${y}" r="6" fill="${m.color}" stroke="var(--ground)" stroke-width="2"/></g>`).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Belief track"><line x1="${x(0)}" y1="${y}" x2="${x(1)}" y2="${y}" stroke="var(--line)" stroke-width="2"/>${ticks}${hist}${mk}</svg>`;
+}
+function derivHTML(d){return `<details class="deriv"><summary>Show the derivation</summary><div class="dbody"><p>${d.body}</p><div class="calc">${d.calc}</div><span class="lrtag">${d.lr}</span><div class="srcline">${d.src}</div></div></details>`;}
+
+function rIntro(){
+  const card=h(`<div>
+    <div class="eyebrow">The Forecasting Bench \u00b7 Sourced Edition</div>
+    <span class="badge">\u25c9 softer data \u00b7 honesty shown</span>
+    <h1>The dazzling spinout,<br>done properly.</h1>
+    <p class="lede">The election ran on clean data. This one doesn\u2019t \u2014 and that\u2019s the lesson. Spinout-survival evidence is patchier, the effect sizes are looser, and one signal is <b>openly contested</b> in the data. Each likelihood ratio still traces to a published source, but you\u2019ll see the error bars widen and, in one case, the direction itself in doubt. You\u2019re even allowed to correctly <b>hold steady</b> on ambiguous evidence.</p>
+    <div class="card mt-l">
+      <p class="body-txt">Commit a gut number, anchor on a real (if wide) base rate, then update through four facts \u2014 the lead investor, a missing co-founder, a press profile, and a signed pilot. Open the derivation under each to see exactly how soft or solid its number is.</p>
+      <div class="actions"><button class="primary" id="go">Begin</button></div>
+    </div>
+    <div class="foot">Honest estimates from public sources \u00b7 wide error bars \u00b7 not a peer-reviewed model.</div>
+  </div>`);
+  app.appendChild(card);card.querySelector('#go').onclick=()=>{S.screen='gut';render();};
+}
+function rGut(){
+  const card=h(`<div>
+    <div class="steprow"><span class="stepname">Step 1 \u00b7 First instinct</span><span class="module">${SCN.module}</span></div>
+    <div class="qtitle">${SCN.question}</div>
+    <div class="card"><p class="body-txt">${SCN.caseText}</p>${instrument(S.gut,SCN.gutPrompt,'gut')}<div class="actions"><button class="primary" id="next">Commit my gut</button></div></div>
+  </div>`);
+  app.appendChild(card);wire(card,'gut',v=>S.gut=v);
+  card.querySelector('#next').onclick=()=>{S.screen='refclass';render();};
+}
+function rRef(){
+  const card=h(`<div>
+    <div class="steprow"><span class="stepname">Step 2 \u00b7 The outside view</span><span class="module">${SCN.module}</span></div>
+    <div class="qtitle">Which reference class should anchor you?</div>
+    <div class="card"><p class="body-txt">Two of these are traps pulling in opposite directions \u2014 one too gloomy, one too rosy. Pick the class that is both <b>relevant</b> and <b>backed by data</b>:</p>
+      <div id="opts" class="mt"></div><div id="note"></div>
+      <div class="actions"><button class="primary" id="next" disabled>Use this as my anchor</button></div></div>
+  </div>`);
+  app.appendChild(card);
+  const opts=card.querySelector('#opts'),note=card.querySelector('#note'),next=card.querySelector('#next');
+  SCN.classes.forEach((c,i)=>{
+    const o=h(`<button class="ref-opt" aria-pressed="false"><span class="lab">${c.label}<span class="sm">${c.sub}</span></span><span class="rate hidden" id="r${i}">reveal</span></button>`);
+    o.onclick=()=>{
+      S.chosen=i;
+      [...opts.children].forEach((el,j)=>{el.setAttribute('aria-pressed',j===i?'true':'false');const r=el.querySelector('.rate');r.textContent=Math.round(SCN.classes[j].rate*100)+'%';r.classList.remove('hidden');});
+      next.disabled=false;
+      const best=i===SCN.bestClass;
+      note.innerHTML=`<div class="fb ${best?'good':'over'}">${best?'\u2713 The right class \u2014 relevant and data-backed.':'\u26a0 A trap.'} ${SCN.classes[i].trap?(i===0?'\u201cMost startups fail\u201d is true of startups in general, but funded spinouts are a different, much hardier population \u2014 wrong class.':'\u201cThis founder is brilliant\u201d is the inside view, not a class \u2014 and brilliance is already priced into who gets funded.'):''}</div>`;
+    };
+    opts.appendChild(o);
+  });
+  next.onclick=()=>{S.screen='bridge';render();};
+}
+function rBridge(){
+  const aPct=Math.round(SCN.anchor*100),gap=S.gut-aPct;
+  const card=h(`<div>
+    <div class="steprow"><span class="stepname">Step 3 \u00b7 Gut vs base rate</span><span class="module">${SCN.module}</span></div>
+    <div class="qtitle">Where the discipline starts</div>
+    <div class="card">
+      <div class="tracklabel">Your starting point, two ways</div>
+      ${beliefTrack([{p:S.gut/100,color:'var(--gut)'},{p:SCN.anchor,color:'var(--signal)'}])}
+      <div class="legend"><span><i style="background:var(--gut)"></i>Your gut \u00b7 ${S.gut}%</span><span><i style="background:var(--signal)"></i>Base-rate anchor \u00b7 ${aPct}%</span></div>
+      <p class="body-txt mt-l">${SCN.anchorNote}</p>
+      ${Math.abs(gap)>=12?`<p class="body-txt mt">Your gut sat <b>${Math.abs(gap)} points ${gap>0?'above':'below'}</b> the base rate \u2014 ${gap>0?'the founder\u2019s glow':'the cynic\u2019s reflex'} pulling you off the data.</p>`:`<p class="body-txt mt">Your gut landed close to the data-backed rate \u2014 you dodged both traps.</p>`}
+      <div class="actions"><button class="primary" id="next">Now the evidence arrives</button></div>
+    </div>
+  </div>`);
+  app.appendChild(card);
+  S.bayes=bayesChain(SCN.anchor,SCN.evidence.map(e=>e.lr));
+  S.path=[SCN.anchor];S.cur=Math.round(SCN.anchor*100);S.i=0;S.fb=[];
+  card.querySelector('#next').onclick=()=>{S.screen='evidence';render();};
+}
+function rEv(){
+  const e=SCN.evidence[S.i];
+  const card=h(`<div>
+    <div class="steprow"><span class="stepname">Step 4 \u00b7 Update \u00b7 ${S.i+1} of ${SCN.evidence.length}</span><span class="module">how much to react</span></div>
+    <div class="qtitle">${SCN.question}</div>
+    <div class="card">
+      <div class="ev"><div class="src">New information \u00b7 ${e.src}</div><div class="txt">${e.txt}</div></div>
+      <div class="tracklabel">Your belief so far</div>
+      ${beliefTrack([{p:S.path[S.path.length-1],color:'var(--signal)'}],S.path)}
+      ${instrument(S.cur,'where do you move to?','ev')}
+      <div class="actions"><button class="primary" id="set">Set my new probability</button></div>
+    </div>
+  </div>`);
+  app.appendChild(card);wire(card,'ev',v=>S.cur=v);
+  card.querySelector('#set').onclick=score;
+}
+function score(){
+  const e=SCN.evidence[S.i];
+  const prev=S.path[S.path.length-1],now=clamp(S.cur/100);
+  const bPrev=S.bayes[S.i],bNow=S.bayes[S.i+1];
+  const tD=logit(clamp(bNow))-logit(clamp(bPrev)),pD=logit(now)-logit(clamp(prev));
+  S.path.push(now);
+  const tM=Math.abs(tD),pM=Math.abs(pD),sameDir=(tD===0)||Math.sign(tD)===Math.sign(pD)||pD===0;
+  let cls,head;
+  if(e.contested && pM<0.18){cls='good';head='Reasonably held \u2014 the evidence is contested.';}
+  else if(e.kind==='noise'||tM<0.06){if(pM<0.12){cls='good';head='Held steady \u2014 right call.';}else{cls='noise';head='You reacted to noise.';}}
+  else if(!sameDir&&pM>0.08){cls='over';head='Wrong direction.';}
+  else if(pM>tM*2.0&&pM>0.15){cls='over';head='Over-reacted.';}
+  else if(pM<tM*0.45){cls='over';head='Under-reacted.';}
+  else{cls='good';head='Well-judged update.';}
+  S.last={cls,head,ex:e.note+` <span style="color:var(--faint)">(A Bayesian on these sourced ratios lands near ${Math.round(bNow*100)}% here; you went to ${Math.round(now*100)}%.)</span>`,bNow,deriv:e.deriv};
+  S.fb.push({kind:e.kind,cls});S.cur=Math.round(now*100);
+  showFb();
+}
+function showFb(){
+  const e=SCN.evidence[S.i],fb=S.last,last=S.i===SCN.evidence.length-1;
+  app.innerHTML='';
+  const card=h(`<div>
+    <div class="steprow"><span class="stepname">Step 4 \u00b7 Update \u00b7 ${S.i+1} of ${SCN.evidence.length}</span><span class="module">how much to react</span></div>
+    <div class="qtitle">${SCN.question}</div>
+    <div class="card">
+      <div class="ev"><div class="src">New information \u00b7 ${e.src}</div><div class="txt">${e.txt}</div></div>
+      <div class="fb ${fb.cls}"><b>${fb.head}</b><span class="ex">${fb.ex}</span></div>
+      ${derivHTML(fb.deriv)}
+      <div class="tracklabel mt">Belief track \u00b7 anchor \u2192 now</div>
+      ${beliefTrack([{p:S.path[S.path.length-1],color:'var(--signal)'},{p:fb.bNow,color:'var(--truth)'}],S.path)}
+      <div class="legend"><span><i style="background:var(--signal)"></i>You \u00b7 ${Math.round(S.path[S.path.length-1]*100)}%</span><span><i style="background:var(--truth)"></i>Bayesian \u00b7 ${Math.round(fb.bNow*100)}%</span></div>
+      <div class="actions"><button class="primary" id="next">${last?'See how it resolved':'Next piece of evidence'}</button></div>
+    </div>
+  </div>`);
+  app.appendChild(card);
+  card.querySelector('#next').onclick=()=>{if(last){S.screen='resolve';render();}else{S.i++;S.cur=Math.round(S.path[S.path.length-1]*100);S.screen='evidence';render();}};
+}
+function rResolve(){
+  const fP=S.path[S.path.length-1],fB=S.bayes[S.bayes.length-1];
+  const noise=S.fb.filter(f=>f.kind==='noise'),noiseOK=noise.filter(f=>f.cls==='good').length;
+  const good=S.fb.filter(f=>f.cls==='good').length;
+  const srcRows=SCN.sources.map(s=>`<div class="s"><b>${s[0]}.</b> ${s[1]}</div>`).join('');
+  const card=h(`<div>
+    <div class="steprow"><span class="stepname">Step 5 \u00b7 Resolution</span><span class="module">${SCN.module}</span></div>
+    <div class="qtitle">${SCN.question}</div>
+    <div class="card">
+      <div class="resbadge"><i></i>What actually happened</div>
+      <p class="body-txt">${SCN.resolution}</p>
+      <div class="hr"></div>
+      <div class="tracklabel">Your whole journey \u00b7 gut \u2192 anchor \u2192 final</div>
+      ${beliefTrack([{p:S.gut/100,color:'var(--gut)'},{p:fP,color:'var(--signal)'},{p:fB,color:'var(--truth)'}],S.path)}
+      <div class="legend"><span><i style="background:var(--gut)"></i>Gut \u00b7 ${S.gut}%</span><span><i style="background:var(--signal)"></i>Your final \u00b7 ${Math.round(fP*100)}%</span><span><i style="background:var(--truth)"></i>Bayesian \u00b7 ${Math.round(fB*100)}%</span></div>
+      <div class="miniread">You ended <b>${Math.abs(Math.round(fP*100)-Math.round(fB*100))} points</b> from the sourced benchmark \u00b7 ${good}/${SCN.evidence.length} updates well-judged${noise.length?` \u00b7 noise resisted ${noiseOK}/${noise.length}`:''}</div>
+      <div class="lesson"><h3>The lesson</h3><p>${SCN.lesson}</p></div>
+      <div class="caveat">${SCN.caveat}</div>
+      <div class="sources"><h3>Sources &amp; method</h3>${srcRows}</div>
+      <div class="actions"><button class="primary" id="again">Replay</button></div>
+    </div>
+    <div class="foot">When the data is soft, the discipline is to hold your numbers loosely \u2014 and say so.</div>
+  </div>`);
+  app.appendChild(card);
+  card.querySelector('#again').onclick=()=>{S={screen:'gut',gut:50};render();};
+}
+
+S={screen:'intro',gut:50};
+render();
+</script>
+</body>
+</html>
