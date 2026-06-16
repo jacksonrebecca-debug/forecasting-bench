@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Time Machine</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+:root{--ground:#0E1218;--panel:#171D27;--panel-2:#1E2530;--line:#2B333F;--ink:#E9ECF2;--muted:#8A95A6;--faint:#5A6475;--signal:#E8B04B;--signal-dim:#7a5e2a;--truth:#4FB3A6;--warn:#E07A5F;--gut:#8E7CC3;--shadow:rgba(0,0,0,.35)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--ground);color:var(--ink);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{min-height:100vh;display:flex;justify-content:center;padding:28px 18px 64px}
+.wrap{width:100%;max-width:680px}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--signal);margin-bottom:10px}
+h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:33px;letter-spacing:-.02em;line-height:1.05;margin-bottom:14px}
+.lede{color:var(--muted);font-size:15px;line-height:1.62;max-width:58ch}.lede b{color:var(--ink);font-weight:600}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;box-shadow:0 8px 30px var(--shadow)}
+.mt{margin-top:18px}.mt-l{margin-top:26px}.hr{height:1px;background:var(--line);margin:22px 0}
+button.primary{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:15px;color:#15110a;background:var(--signal);border:none;padding:13px 22px;border-radius:10px;cursor:pointer;transition:.15s}
+button.primary:hover{filter:brightness(1.07)}button.primary:disabled{opacity:.4;cursor:not-allowed}
+button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.actions{display:flex;gap:12px;align-items:center;margin-top:24px}.actions .primary{flex:1}
+.steprow{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
+.stepname{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
+.module{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--signal)}
+.qtitle{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:20px;line-height:1.34;letter-spacing:-.01em;margin-bottom:10px}
+.body-txt{font-size:14.5px;line-height:1.66;color:var(--muted)}.body-txt b{color:var(--ink);font-weight:600}
+.hazard{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--truth);background:var(--ground);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin:12px 0}
+.slab{margin-top:16px}
+.slab .sl-lab{font-size:14px;margin-bottom:8px;color:var(--ink)}
+.slab .sl-row{display:flex;align-items:center;gap:14px}
+.slab .sl-val{font-family:'IBM Plex Mono',monospace;font-size:20px;font-variant-numeric:tabular-nums;color:var(--signal);min-width:54px;text-align:right}
+input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:4px;border-radius:3px;background:linear-gradient(90deg,var(--signal) var(--fill,50%),var(--line) var(--fill,50%));outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--signal);border:3px solid var(--ground);box-shadow:0 0 0 1px var(--signal)}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--signal);border:3px solid var(--ground)}
+.verdict{border-radius:10px;padding:14px 16px;margin:8px 0 4px;font-size:14px;line-height:1.62}
+.verdict.good{background:rgba(79,179,166,.1);border:1px solid rgba(79,179,166,.4);color:var(--truth)}
+.verdict.miss{background:rgba(224,122,95,.1);border:1px solid rgba(224,122,95,.4);color:var(--warn)}
+.verdict b{font-weight:600}.verdict .ex{display:block;margin-top:6px;color:var(--muted)}
+.curvecap{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:16px 0 4px}
+svg{display:block;width:100%;height:auto}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)}
+.legend i{display:inline-block;width:12px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.lesson{border-left:2px solid var(--signal);padding:4px 0 4px 16px;margin-top:18px}
+.lesson h3{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:16px;margin-bottom:8px}
+.lesson p{font-size:14px;line-height:1.66;color:var(--muted)}.lesson p b{color:var(--ink);font-weight:600}
+.foot{margin-top:30px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;color:var(--faint);line-height:1.7}
+.track{height:3px;background:var(--line);border-radius:2px;overflow:hidden;margin-bottom:22px}.track>i{display:block;height:100%;background:var(--signal);transition:width .35s}
+@media (max-width:520px){h1{font-size:27px}.qtitle{font-size:18px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+/* ============================================================
+   THE TIME MACHINE  \u00b7  Instrument 07
+   Probabilities don't add across years \u2014 they compound. A
+   steady annual chance h gives P(by year t) = 1-(1-h)^t. This
+   trains scope-sensitivity and the compounding instinct.
+   ============================================================ */
+
+const SCN=[
+  {id:'fusion',h:0.08,t1:5,t2:25,maxT:30,
+   title:'A fusion power venture',
+   event:'reaches commercial grid power',
+   hazardTxt:'Each year, suppose this venture has about an 8% chance of finally reaching grid power \u2014 and that yearly rate is roughly steady.'},
+  {id:'quake',h:0.02,t1:10,t2:50,maxT:60,
+   title:'A seismic fault',
+   event:'produces a major earthquake',
+   hazardTxt:'A particular fault has about a 2% chance per year of producing a major earthquake, fairly constant year to year.'},
+  {id:'acq',h:0.15,t1:3,t2:10,maxT:12,
+   title:'An early-stage startup',
+   event:'is acquired',
+   hazardTxt:'Say this startup has roughly a 15% chance of being acquired in any given year while it stays independent.'},
+  {id:'fail',h:0.005,t1:20,t2:40,maxT:50,
+   title:'A reactor component',
+   event:'suffers a critical failure',
+   hazardTxt:'A safety-critical component has about a 0.5% chance per year of a critical failure.'}
+];
+
+const cum=(h,t)=>1-Math.pow(1-h,t);
+const lin=(h,t)=>Math.min(h*t,1);
+
+let S={screen:'intro',si:0,a1:30,a2:60,scores:[]};
+const app=document.getElementById('app');
+function h(s){const t=document.createElement('template');t.innerHTML=s.trim();return t.content.firstChild;}
+function render(){app.innerHTML='';({intro:rIntro,ask:rAsk,reveal:rReveal,done:rDone})[S.screen]();window.scrollTo&&window.scrollTo(0,0);}
+
+function rIntro(){
+  const card=h(`<div>
+    <div class="eyebrow">The Forecasting Bench \u00b7 Instrument 07</div>
+    <h1>The Time Machine</h1>
+    <p class="lede">If something has a 10% chance of happening each year, what\u2019s the chance it happens within ten years? The tempting answer \u2014 100% \u2014 is badly wrong. Probabilities <b>don\u2019t add across time, they compound</b>: the right answer is about 65%, because each year has to <i>not</i> happen, and 0.9 multiplied by itself ten times still leaves a real chance it never does.<br><br>This instrument trains two linked instincts: that a forecast must be <b>scope-sensitive</b> (a longer window means a higher chance), and that you convert between horizons with <b>P(by year t) = 1 \u2212 (1\u2212h)^t</b>, never by multiplying. Crucial when you\u2019re forecasting anything on a deep-tech timeline.</p>
+    <div class="actions"><button class="primary" id="go">Begin</button></div>
+    <div class="foot">Trains: scope sensitivity \u00b7 hazard rates \u00b7 why probabilities compound, not add.</div>
+  </div>`);
+  app.appendChild(card);card.querySelector('#go').onclick=()=>{S.screen='ask';S.si=0;S.scores=[];S.a1=30;S.a2=60;render();};
+}
+
+function rAsk(){
+  const c=SCN[S.si];
+  const card=h(`<div>
+    <div class="steprow"><span class="stepname">Scenario ${S.si+1} / ${SCN.length}</span><span class="module">${c.title}</span></div>
+    <div class="track"><i style="width:${(S.si/SCN.length)*100}%"></i></div>
+    <div class="card">
+      <div class="qtitle">What\u2019s the chance it ${c.event} within each window?</div>
+      <div class="hazard">${c.hazardTxt}</div>
+      <p class="body-txt">Don\u2019t reach for a calculator \u2014 set what your instinct says, then we\u2019ll compound it properly.</p>
+      <div class="slab"><div class="sl-lab">Chance within <b>${c.t1} years</b></div><div class="sl-row"><input type="range" id="s1" min="0" max="100" value="${S.a1}" style="--fill:${S.a1}%"><span class="sl-val" id="v1">${S.a1}%</span></div></div>
+      <div class="slab"><div class="sl-lab">Chance within <b>${c.t2} years</b></div><div class="sl-row"><input type="range" id="s2" min="0" max="100" value="${S.a2}" style="--fill:${S.a2}%"><span class="sl-val" id="v2">${S.a2}%</span></div></div>
+      <div class="actions"><button class="primary" id="next">Compound it</button></div>
+    </div>
+  </div>`);
+  app.appendChild(card);
+  const s1=card.querySelector('#s1'),s2=card.querySelector('#s2');
+  s1.oninput=()=>{S.a1=+s1.value;card.querySelector('#v1').textContent=S.a1+'%';s1.style.setProperty('--fill',S.a1+'%');};
+  s2.oninput=()=>{S.a2=+s2.value;card.querySelector('#v2').textContent=S.a2+'%';s2.style.setProperty('--fill',S.a2+'%');};
+  card.querySelector('#next').onclick=()=>{S.screen='reveal';render();};
+}
+
+function curve(c){
+  const W=620,H=250,padL=40,padR=16,padT=14,padB=34;
+  const xT=t=>padL+(t/c.maxT)*(W-padL-padR);
+  const yP=p=>H-padB-(p)*(H-padT-padB);
+  let grid='';
+  for(let g=0;g<=100;g+=25){const gy=yP(g/100);grid+=`<line x1="${padL}" y1="${gy}" x2="${W-padR}" y2="${gy}" stroke="var(--line)" stroke-width="1"/><text x="${padL-6}" y="${gy+3}" text-anchor="end" fill="var(--faint)" font-family="IBM Plex Mono" font-size="9.5">${g}%</text>;`}
+  for(let t=0;t<=c.maxT;t+=Math.ceil(c.maxT/6/5)*5||5){const gx=xT(t);grid+=`<text x="${gx}" y="${H-padB+18}" text-anchor="middle" fill="var(--faint)" font-family="IBM Plex Mono" font-size="9.5">${t}y</text>`;}
+  // true compounding curve
+  let tp=[],lp=[];
+  for(let t=0;t<=c.maxT;t+=Math.max(c.maxT/120,0.25)){tp.push(`${xT(t).toFixed(1)},${yP(cum(c.h,t)).toFixed(1)}`);lp.push(`${xT(t).toFixed(1)},${yP(lin(c.h,t)).toFixed(1)}`);}
+  const truePts=[c.t1,c.t2].map(t=>`<circle cx="${xT(t)}" cy="${yP(cum(c.h,t))}" r="5" fill="var(--truth)" stroke="var(--ground)" stroke-width="2"/>`).join('');
+  const yourPts=[[c.t1,S.a1/100],[c.t2,S.a2/100]].map(([t,p])=>`<circle cx="${xT(t)}" cy="${yP(p)}" r="5" fill="var(--gut)" stroke="var(--ground)" stroke-width="2"/>`).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Cumulative probability over time">
+    ${grid}
+    <polyline points="${lp.join(' ')}" fill="none" stroke="var(--warn)" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.8"/>
+    <polyline points="${tp.join(' ')}" fill="none" stroke="var(--truth)" stroke-width="2"/>
+    ${truePts}${yourPts}
+  </svg>`;
+}
+
+function rReveal(){
+  const c=SCN[S.si];
+  const true1=Math.round(cum(c.h,c.t1)*100), true2=Math.round(cum(c.h,c.t2)*100);
+  const lin1=Math.round(lin(c.h,c.t1)*100), lin2=Math.round(lin(c.h,c.t2)*100);
+  const e1=Math.abs(S.a1-true1), e2=Math.abs(S.a2-true2);
+  const mono = S.a2>=S.a1;
+  const close = e1<=8 && e2<=8 && mono;
+  S.scores[S.si]=close;
+  const last=S.si===SCN.length-1;
+  let head, ex;
+  if(!mono){ head='Scope slip.'; ex=`You gave a <b>higher</b> chance for the shorter window than the longer one (${S.a1}% within ${c.t1}y vs ${S.a2}% within ${c.t2}y). More time can only add chances for the event to occur, so the longer horizon must be \u2265 the shorter. The correct figures are ${true1}% and ${true2}%.`; }
+  else if(close){ head='Well compounded.'; ex=`Spot on: about <b>${true1}%</b> within ${c.t1} years and <b>${true2}%</b> within ${c.t2}. You let the chance build the right way \u2014 fast at first, then flattening as it approaches certainty.`; }
+  else { head='Off the curve.'; ex=`The compounded answers are <b>${true1}%</b> (${c.t1}y) and <b>${true2}%</b> (${c.t2}y). Naive adding would have said ${lin1}% and ${lin2}% \u2014 the dashed line \u2014 which over-counts because it lets the same risk be paid twice and can sail past 100%.`; }
+  const card=h(`<div>
+    <div class="steprow"><span class="stepname">Scenario ${S.si+1} \u00b7 the curve</span><span class="module">${c.title}</span></div>
+    <div class="card">
+      <div class="verdict ${close?'good':'miss'}"><b>${head}</b><span class="ex">${ex}</span></div>
+      <div class="curvecap">P(it has happened by year t) = 1 \u2212 (1 \u2212 ${c.h})^t</div>
+      ${curve(c)}
+      <div class="legend"><span><i style="background:var(--truth)"></i>true compounding</span><span><i style="background:var(--warn)"></i>naive adding (h \u00d7 t)</span><span><i style="background:var(--gut)"></i>your two answers</span></div>
+      <p class="body-txt mt">${c.h<=0.02?`Notice the slow burn: a tiny ${Math.round(c.h*100*10)/10}% a year still compounds to <b>${true2}%</b> over ${c.t2} years. Small annual risks become near-inevitabilities given enough time.`:`Notice the flattening: the chance climbs fast early, then slows as it nears certainty \u2014 each later year has fewer \u201csurviving\u201d cases left to convert.`}</p>
+      <div class="actions"><button class="primary" id="next">${last?'See the lesson':'Next scenario'}</button></div>
+    </div>
+  </div>`);
+  app.appendChild(card);
+  card.querySelector('#next').onclick=()=>{ if(last){S.screen='done';render();} else {S.si++;S.a1=30;S.a2=60;S.screen='ask';render();} };
+}
+
+function rDone(){
+  const good=S.scores.filter(Boolean).length;
+  const card=h(`<div>
+    <div class="steprow"><span class="stepname">Complete</span><span class="module">${good}/${SCN.length} well compounded</span></div>
+    <div class="card">
+      <div class="lesson" style="margin-top:0"><h3>The lesson</h3><p>A forecast must answer to its time window. Two errors recur. The first is <b>scope insensitivity</b> \u2014 giving roughly the same probability whatever the horizon; the cure is to insist that a longer window always carries at least as much chance as a shorter one. The second is <b>adding instead of compounding</b>: treating an 8%-a-year risk as 40% over five years and 200% over twenty-five. The right tool is survival \u2014 the event fails to happen each year with probability (1\u2212h), so by year t the chance it <i>has</i> happened is 1\u2212(1\u2212h)^t, a curve that rises fast then flattens toward but never reaches certainty. Two consequences worth carrying: <b>small annual hazards become near-certainties over long horizons</b> (the slow-burn risks worth taking seriously), and a <b>scary-sounding yearly rate doesn\u2019t mean disaster is imminent</b> in the near term.</p></div>
+      <div class="actions"><button class="primary" id="again">Run it again</button></div>
+    </div>
+    <div class="foot">Longer window, higher chance \u00b7 compound, never add \u00b7 1 \u2212 (1\u2212h) to the power of t.</div>
+  </div>`);
+  app.appendChild(card);
+  card.querySelector('#again').onclick=()=>{S.screen='intro';render();};
+}
+
+render();
+</script>
+</body>
+</html>
