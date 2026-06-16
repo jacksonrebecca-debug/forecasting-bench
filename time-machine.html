@@ -124,17 +124,17 @@ function curve(c){
   const xT=t=>padL+(t/c.maxT)*(W-padL-padR);
   const yP=p=>H-padB-(p)*(H-padT-padB);
   let grid='';
-  for(let g=0;g<=100;g+=25){const gy=yP(g/100);grid+=`<line x1="${padL}" y1="${gy}" x2="${W-padR}" y2="${gy}" stroke="var(--line)" stroke-width="1"/><text x="${padL-6}" y="${gy+3}" text-anchor="end" fill="var(--faint)" font-family="IBM Plex Mono" font-size="9.5">${g}%</text>;`}
-  for(let t=0;t<=c.maxT;t+=Math.ceil(c.maxT/6/5)*5||5){const gx=xT(t);grid+=`<text x="${gx}" y="${H-padB+18}" text-anchor="middle" fill="var(--faint)" font-family="IBM Plex Mono" font-size="9.5">${t}y</text>`;}
+  for(let g=0;g<=100;g+=25){const gy=yP(g/100);grid+=`<line x1="${padL}" y1="${gy}" x2="${W-padR}" y2="${gy}" stroke="#2B333F" stroke-width="1"/><text x="${padL-6}" y="${gy+3}" text-anchor="end" fill="#5A6475" font-family="IBM Plex Mono" font-size="9.5">${g}%</text>;`}
+  for(let t=0;t<=c.maxT;t+=Math.ceil(c.maxT/6/5)*5||5){const gx=xT(t);grid+=`<text x="${gx}" y="${H-padB+18}" text-anchor="middle" fill="#5A6475" font-family="IBM Plex Mono" font-size="9.5">${t}y</text>`;}
   // true compounding curve
   let tp=[],lp=[];
   for(let t=0;t<=c.maxT;t+=Math.max(c.maxT/120,0.25)){tp.push(`${xT(t).toFixed(1)},${yP(cum(c.h,t)).toFixed(1)}`);lp.push(`${xT(t).toFixed(1)},${yP(lin(c.h,t)).toFixed(1)}`);}
-  const truePts=[c.t1,c.t2].map(t=>`<circle cx="${xT(t)}" cy="${yP(cum(c.h,t))}" r="5" fill="var(--truth)" stroke="var(--ground)" stroke-width="2"/>`).join('');
-  const yourPts=[[c.t1,S.a1/100],[c.t2,S.a2/100]].map(([t,p])=>`<circle cx="${xT(t)}" cy="${yP(p)}" r="5" fill="var(--gut)" stroke="var(--ground)" stroke-width="2"/>`).join('');
+  const truePts=[c.t1,c.t2].map(t=>`<circle cx="${xT(t)}" cy="${yP(cum(c.h,t))}" r="5" fill="#4FB3A6" stroke="#0E1218" stroke-width="2"/>`).join('');
+  const yourPts=[[c.t1,S.a1/100],[c.t2,S.a2/100]].map(([t,p])=>`<circle cx="${xT(t)}" cy="${yP(p)}" r="5" fill="#8E7CC3" stroke="#0E1218" stroke-width="2"/>`).join('');
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Cumulative probability over time">
     ${grid}
-    <polyline points="${lp.join(' ')}" fill="none" stroke="var(--warn)" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.8"/>
-    <polyline points="${tp.join(' ')}" fill="none" stroke="var(--truth)" stroke-width="2"/>
+    <polyline points="${lp.join(' ')}" fill="none" stroke="#E07A5F" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.8"/>
+    <polyline points="${tp.join(' ')}" fill="none" stroke="#4FB3A6" stroke-width="2"/>
     ${truePts}${yourPts}
   </svg>`;
 }
