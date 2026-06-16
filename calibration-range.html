@@ -1,485 +1,372 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Calibration Range</title>
+<title>The Calibration Range \u00b7 Forecasting Bench</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 :root{
-  --ground:#0E1218;
-  --panel:#171D27;
-  --panel-2:#1E2530;
-  --line:#2B333F;
-  --ink:#E9ECF2;
-  --muted:#8A95A6;
-  --faint:#5A6475;
-  --signal:#E8B04B;       /* needle / live probability */
-  --signal-dim:#7a5e2a;
-  --truth:#4FB3A6;         /* benchmark / correct */
-  --warn:#E07A5F;          /* overconfidence */
-  --shadow:rgba(0,0,0,.35);
+  --ground:#0E1218;--panel:#171D27;--panel-2:#1E2530;--line:#2B333F;--line-2:#3A4654;
+  --ink:#E9ECF2;--muted:#8A95A6;--faint:#5A6475;
+  --signal:#E8B04B;--truth:#4FB3A6;--warn:#E07A5F;--gut:#8E7CC3;
+  --shadow:rgba(0,0,0,.4);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:var(--ground);color:var(--ink);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
-body{min-height:100vh;display:flex;justify-content:center;padding:28px 18px 64px}
+body{min-height:100vh;display:flex;justify-content:center;padding:28px 18px 70px}
 .wrap{width:100%;max-width:680px}
-
-.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--signal);margin-bottom:10px}
-h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:34px;letter-spacing:-.02em;line-height:1.04;margin-bottom:14px}
-.lede{color:var(--muted);font-size:15px;line-height:1.6;max-width:56ch}
+.back{display:inline-flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);text-decoration:none;margin-bottom:18px}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--signal);margin-bottom:12px}
+h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(30px,6vw,44px);letter-spacing:-.02em;line-height:1.02;margin-bottom:16px}
+.lede{color:var(--muted);font-size:15.5px;line-height:1.62}
 .lede b{color:var(--ink);font-weight:600}
-
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;box-shadow:0 1px 0 rgba(255,255,255,.02) inset, 0 8px 30px var(--shadow)}
-.mt{margin-top:18px}.mt-l{margin-top:26px}
-
-/* domain chooser */
-.field-label{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);margin-bottom:12px}
-.domains{display:flex;flex-wrap:wrap;gap:8px}
-.chip{font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.04em;color:var(--muted);background:var(--panel-2);border:1px solid var(--line);padding:9px 14px;border-radius:999px;cursor:pointer;transition:.15s}
-.chip:hover{border-color:var(--faint);color:var(--ink)}
-.chip[aria-pressed="true"]{background:rgba(232,176,75,.12);border-color:var(--signal);color:var(--signal)}
-.chip:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
-
-button.primary{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:15px;letter-spacing:.01em;color:#15110a;background:var(--signal);border:none;padding:13px 22px;border-radius:10px;cursor:pointer;transition:.15s}
-button.primary:hover{filter:brightness(1.07)}
-button.primary:disabled{opacity:.4;cursor:not-allowed}
-button.ghost{font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.06em;color:var(--muted);background:none;border:1px solid var(--line);padding:10px 16px;border-radius:9px;cursor:pointer;transition:.15s}
-button.ghost:hover{border-color:var(--faint);color:var(--ink)}
-button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
-
-/* progress */
-.topbar{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
-.qcount{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;color:var(--faint);text-transform:uppercase}
-.domtag{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;color:var(--signal);text-transform:uppercase}
-.track{height:3px;background:var(--line);border-radius:2px;overflow:hidden;margin-bottom:22px}
-.track > i{display:block;height:100%;background:var(--signal);transition:width .35s ease}
-
-.qtype{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--faint);margin-bottom:12px}
-.claim{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:23px;line-height:1.32;letter-spacing:-.01em;margin-bottom:6px}
-
-/* probability instrument */
-.readout{font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums;font-size:52px;letter-spacing:-.02em;color:var(--signal);line-height:1;margin:22px 0 4px;text-align:center}
-.readout .pct{font-size:24px;color:var(--signal-dim);margin-left:2px}
-.readout-cap{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-bottom:18px}
-input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:3px;background:linear-gradient(90deg,var(--signal) var(--fill,50%),var(--line) var(--fill,50%));outline:none;cursor:pointer}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--signal);border:3px solid var(--ground);box-shadow:0 0 0 1px var(--signal),0 2px 6px var(--shadow);cursor:grab}
-input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--signal);border:3px solid var(--ground);box-shadow:0 0 0 1px var(--signal);cursor:grab}
-input[type=range]:focus-visible{outline:2px solid var(--signal);outline-offset:6px}
-.scale{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--faint);margin-top:8px}
-
-/* range inputs */
-.range-row{display:flex;gap:14px;margin:18px 0 4px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:22px;box-shadow:0 10px 30px var(--shadow);margin-top:20px}
+.mt-l{margin-top:22px}
+.field-label{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:11px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--muted);background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:9px 14px;cursor:pointer;transition:.15s}
+.chip:hover{border-color:var(--line-2);color:var(--ink)}
+.chip[aria-pressed="true"]{border-color:var(--signal);color:var(--signal);background:rgba(232,176,75,.1)}
+.steprow{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.qcount{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.domtag{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--signal)}
+.track{height:3px;background:var(--line);border-radius:2px;overflow:hidden;margin-bottom:18px}
+.track i{display:block;height:100%;background:var(--signal);transition:width .3s}
+.qtype{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+.claim{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:20px;line-height:1.3;margin-bottom:18px}
+.readout{text-align:center;font-family:'IBM Plex Mono',monospace;font-weight:600}
+.readout #pv{font-size:40px;color:var(--gut)}.readout .pct{font-size:20px;color:var(--muted)}
+.readout-cap{text-align:center;font-size:12.5px;color:var(--faint);margin-bottom:4px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:3px;background:linear-gradient(90deg,var(--gut) var(--fill,50%),var(--line) var(--fill,50%));outline:none;cursor:pointer;margin:10px 0;touch-action:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--gut);border:3px solid var(--ground);box-shadow:0 0 0 1px var(--gut),0 2px 6px var(--shadow);cursor:grab}
+input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--gut);border:3px solid var(--ground);box-shadow:0 0 0 1px var(--gut);cursor:grab}
+input[type=range]:focus-visible{outline:2px solid var(--gut);outline-offset:6px}
+.scale{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--faint)}
+.range-row{display:flex;gap:12px}
 .range-cell{flex:1}
-.range-cell label{display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-bottom:7px}
-.range-cell input{width:100%;font-family:'IBM Plex Mono',monospace;font-size:20px;font-variant-numeric:tabular-nums;color:var(--ink);background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:12px 13px}
-.range-cell input:focus{outline:none;border-color:var(--signal)}
-.unit{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);text-align:center;margin-top:12px}
-.hint{font-size:13px;color:var(--faint);text-align:center;margin-top:10px;line-height:1.5}
-
-.actions{display:flex;gap:12px;align-items:center;margin-top:24px}
-.actions .primary{flex:1}
-
-/* reveal */
-.verdict{display:flex;align-items:center;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px}
-.dot{width:9px;height:9px;border-radius:50%;flex:none}
-.ok .dot{background:var(--truth)} .ok{color:var(--truth)}
-.miss .dot{background:var(--warn)} .miss{color:var(--warn)}
-.reveal-fact{font-size:15px;line-height:1.6;color:var(--ink);margin-bottom:6px}
-.reveal-fact b{color:var(--signal);font-weight:600}
-.explain{font-size:14px;line-height:1.62;color:var(--muted);margin-top:10px}
-.metricline{display:flex;gap:24px;margin:16px 0 4px;flex-wrap:wrap}
-.metric{font-family:'IBM Plex Mono',monospace}
-.metric .v{font-size:22px;font-variant-numeric:tabular-nums;color:var(--ink)}
-.metric .k{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-top:3px}
-
-/* summary */
-.scoregrid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:6px}
-.scorecell{background:var(--panel);padding:18px 20px}
-.scorecell .v{font-family:'IBM Plex Mono',monospace;font-size:30px;font-variant-numeric:tabular-nums;color:var(--signal);letter-spacing:-.01em}
-.scorecell .k{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-top:6px}
-.scorecell .sub{font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.5}
-
-.plotwrap{margin-top:8px}
-.plot-cap{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-bottom:4px}
-.plot-note{font-size:13px;color:var(--muted);line-height:1.6;margin-top:12px}
-svg{display:block;width:100%;height:auto}
-
-.diagnosis{border-left:2px solid var(--signal);padding:4px 0 4px 16px;margin-top:18px}
-.diagnosis h3{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:16px;margin-bottom:8px}
-.diagnosis p{font-size:14px;line-height:1.65;color:var(--muted)}
-.diagnosis p b{color:var(--ink);font-weight:600}
-
-.foot{margin-top:30px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;color:var(--faint);line-height:1.7}
-.foot a{color:var(--muted)}
-.hr{height:1px;background:var(--line);margin:24px 0}
-.lifetime-tag{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);letter-spacing:.1em}
-@media (max-width:520px){h1{font-size:27px}.claim{font-size:20px}.readout{font-size:42px}.scoregrid{grid-template-columns:1fr}}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.range-cell label{display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);margin-bottom:6px}
+.range-cell input{width:100%;font-family:'IBM Plex Mono',monospace;font-size:18px;background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:11px 13px;color:var(--ink);outline:none}
+.range-cell input:focus{border-color:var(--gut)}
+.unit{text-align:center;font-size:13px;color:var(--muted);margin-top:12px}
+.hint{font-size:12.5px;color:var(--faint);line-height:1.5;margin-top:12px}
+.actions{margin-top:20px;display:flex;gap:10px;flex-wrap:wrap}
+button.primary{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;background:var(--signal);color:#1a1205;border:none;border-radius:10px;padding:13px 22px;cursor:pointer;transition:.15s}
+button.primary:hover{filter:brightness(1.07)}
+button.ghost{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:14px;background:transparent;color:var(--muted);border:1px solid var(--line);border-radius:10px;padding:13px 18px;cursor:pointer}
+button.ghost:hover{border-color:var(--line-2);color:var(--ink)}
+.verdict{display:flex;align-items:center;gap:10px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:17px;border-radius:11px;padding:14px 16px}
+.verdict .dot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+.verdict.ok{background:rgba(79,179,166,.12);color:var(--truth)}.verdict.ok .dot{background:var(--truth)}
+.verdict.miss{background:rgba(224,122,95,.12);color:var(--warn)}.verdict.miss .dot{background:var(--warn)}
+.reveal-fact{font-size:15px;line-height:1.55;margin-top:14px;color:var(--ink)}
+.reveal-fact b{color:var(--signal)}
+.metricline{display:flex;gap:10px;margin-top:14px}
+.metric{flex:1;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:11px;text-align:center}
+.metric .v{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:600;color:var(--ink)}
+.metric .k{font-size:11px;color:var(--faint);margin-top:3px}
+.explain{font-size:13.5px;color:var(--muted);line-height:1.6;margin-top:14px}
+svg{display:block;width:100%;height:auto;max-width:380px;margin:0 auto}
+.plotwrap{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:12px 8px 6px;margin:6px 0 14px}
+.diagnosis h3{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+.diagnosis p{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:10px}
+.diagnosis p b{color:var(--ink)}
+.foot{margin-top:20px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--faint);text-align:center}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap" id="app"></div>
-
 <script>
-/* ============================================================
-   THE CALIBRATION RANGE
-   A trainer for probabilistic reasoning, calibration, and
-   over/under-confidence — the third Good Judgment fundamental.
-   ============================================================ */
+const app=document.getElementById('app');
+function h(s){const t=document.createElement('template');t.innerHTML=s.trim();return t.content.firstChild;}
+const fmtNum=n=>Number(n).toLocaleString('en-GB');
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 
-/* ---- Question bank ----
-   type 'claim'  : a true/false statement; you give P(true) 0-100.
-   type 'range'  : a numeric quantity; you give a 90% interval [low,high].
-   All answers chosen to be durable facts.                        */
-const BANK = [
-  // ---------- GEOGRAPHY ----------
-  {d:'Geography',type:'claim',q:'Canada has a larger total area than China.',a:true,e:'Canada is about 9.98 million km²; China about 9.6 million. Canada edges it.'},
-  {d:'Geography',type:'claim',q:'The Atlantic Ocean is larger than the Indian Ocean.',a:true,e:'Order is Pacific, then Atlantic, then Indian. So yes.'},
-  {d:'Geography',type:'claim',q:'K2 is taller than Kangchenjunga.',a:true,e:'K2 is 8,611 m; Kangchenjunga 8,586 m. Close, but K2 wins.'},
-  {d:'Geography',type:'claim',q:'Greenland has a larger area than Mexico.',a:true,e:'Greenland ~2.16 million km² vs Mexico ~1.96 million.'},
-  {d:'Geography',type:'claim',q:'Australia has a larger land area than Brazil.',a:false,e:'Brazil (~8.5M km²) is larger than Australia (~7.7M). A common map-distortion trap.'},
-  {d:'Geography',type:'claim',q:'Istanbul sits on two continents.',a:true,e:'The Bosphorus splits it between Europe and Asia.'},
-  {d:'Geography',type:'claim',q:'Lake Baikal holds more water than all five North American Great Lakes combined.',a:true,e:'Baikal is the deepest lake on Earth; ~23,600 km³ vs the Great Lakes\u2019 ~22,600 km³.'},
-  {d:'Geography',type:'range',q:'Height of Mount Everest above sea level.',a:8849,unit:'metres',e:'8,849 m (the 2020 joint China\u2013Nepal re-survey).'},
-  {d:'Geography',type:'range',q:'Height of Mount Kilimanjaro.',a:5895,unit:'metres',e:'5,895 m \u2014 the highest point in Africa.'},
-  {d:'Geography',type:'range',q:'Length of the River Nile.',a:6650,unit:'kilometres',e:'Commonly given as ~6,650 km.'},
-  {d:'Geography',type:'range',q:'Great-circle air distance, London to New York.',a:5570,unit:'kilometres',e:'About 5,570 km.'},
-  {d:'Geography',type:'range',q:'Depth of the Challenger Deep, the ocean\u2019s deepest point.',a:10920,unit:'metres',e:'About 10,920 m down in the Mariana Trench.'},
-
-  // ---------- HISTORY ----------
-  {d:'History',type:'claim',q:'Gutenberg\u2019s printing press predates the fall of Constantinople.',a:true,e:'Press ~1440; Constantinople fell 1453.'},
-  {d:'History',type:'claim',q:'Darwin\u2019s On the Origin of Species was published before Marx\u2019s Das Kapital.',a:true,e:'Origin 1859; Das Kapital vol. 1, 1867.'},
-  {d:'History',type:'claim',q:'Cleopatra lived closer in time to the Moon landing than to the building of the Great Pyramid.',a:true,e:'Pyramid ~2560 BC, Cleopatra ~30 BC, Moon landing 1969. The gap to the pyramid is larger.'},
-  {d:'History',type:'claim',q:'The Roman Colosseum was completed before the birth of Christ.',a:false,e:'It was completed around 80 AD.'},
-  {d:'History',type:'claim',q:'The Magna Carta was sealed in the 13th century.',a:true,e:'1215.'},
-  {d:'History',type:'claim',q:'Oxford University is older than the Aztec capital Tenochtitlan.',a:true,e:'Teaching at Oxford dates to ~1096; Tenochtitlan was founded in 1325.'},
-  {d:'History',type:'claim',q:'The American Civil War began before the unification of Germany.',a:true,e:'Civil War 1861; German unification 1871.'},
-  {d:'History',type:'range',q:'Year the Berlin Wall fell.',a:1989,unit:'year',e:'9 November 1989.'},
-  {d:'History',type:'range',q:'Year construction of the Eiffel Tower was completed.',a:1889,unit:'year',e:'1889, for the World\u2019s Fair.'},
-  {d:'History',type:'range',q:'Year the RMS Titanic sank.',a:1912,unit:'year',e:'April 1912.'},
-  {d:'History',type:'range',q:'Year Apollo 11 first landed humans on the Moon.',a:1969,unit:'year',e:'July 1969.'},
-  {d:'History',type:'range',q:'Year William Shakespeare died.',a:1616,unit:'year',e:'1616.'},
-
-  // ---------- SCIENCE ----------
-  {d:'Science',type:'claim',q:'A bolt of lightning is hotter than the surface of the Sun.',a:true,e:'Lightning peaks near 30,000\u00b0C; the Sun\u2019s surface is ~5,500\u00b0C.'},
-  {d:'Science',type:'claim',q:'Oxygen is the most abundant element in the Earth\u2019s crust by mass.',a:true,e:'~46% oxygen, ~28% silicon.'},
-  {d:'Science',type:'claim',q:'Light from the Sun takes more than five minutes to reach the Earth.',a:true,e:'About 8 minutes 20 seconds.'},
-  {d:'Science',type:'claim',q:'Venus is the hottest planet in the Solar System.',a:true,e:'Its thick CO\u2082 atmosphere makes it hotter than Mercury despite being further out.'},
-  {d:'Science',type:'claim',q:'Human blood is blue before it is exposed to oxygen.',a:false,e:'Blood is always red; veins only look blue through skin.'},
-  {d:'Science',type:'claim',q:'Helium was detected in the Sun before it was found on Earth.',a:true,e:'Spotted in the solar spectrum in 1868, hence the name (helios).'},
-  {d:'Science',type:'claim',q:'Sound travels faster in water than in air.',a:true,e:'Roughly four times faster.'},
-  {d:'Science',type:'claim',q:'A newborn baby has more bones than an adult.',a:true,e:'Newborns have ~270+ that fuse to 206 by adulthood.'},
-  {d:'Science',type:'range',q:'Speed of light in a vacuum.',a:299792,unit:'km per second',e:'299,792 km/s.'},
-  {d:'Science',type:'range',q:'Average distance from the Earth to the Moon.',a:384400,unit:'kilometres',e:'About 384,400 km.'},
-  {d:'Science',type:'range',q:'Number of confirmed elements on the periodic table.',a:118,unit:'elements',e:'118, up to oganesson.'},
-  {d:'Science',type:'range',q:'Equatorial diameter of the Earth.',a:12742,unit:'kilometres',e:'About 12,742 km (mean diameter).'},
-
-  // ---------- WORLD & GENERAL ----------
-  {d:'World',type:'claim',q:'There are more than 190 member states of the United Nations.',a:true,e:'193 members.'},
-  {d:'World',type:'claim',q:'The Eiffel Tower is taller than the Statue of Liberty including its pedestal.',a:true,e:'Eiffel ~330 m vs Liberty ~93 m.'},
-  {d:'World',type:'claim',q:'War and Peace is longer than Moby-Dick.',a:true,e:'~587k words vs ~206k.'},
-  {d:'World',type:'claim',q:'Switzerland has more official national languages than Belgium.',a:true,e:'Switzerland 4 (German, French, Italian, Romansh); Belgium 3.'},
-  {d:'World',type:'claim',q:'Stored properly, honey will spoil within a few years.',a:false,e:'Honey is famously stable for decades \u2014 even millennia.'},
-  {d:'World',type:'claim',q:'Queen Elizabeth II reigned longer than Queen Victoria.',a:true,e:'~70 years vs ~63.'},
-  {d:'World',type:'claim',q:'Nepal\u2019s national flag is the only one that is not a rectangle.',a:true,e:'It\u2019s a double-pennant shape \u2014 unique among national flags.'},
-  {d:'World',type:'range',q:'Number of keys on a standard piano.',a:88,unit:'keys',e:'88 \u2014 52 white, 36 black.'},
-  {d:'World',type:'range',q:'Height of the Eiffel Tower to the tip.',a:330,unit:'metres',e:'About 330 m including antennas.'},
-  {d:'World',type:'range',q:'Number of bones in the adult human body.',a:206,unit:'bones',e:'206.'}
+/* ---------- item bank (all facts verified) ---------- */
+const BANK=[
+ {d:'Geography',type:'claim',q:'Canada has a larger total area than China.',a:true,e:'Canada is about 9.98M km\u00b2; China about 9.6M. Canada edges it.'},
+ {d:'Geography',type:'claim',q:'The Atlantic Ocean is larger than the Indian Ocean.',a:true,e:'Order is Pacific, then Atlantic, then Indian.'},
+ {d:'Geography',type:'claim',q:'K2 is taller than Kangchenjunga.',a:true,e:'K2 is 8,611 m; Kangchenjunga 8,586 m. Close, but K2 wins.'},
+ {d:'Geography',type:'claim',q:'Greenland has a larger area than Mexico.',a:true,e:'Greenland ~2.16M km\u00b2 vs Mexico ~1.96M.'},
+ {d:'Geography',type:'claim',q:'Australia has a larger land area than Brazil.',a:false,e:'Brazil (~8.5M km\u00b2) is larger than Australia (~7.7M). A common map-distortion trap.'},
+ {d:'Geography',type:'claim',q:'Istanbul sits on two continents.',a:true,e:'The Bosphorus splits it between Europe and Asia.'},
+ {d:'Geography',type:'claim',q:'The Sahara is larger than Australia.',a:true,e:'The Sahara is ~9.2M km\u00b2; Australia ~7.7M.'},
+ {d:'Geography',type:'range',q:'Height of Mount Everest above sea level.',a:8849,unit:'metres',e:'8,849 m, per the 2020 China\u2013Nepal re-survey.'},
+ {d:'Geography',type:'range',q:'Height of Mount Kilimanjaro.',a:5895,unit:'metres',e:'5,895 m \u2014 the highest point in Africa.'},
+ {d:'Geography',type:'range',q:'Length of the River Nile.',a:6650,unit:'kilometres',e:'Commonly given as ~6,650 km.'},
+ {d:'Geography',type:'range',q:'Great-circle air distance, London to New York.',a:5570,unit:'kilometres',e:'About 5,570 km.'},
+ {d:'Geography',type:'range',q:'Depth of the Challenger Deep, the ocean\u2019s deepest point.',a:10920,unit:'metres',e:'About 10,920 m, in the Mariana Trench.'},
+ {d:'History',type:'claim',q:'Gutenberg\u2019s printing press predates the fall of Constantinople.',a:true,e:'Press ~1440; Constantinople fell 1453.'},
+ {d:'History',type:'claim',q:'Darwin\u2019s On the Origin of Species was published before Marx\u2019s Das Kapital.',a:true,e:'Origin 1859; Das Kapital vol. 1, 1867.'},
+ {d:'History',type:'claim',q:'Cleopatra lived closer in time to the Moon landing than to the building of the Great Pyramid.',a:true,e:'Pyramid ~2560 BC, Cleopatra ~30 BC, Moon landing 1969.'},
+ {d:'History',type:'claim',q:'The Roman Colosseum was completed before the birth of Christ.',a:false,e:'It was completed around 80 AD.'},
+ {d:'History',type:'claim',q:'The Magna Carta was sealed in the 13th century.',a:true,e:'1215.'},
+ {d:'History',type:'claim',q:'Oxford University is older than the Aztec capital Tenochtitlan.',a:true,e:'Teaching at Oxford dates to ~1096; Tenochtitlan was founded in 1325.'},
+ {d:'History',type:'claim',q:'A working fax machine existed before the American Civil War began.',a:true,e:'Alexander Bain patented a fax-like device in 1843; the war began 1861.'},
+ {d:'History',type:'range',q:'Year the Berlin Wall fell.',a:1989,unit:'year',e:'9 November 1989.'},
+ {d:'History',type:'range',q:'Year construction of the Eiffel Tower was completed.',a:1889,unit:'year',e:'1889, for the World\u2019s Fair.'},
+ {d:'History',type:'range',q:'Year the RMS Titanic sank.',a:1912,unit:'year',e:'April 1912.'},
+ {d:'History',type:'range',q:'Year Apollo 11 first landed humans on the Moon.',a:1969,unit:'year',e:'July 1969.'},
+ {d:'History',type:'range',q:'Year the first iPhone was released.',a:2007,unit:'year',e:'2007.'},
+ {d:'Science',type:'claim',q:'A bolt of lightning is hotter than the surface of the Sun.',a:true,e:'Lightning peaks near 30,000\u00b0C; the Sun\u2019s surface is ~5,500\u00b0C.'},
+ {d:'Science',type:'claim',q:'Oxygen is the most abundant element in the Earth\u2019s crust by mass.',a:true,e:'~46% oxygen, ~28% silicon.'},
+ {d:'Science',type:'claim',q:'Light from the Sun takes more than five minutes to reach the Earth.',a:true,e:'About 8 minutes 20 seconds.'},
+ {d:'Science',type:'claim',q:'Venus is the hottest planet in the Solar System.',a:true,e:'Its thick CO\u2082 atmosphere makes it hotter than Mercury despite being further out.'},
+ {d:'Science',type:'claim',q:'Human blood is blue before it is exposed to oxygen.',a:false,e:'Blood is always red; veins only look blue through skin.'},
+ {d:'Science',type:'claim',q:'A day on Venus is longer than a year on Venus.',a:true,e:'Venus rotates once every ~243 Earth days but orbits the Sun in ~225.'},
+ {d:'Science',type:'claim',q:'Sharks have existed for longer than trees.',a:true,e:'Sharks ~450M years; trees ~390M years.'},
+ {d:'Science',type:'claim',q:'The Great Wall of China is visible from the Moon with the naked eye.',a:false,e:'It is not \u2014 it\u2019s far too narrow.'},
+ {d:'Science',type:'range',q:'Number of bones in the adult human body.',a:206,unit:'bones',e:'206 in a typical adult.'},
+ {d:'Science',type:'range',q:'Speed of light in a vacuum.',a:299792,unit:'km per second',e:'299,792 km/s.'},
+ {d:'Science',type:'range',q:'Average distance from the Earth to the Moon.',a:384400,unit:'kilometres',e:'About 384,400 km.'},
+ {d:'Science',type:'range',q:'Boiling point of water at sea level.',a:100,unit:'\u00b0C',e:'100\u00b0C at standard pressure.'}
 ];
+const DOMAINS=['Mixed','Geography','History','Science'];
 
-const DOMAINS = ['Mixed','Geography','History','Science','World'];
-const ROUND_SIZE = 10;
-const NBINS = 10;
+/* ---------- lifetime store ---------- */
+const LKEY='forecasting_bench_calibration_v2';
+const NBINS=5;
+function freshLT(){return{rounds:0,brierSum:0,brierN:0,rangeN:0,rangeHits:0,bins:Array.from({length:NBINS},()=>({n:0,sumP:0,sumTrue:0}))};}
+let LT=freshLT();
+async function loadLT(){try{if(window.storage){const r=await window.storage.get(LKEY);if(r&&r.value)LT=JSON.parse(r.value);}}catch(e){}}
+async function saveLT(){try{if(window.storage)await window.storage.set(LKEY,JSON.stringify(LT));}catch(e){}}
+async function resetLT(){LT=freshLT();try{if(window.storage)await window.storage.delete(LKEY);}catch(e){}}
 
-/* ---- persistence (lifetime calibration) with graceful fallback ---- */
-const LKEY = 'calibration_range_lifetime_v1';
-let memFallback = null;
-function blankLifetime(){return {bins:Array.from({length:NBINS},()=>({n:0,sumP:0,sumTrue:0})),brierSum:0,brierN:0,rangeHits:0,rangeN:0,rounds:0};}
-async function loadLifetime(){
-  try{ const r = await window.storage.get(LKEY); return r&&r.value?JSON.parse(r.value):blankLifetime(); }
-  catch(e){ return memFallback ? memFallback : blankLifetime(); }
-}
-async function saveLifetime(obj){
-  memFallback = obj;
-  try{ await window.storage.set(LKEY, JSON.stringify(obj)); }catch(e){/* in-memory only */}
-}
-async function resetLifetime(){
-  const fresh = blankLifetime(); memFallback = fresh;
-  try{ await window.storage.delete(LKEY); }catch(e){}
-  return fresh;
-}
-
-/* ---- state ---- */
-let state = {screen:'start', domain:'Mixed', deck:[], idx:0, p:50, low:'', high:'', responses:[]};
+let state={screen:'start',domain:'Mixed',deck:[],idx:0,p:50,low:'',high:'',responses:[]};
 
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function drawDeck(domain){
-  let pool = domain==='Mixed'?BANK:BANK.filter(q=>q.d===domain);
-  return shuffle(pool).slice(0,Math.min(ROUND_SIZE,pool.length));
+  const pool=domain==='Mixed'?BANK:BANK.filter(x=>x.d===domain);
+  const claims=shuffle(pool.filter(x=>x.type==='claim'));
+  const ranges=shuffle(pool.filter(x=>x.type==='range'));
+  const deck=[];
+  const nC=Math.min(6,claims.length), nR=Math.min(4,ranges.length);
+  for(let i=0;i<nC;i++)deck.push(claims[i]);
+  for(let i=0;i<nR;i++)deck.push(ranges[i]);
+  return shuffle(deck).slice(0,10);
 }
-const fmtNum = n => n.toLocaleString('en-GB');
 
-/* ---- render ---- */
-const app = document.getElementById('app');
-function h(html){const t=document.createElement('template');t.innerHTML=html.trim();return t.content.firstChild;}
-
-async function render(){
+function render(){
   app.innerHTML='';
-  if(state.screen==='start') return renderStart();
-  if(state.screen==='question') return renderQuestion();
-  if(state.screen==='reveal') return renderReveal();
-  if(state.screen==='summary') return renderSummary();
+  if(state.screen==='start')return rStart();
+  if(state.screen==='question')return rQuestion();
+  if(state.screen==='reveal')return rReveal();
+  if(state.screen==='summary')return rSummary();
 }
 
-function renderStart(){
-  const card = h(`<div>
+function rStart(){
+  const chips=DOMAINS.map(d=>`<button class="chip" data-d="${d}" aria-pressed="${d===state.domain}">${d}</button>`).join('');
+  const card=h(`<div>
+    <a class="back" href="index.html">&larr; The Forecasting Bench</a>
     <div class="eyebrow">Forecasting Bench \u00b7 Instrument 01</div>
     <h1>The Calibration Range</h1>
-    <p class="lede">When you say something is <b>70% likely</b>, is it true about 70% of the time? Good forecasters aren\u2019t just knowledgeable \u2014 their confidence <b>matches reality</b>. This range trains that match.<br><br>You\u2019ll meet ten items. For each claim, set how likely it is to be <b>true</b>. For each quantity, give a range you\u2019re <b>90% sure</b> contains the answer. Your calibration curve builds up across every round you play.</p>
+    <p class="lede">When you say something is <b>70% likely</b>, is it true about 70% of the time? A good forecaster isn\u2019t just knowledgeable \u2014 their confidence <b>matches reality</b>. This range trains that match.<br><br>Ten items. For each claim, set how likely it is to be <b>true</b>. For each quantity, give a range you\u2019re <b>90% sure</b> contains the answer. Your calibration curve builds up across every round.</p>
     <div class="card mt-l">
       <div class="field-label">Choose a quiz set</div>
-      <div class="domains" id="domains"></div>
+      <div class="chips" id="chips">${chips}</div>
       <div class="actions">
         <button class="primary" id="startBtn">Begin round</button>
         <button class="ghost" id="resetBtn">Reset history</button>
       </div>
     </div>
-    <div class="foot">Built on the Good Judgment\u00ae fundamentals \u2014 probabilistic reasoning, calibration, over- and under-confidence.</div>
+    <div class="foot">probabilistic reasoning \u00b7 calibration \u00b7 over- and under-confidence</div>
   </div>`);
   app.appendChild(card);
-  const dwrap = card.querySelector('#domains');
-  DOMAINS.forEach(d=>{
-    const c = h(`<button class="chip" aria-pressed="${d===state.domain}">${d}</button>`);
-    c.onclick=()=>{state.domain=d; render();};
-    dwrap.appendChild(c);
-  });
+  card.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{state.domain=c.dataset.d;render();});
   card.querySelector('#startBtn').onclick=()=>{
-    state.deck=drawDeck(state.domain); state.idx=0; state.responses=[]; state.p=50; state.low=''; state.high='';
-    state.screen='question'; render();
+    state.deck=drawDeck(state.domain);state.idx=0;state.responses=[];state.p=50;state.low='';state.high='';
+    state.screen='question';render();
   };
   card.querySelector('#resetBtn').onclick=async()=>{
-    await resetLifetime();
-    const btn=card.querySelector('#resetBtn'); btn.textContent='History cleared';
-    setTimeout(()=>{btn.textContent='Reset history';},1400);
+    await resetLT();
+    const b=card.querySelector('#resetBtn');b.textContent='History cleared';
+    setTimeout(()=>{b.textContent='Reset history';},1400);
   };
 }
 
-function renderQuestion(){
-  const q = state.deck[state.idx];
-  const pct = ((state.idx)/state.deck.length)*100;
-  const card = h(`<div>
-    <div class="topbar">
-      <span class="qcount">Item ${state.idx+1} / ${state.deck.length}</span>
-      <span class="domtag">${q.d}</span>
-    </div>
-    <div class="track"><i style="width:${pct}%"></i></div>
-    <div class="card">
-      <div class="qtype">${q.type==='claim'?'True or false':'Estimate \u2014 90% interval'}</div>
-      <div class="claim">${q.q}</div>
-      <div id="input"></div>
-      <div class="actions">
-        <button class="primary" id="submit">Lock it in</button>
-      </div>
-    </div>
-  </div>`);
-  app.appendChild(card);
-  const inp = card.querySelector('#input');
-
+function rQuestion(){
+  const q=state.deck[state.idx];
+  const pctDone=(state.idx/state.deck.length)*100;
+  let inputHTML;
   if(q.type==='claim'){
-    inp.innerHTML = `
+    inputHTML=`
       <div class="readout"><span id="pv">${state.p}</span><span class="pct">%</span></div>
       <div class="readout-cap">chance this is true</div>
       <input type="range" id="slider" min="0" max="100" step="1" value="${state.p}" style="--fill:${state.p}%">
-      <div class="scale"><span>0 \u00b7 false</span><span>50 \u00b7 unsure</span><span>100 \u00b7 true</span></div>
-    `;
-    const s = inp.querySelector('#slider'); const pv = inp.querySelector('#pv');
-    s.oninput=()=>{state.p=+s.value; pv.textContent=state.p; s.style.setProperty('--fill',state.p+'%');};
-    card.querySelector('#submit').onclick=()=>submitClaim(q);
-  } else {
-    inp.innerHTML = `
+      <div class="scale"><span>0 \u00b7 false</span><span>50 \u00b7 unsure</span><span>100 \u00b7 true</span></div>`;
+  }else{
+    inputHTML=`
       <div class="range-row">
         <div class="range-cell"><label>Low bound</label><input id="low" type="number" inputmode="numeric" value="${state.low}" placeholder="\u2013"></div>
         <div class="range-cell"><label>High bound</label><input id="high" type="number" inputmode="numeric" value="${state.high}" placeholder="\u2013"></div>
       </div>
       <div class="unit">${q.unit}</div>
-      <div class="hint">Pick bounds wide enough that you\u2019d be genuinely surprised \u2014 about 1 time in 10 \u2014 if the true value fell outside them.</div>
-    `;
-    const lo=inp.querySelector('#low'), hi=inp.querySelector('#high');
-    lo.oninput=()=>state.low=lo.value; hi.oninput=()=>state.high=hi.value;
+      <div class="hint">Pick bounds wide enough that you\u2019d be genuinely surprised \u2014 about 1 time in 10 \u2014 if the true value fell outside them.</div>`;
+  }
+  const card=h(`<div>
+    <a class="back" href="index.html">&larr; The Forecasting Bench</a>
+    <div class="steprow"><span class="qcount">Item ${state.idx+1} / ${state.deck.length}</span><span class="domtag">${q.d}</span></div>
+    <div class="track"><i style="width:${pctDone}%"></i></div>
+    <div class="card">
+      <div class="qtype">${q.type==='claim'?'True or false':'Estimate \u2014 90% interval'}</div>
+      <div class="claim">${q.q}</div>
+      ${inputHTML}
+      <div class="actions"><button class="primary" id="submit">Lock it in</button></div>
+    </div>
+  </div>`);
+  app.appendChild(card);
+  if(q.type==='claim'){
+    const s=card.querySelector('#slider'),pv=card.querySelector('#pv');
+    s.oninput=()=>{state.p=+s.value;pv.textContent=state.p;s.style.setProperty('--fill',state.p+'%');};
+    card.querySelector('#submit').onclick=()=>submitClaim(q);
+  }else{
+    const lo=card.querySelector('#low'),hi=card.querySelector('#high');
+    lo.oninput=()=>state.low=lo.value;hi.oninput=()=>state.high=hi.value;
     card.querySelector('#submit').onclick=()=>submitRange(q,lo,hi);
   }
 }
 
 function submitClaim(q){
-  const p = state.p/100;
-  const truth = q.a?1:0;
-  const brier = (p-truth)*(p-truth);
+  const p=state.p/100, truth=q.a?1:0, brier=(p-truth)*(p-truth);
   state.responses.push({type:'claim',q,p,truth,brier});
-  state.lastReveal = renderClaimReveal.bind(null,q,p,truth,brier);
-  state.screen='reveal'; render();
+  state.reveal={kind:'claim',q,p,truth,brier};
+  state.screen='reveal';render();
 }
 function submitRange(q,lo,hi){
-  let low=parseFloat(lo.value), high=parseFloat(hi.value);
-  if(isNaN(low)||isNaN(high)){ lo.style.borderColor='var(--warn)'; hi.style.borderColor='var(--warn)'; return; }
-  if(low>high){ const t=low; low=high; high=t; }
-  const hit = q.a>=low && q.a<=high;
-  state.responses.push({type:'range',q,low,high,truth:q.a,hit});
-  state.lastReveal = renderRangeReveal.bind(null,q,low,high,hit);
-  state.screen='reveal'; render();
+  let low=parseFloat(lo.value),high=parseFloat(hi.value);
+  if(isNaN(low)||isNaN(high)){lo.style.borderColor='#E07A5F';hi.style.borderColor='#E07A5F';return;}
+  if(low>high){const t=low;low=high;high=t;}
+  const hit=q.a>=low&&q.a<=high;
+  state.responses.push({type:'range',q,low,high,hit});
+  state.reveal={kind:'range',q,low,high,hit};
+  state.screen='reveal';render();
 }
 
-function revealShell(inner){
-  const last = state.idx===state.deck.length-1;
-  const card = h(`<div>
-    <div class="topbar"><span class="qcount">Item ${state.idx+1} / ${state.deck.length}</span><span class="domtag">${state.deck[state.idx].d}</span></div>
+function rReveal(){
+  const r=state.reveal;
+  const last=state.idx===state.deck.length-1;
+  let inner;
+  if(r.kind==='claim'){
+    const correctSide=(r.p>=0.5)===(r.truth===1);
+    inner=`
+      <div class="verdict ${correctSide?'ok':'miss'}"><span class="dot"></span>${r.q.a?'This is TRUE':'This is FALSE'}</div>
+      <div class="reveal-fact">You put it at <b>${Math.round(r.p*100)}%</b> likely to be true.</div>
+      <div class="metricline">
+        <div class="metric"><div class="v">${r.brier.toFixed(3)}</div><div class="k">Brier score</div></div>
+        <div class="metric"><div class="v">${correctSide?'right side':'wrong side'}</div><div class="k">of 50/50</div></div>
+      </div>
+      <div class="explain">${r.q.e}<br><span style="color:var(--faint)">A Brier score is the squared gap between your probability and what happened: 0 is perfect, 0.25 is what you\u2019d get always guessing 50%.</span></div>`;
+  }else{
+    inner=`
+      <div class="verdict ${r.hit?'ok':'miss'}"><span class="dot"></span>${r.hit?'Inside your range':'Outside your range'}</div>
+      <div class="reveal-fact">True value: <b>${fmtNum(r.q.a)}</b> ${r.q.unit}. <span style="color:var(--muted)">You said ${fmtNum(r.low)} \u2013 ${fmtNum(r.high)}.</span></div>
+      <div class="explain">${r.q.e}<br><span style="color:var(--faint)">A well-calibrated 90% interval should catch the answer about 9 times in 10. Most people\u2019s catch it far less \u2014 the classic sign of over-confidence.</span></div>`;
+  }
+  const card=h(`<div>
+    <a class="back" href="index.html">&larr; The Forecasting Bench</a>
+    <div class="steprow"><span class="qcount">Item ${state.idx+1} / ${state.deck.length}</span><span class="domtag">${r.q.d}</span></div>
     <div class="track"><i style="width:${((state.idx+1)/state.deck.length)*100}%"></i></div>
-    <div class="card">${inner}
+    <div class="card">
+      ${inner}
       <div class="actions"><button class="primary" id="next">${last?'See your calibration':'Next item'}</button></div>
     </div>
   </div>`);
   app.appendChild(card);
   card.querySelector('#next').onclick=()=>{
-    if(last){ finishRound(); }
-    else{ state.idx++; state.p=50; state.low=''; state.high=''; state.screen='question'; render(); }
+    if(last){finishRound();}
+    else{state.idx++;state.p=50;state.low='';state.high='';state.screen='question';render();}
   };
 }
-function renderClaimReveal(q,p,truth,brier){
-  const correctSide = (p>=0.5)===(truth===1);
-  const cls = correctSide?'ok':'miss';
-  revealShell(`
-    <div class="verdict ${cls}"><span class="dot"></span>${q.a?'This is TRUE':'This is FALSE'}</div>
-    <div class="reveal-fact">You put it at <b>${Math.round(p*100)}%</b> likely to be true.</div>
-    <div class="metricline">
-      <div class="metric"><div class="v">${brier.toFixed(3)}</div><div class="k">Brier score</div></div>
-      <div class="metric"><div class="v">${correctSide?'right side':'wrong side'}</div><div class="k">of 50/50</div></div>
-    </div>
-    <div class="explain">${q.e} <br><span style="color:var(--faint)">A Brier score is the squared gap between your probability and what happened: 0 is perfect, 0.25 is what you\u2019d get always guessing 50%.</span></div>
-  `);
-}
-function renderRangeReveal(q,low,high,hit){
-  const cls = hit?'ok':'miss';
-  revealShell(`
-    <div class="verdict ${cls}"><span class="dot"></span>${hit?'Inside your range':'Outside your range'}</div>
-    <div class="reveal-fact">True value: <b>${fmtNum(q.truth)}</b> ${q.unit}. <span style="color:var(--muted)">You said ${fmtNum(low)} \u2013 ${fmtNum(high)}.</span></div>
-    <div class="explain">${q.e}<br><span style="color:var(--faint)">A well-calibrated 90% interval should catch the answer about 9 times in 10. Most people\u2019s catch it far less \u2014 the classic sign of over-confidence.</span></div>
-  `);
-}
 
-async function finishRound(){
-  const lt = await loadLifetime();
-  lt.rounds += 1;
+function finishRound(){
+  LT.rounds+=1;
   state.responses.forEach(r=>{
     if(r.type==='claim'){
-      lt.brierSum += r.brier; lt.brierN += 1;
-      let bin = Math.min(NBINS-1, Math.floor(r.p*NBINS));
-      lt.bins[bin].n+=1; lt.bins[bin].sumP+=r.p; lt.bins[bin].sumTrue+=r.truth;
-    } else {
-      lt.rangeN+=1; if(r.hit) lt.rangeHits+=1;
+      LT.brierSum+=r.brier;LT.brierN+=1;
+      const bin=Math.min(NBINS-1,Math.floor(r.p*NBINS));
+      LT.bins[bin].n+=1;LT.bins[bin].sumP+=r.p;LT.bins[bin].sumTrue+=r.truth;
+    }else{
+      LT.rangeN+=1;if(r.hit)LT.rangeHits+=1;
     }
   });
-  await saveLifetime(lt);
-  state.lifetime = lt;
-  state.screen='summary'; render();
+  saveLT();
+  state.screen='summary';render();
 }
 
-/* ---- calibration plot ---- */
-function calibrationPlot(lt){
-  const W=440,H=440,pad=46;
-  const x=v=>pad+v*(W-2*pad);
-  const y=v=>H-pad-v*(H-2*pad);
-  let grid='';
+/* ---------- calibration plot ---------- */
+function calibrationPlot(){
+  const W=380,H=380,pad=46;
+  const x=v=>pad+v*(W-2*pad), y=v=>H-pad-v*(H-2*pad);
+  let g='';
   for(let i=0;i<=10;i+=2){const gx=x(i/10),gy=y(i/10);
-    grid+=`<line x1="${x(0)}" y1="${gy}" x2="${x(1)}" y2="${gy}" stroke="#2B333F" stroke-width="1"/>`;
-    grid+=`<line x1="${gx}" y1="${y(0)}" x2="${gx}" y2="${y(1)}" stroke="#2B333F" stroke-width="1"/>`;
+    g+=`<line x1="${x(0)}" y1="${gy}" x2="${x(1)}" y2="${gy}" stroke="#2B333F" stroke-width="1"/>`;
+    g+=`<line x1="${gx}" y1="${y(0)}" x2="${gx}" y2="${y(1)}" stroke="#2B333F" stroke-width="1"/>`;
   }
-  const pts = lt.bins.map((b)=>{
-    if(b.n===0) return '';
-    const px=b.sumP/b.n, py=b.sumTrue/b.n, r=Math.min(14,5+Math.sqrt(b.n)*1.6);
-    return `<circle cx="${x(px)}" cy="${y(py)}" r="${r}" fill="rgba(232,176,75,.22)" stroke="#E8B04B" stroke-width="1.6"/>`;
-  }).join('');
-  // connect populated bins
-  const line = lt.bins.filter(b=>b.n>0).map(b=>`${x(b.sumP/b.n).toFixed(1)},${y(b.sumTrue/b.n).toFixed(1)}`).join(' ');
-  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Calibration curve">
-    ${grid}
-    <line x1="${x(0)}" y1="${y(0)}" x2="${x(1)}" y2="${y(1)}" stroke="#4FB3A6" stroke-width="1.4" stroke-dasharray="5 5"/>
-    <text x="${x(0.72)}" y="${y(0.78)}" fill="#4FB3A6" font-family="IBM Plex Mono" font-size="11" transform="rotate(-45 ${x(0.72)} ${y(0.78)})">perfect calibration</text>
-    ${line?`<polyline points="${line}" fill="none" stroke="#E8B04B" stroke-width="1.4" opacity="0.5"/>`:''}
-    ${pts}
-    <text x="${(W)/2}" y="${H-12}" text-anchor="middle" fill="#5A6475" font-family="IBM Plex Mono" font-size="11" letter-spacing="1">YOU SAID  (P TRUE)  \u2192</text>
-    <text x="14" y="${H/2}" text-anchor="middle" fill="#5A6475" font-family="IBM Plex Mono" font-size="11" letter-spacing="1" transform="rotate(-90 14 ${H/2})">\u2191  ACTUALLY TRUE</text>
-    <text x="${x(0)}" y="${y(0)+20}" fill="#5A6475" font-family="IBM Plex Mono" font-size="10">0%</text>
-    <text x="${x(1)-22}" y="${y(0)+20}" fill="#5A6475" font-family="IBM Plex Mono" font-size="10">100%</text>
-  </svg>`;
+  g+=`<line x1="${x(0)}" y1="${y(0)}" x2="${x(1)}" y2="${y(1)}" stroke="#5A6475" stroke-width="1.5" stroke-dasharray="5 4"/>`;
+  g+=`<text x="${x(0.5)}" y="${H-10}" text-anchor="middle" fill="#5A6475" font-family="IBM Plex Mono" font-size="11">you said \u2192</text>`;
+  g+=`<text x="14" y="${y(0.5)}" text-anchor="middle" fill="#5A6475" font-family="IBM Plex Mono" font-size="11" transform="rotate(-90 14 ${y(0.5)})">actually true \u2192</text>`;
+  let pts='';
+  LT.bins.forEach(b=>{
+    if(b.n===0)return;
+    const px=b.sumP/b.n, py=b.sumTrue/b.n, r=Math.min(15,6+Math.sqrt(b.n)*1.7);
+    pts+=`<circle cx="${x(px)}" cy="${y(py)}" r="${r}" fill="rgba(232,176,75,.22)" stroke="#E8B04B" stroke-width="1.8"/>`;
+  });
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Calibration plot">${g}${pts}</svg>`;
 }
 
-function diagnose(lt){
-  // overall confidence vs accuracy on claims
-  let sumP=0,sumTrue=0,n=0;
-  lt.bins.forEach(b=>{sumP+=b.sumP; sumTrue+=b.sumTrue; n+=b.n;});
-  const out=[];
-  if(n>=8){
-    const meanP=sumP/n, meanTrue=sumTrue/n, gap=meanP-meanTrue;
-    if(Math.abs(gap)<=0.05) out.push(`<p>On true/false claims your average confidence (<b>${Math.round(meanP*100)}%</b>) sits close to how often you were right (<b>${Math.round(meanTrue*100)}%</b>). That\u2019s well calibrated \u2014 keep that honesty.</p>`);
-    else if(gap>0.05) out.push(`<p>You\u2019re running <b>over-confident</b>: your average claim confidence is <b>${Math.round(meanP*100)}%</b> but you were right only <b>${Math.round(meanTrue*100)}%</b> of the time. Pull your strong probabilities back toward the middle.</p>`);
-    else out.push(`<p>You\u2019re running <b>under-confident</b>: you were right <b>${Math.round(meanTrue*100)}%</b> of the time but only claimed <b>${Math.round(meanP*100)}%</b>. When you know something, commit to it.</p>`);
-  } else {
-    out.push(`<p>Play a few more rounds and the curve fills in \u2014 calibration only becomes legible across <b>dozens</b> of judgements, not a handful.</p>`);
+function diagnose(){
+  const parts=[];
+  if(LT.brierN>0){
+    const avgBrier=LT.brierSum/LT.brierN;
+    let oc=0,n=0;
+    LT.bins.forEach(b=>{if(b.n){oc+=(b.sumP/b.n-b.sumTrue/b.n)*b.n;n+=b.n;}});
+    oc=n?oc/n:0;
+    let verdict;
+    if(oc>0.08)verdict='you tend to be <b>over-confident</b> \u2014 your high probabilities come true less often than you claim';
+    else if(oc<-0.08)verdict='you tend to be <b>under-confident</b> \u2014 things you call uncertain happen more often than you say';
+    else verdict='your claim confidence is <b>well-matched</b> to reality';
+    parts.push(`<p>Across <b>${LT.brierN}</b> true/false items your average Brier score is <b>${avgBrier.toFixed(3)}</b> (lower is better; 0.25 is the always-50% baseline). On the curve, ${verdict}. Points above the dashed line mean you were too cautious; below it, too bold.</p>`);
   }
-  if(lt.rangeN>=4){
-    const rate=lt.rangeHits/lt.rangeN;
-    if(rate>=0.82) out.push(`<p>Your 90% intervals caught the answer <b>${Math.round(rate*100)}%</b> of the time \u2014 right around the target. Rare and good.</p>`);
-    else if(rate>=0.6) out.push(`<p>Your 90% intervals caught the truth <b>${Math.round(rate*100)}%</b> of the time \u2014 below the 90% they promise. Widen them: real uncertainty is bigger than it feels.</p>`);
-    else out.push(`<p>Your 90% intervals caught the truth only <b>${Math.round(rate*100)}%</b> of the time. This is the most universal forecasting flaw \u2014 stretch your ranges until missing feels almost impossible, then a little more.</p>`);
+  if(LT.rangeN>0){
+    const hr=LT.rangeHits/LT.rangeN;
+    let rv;
+    if(hr<0.75)rv='Your 90% intervals caught the answer only <b>'+Math.round(hr*100)+'%</b> of the time \u2014 they\u2019re too narrow. This is the most common miscalibration: widen them until being wrong genuinely surprises you.';
+    else if(hr>0.97)rv='Your 90% intervals caught <b>'+Math.round(hr*100)+'%</b> \u2014 a touch too wide. You can afford to be a little bolder.';
+    else rv='Your 90% intervals caught <b>'+Math.round(hr*100)+'%</b> \u2014 close to the 90% target. Nicely calibrated.';
+    parts.push(`<p>${rv}</p>`);
   }
-  return out.join('');
+  if(!parts.length)parts.push('<p>Play a round and your reading will appear here.</p>');
+  return parts.join('');
 }
 
-function renderSummary(){
-  const lt = state.lifetime;
-  // this round
-  const claims = state.responses.filter(r=>r.type==='claim');
-  const ranges = state.responses.filter(r=>r.type==='range');
-  const roundBrier = claims.length?(claims.reduce((s,r)=>s+r.brier,0)/claims.length):null;
-  const roundHits = ranges.filter(r=>r.hit).length;
-  const ltBrier = lt.brierN?(lt.brierSum/lt.brierN):null;
-
-  const card = h(`<div>
-    <div class="eyebrow">Round complete</div>
-    <h1>Your calibration</h1>
-    <div class="scoregrid">
-      <div class="scorecell"><div class="v">${roundBrier!==null?roundBrier.toFixed(3):'\u2014'}</div><div class="k">Brier this round</div><div class="sub">${claims.length} claim${claims.length===1?'':'s'}. Lower is sharper; 0.25 is a coin flip.</div></div>
-      <div class="scorecell"><div class="v">${ranges.length?roundHits+'/'+ranges.length:'\u2014'}</div><div class="k">Ranges that hit</div><div class="sub">${ranges.length?'Aim for about 9 in 10 over time.':'No range items this round.'}</div></div>
+function rSummary(){
+  const card=h(`<div>
+    <a class="back" href="index.html">&larr; The Forecasting Bench</a>
+    <div class="eyebrow">Forecasting Bench \u00b7 Instrument 01 \u00b7 Reading</div>
+    <h1>Your calibration curve.</h1>
+    <p class="lede">Built from every item you\u2019ve answered on this device \u2014 <b>${LT.rounds}</b> round${LT.rounds===1?'':'s'} so far. Perfect calibration sits on the dashed diagonal.</p>
+    <div class="card">
+      <div class="plotwrap">${calibrationPlot()}</div>
+      <div class="diagnosis"><h3>The instrument reads</h3>${diagnose()}</div>
     </div>
-
-    <div class="hr"></div>
-    <div class="plot-cap">Lifetime calibration curve \u00b7 ${lt.rounds} round${lt.rounds===1?'':'s'}</div>
-    <div class="plotwrap" id="plot"></div>
-    <div class="plot-note">Each amber dot is a confidence band you\u2019ve used; its height is how often those calls came true. Dots <b>on the dashed line</b> mean your stated odds match reality. Dots <b>below the line on the right</b> mean over-confidence; <b>above on the left</b> means under-confidence. Bigger dots rest on more evidence.</div>
-
-    <div class="diagnosis" id="diag"></div>
-
-    <div class="actions mt-l">
-      <button class="primary" id="again">Another round</button>
-      <button class="ghost" id="home">Change set</button>
+    <div class="card">
+      <div class="actions">
+        <button class="primary" id="again">Another round</button>
+        <button class="ghost" id="home">Change set</button>
+      </div>
     </div>
-    <div class="foot">
-      <span class="lifetime-tag">Lifetime: ${lt.brierN} claims scored \u00b7 ${lt.rangeHits}/${lt.rangeN} ranges hit \u00b7 mean Brier ${ltBrier!==null?ltBrier.toFixed(3):'\u2014'}</span><br><br>
-      The fundamentals these exercise: probabilistic reasoning, calibration, over- and under-confidence \u2014 from the Good Judgment\u00ae method.
-    </div>
+    <div class="foot">confidence should match reality \u00b7 nothing more, nothing less</div>
   </div>`);
   app.appendChild(card);
-  card.querySelector('#plot').innerHTML = calibrationPlot(lt);
-  card.querySelector('#diag').innerHTML = `<h3>The instrument reads:</h3>${diagnose(lt)}`;
   card.querySelector('#again').onclick=()=>{
-    state.deck=drawDeck(state.domain); state.idx=0; state.responses=[]; state.p=50; state.low=''; state.high='';
-    state.screen='question'; render();
+    state.deck=drawDeck(state.domain);state.idx=0;state.responses=[];state.p=50;state.low='';state.high='';
+    state.screen='question';render();
   };
-  card.querySelector('#home').onclick=()=>{state.screen='start'; render();};
+  card.querySelector('#home').onclick=()=>{state.screen='start';render();};
 }
 
-render();
+(async()=>{await loadLT();render();})();
 </script>
 </body>
 </html>
