@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Wrong Side of Maybe</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+:root{--ground:#0E1218;--panel:#171D27;--panel-2:#1E2530;--line:#2B333F;--ink:#E9ECF2;--muted:#8A95A6;--faint:#5A6475;--signal:#E8B04B;--signal-dim:#7a5e2a;--truth:#4FB3A6;--warn:#E07A5F;--gut:#8E7CC3;--shadow:rgba(0,0,0,.35)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--ground);color:var(--ink);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{min-height:100vh;display:flex;justify-content:center;padding:28px 18px 64px}
+.wrap{width:100%;max-width:680px}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--signal);margin-bottom:10px}
+h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:33px;letter-spacing:-.02em;line-height:1.05;margin-bottom:14px}
+.lede{color:var(--muted);font-size:15px;line-height:1.62;max-width:58ch}.lede b{color:var(--ink);font-weight:600}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;box-shadow:0 8px 30px var(--shadow)}
+.mt{margin-top:18px}.mt-l{margin-top:26px}.hr{height:1px;background:var(--line);margin:22px 0}
+button.primary{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:15px;color:#15110a;background:var(--signal);border:none;padding:13px 22px;border-radius:10px;cursor:pointer;transition:.15s}
+button.primary:hover{filter:brightness(1.07)}button.primary:disabled{opacity:.4;cursor:not-allowed}
+button.ghost{font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.06em;color:var(--muted);background:none;border:1px solid var(--line);padding:11px 16px;border-radius:9px;cursor:pointer}
+button.ghost:hover{border-color:var(--faint);color:var(--ink)}
+button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.actions{display:flex;gap:12px;align-items:center;margin-top:24px}.actions .primary{flex:1}
+.steprow{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
+.stepname{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
+.module{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--signal)}
+.qtitle{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:21px;line-height:1.32;letter-spacing:-.01em;margin-bottom:14px}
+.body-txt{font-size:14.5px;line-height:1.66;color:var(--muted)}.body-txt b{color:var(--ink);font-weight:600}
+.opt{display:block;width:100%;text-align:left;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:10px;cursor:pointer;color:var(--ink);font-size:14.5px;transition:.15s}
+.opt:hover{border-color:var(--faint)}
+.opt[disabled]{cursor:default}
+.opt.correct{border-color:var(--truth);background:rgba(79,179,166,.1)}
+.opt.wrong{border-color:var(--warn);background:rgba(224,122,95,.1)}
+.fb{border-radius:10px;padding:14px 16px;margin-top:8px;font-size:14px;line-height:1.6}
+.fb.good{background:rgba(79,179,166,.1);border:1px solid rgba(79,179,166,.4);color:var(--truth)}
+.fb.miss{background:rgba(224,122,95,.1);border:1px solid rgba(224,122,95,.4);color:var(--warn)}
+.fb b{font-weight:600}.fb .ex{display:block;margin-top:6px;color:var(--muted)}
+.who{display:flex;gap:12px;margin-top:6px}
+.who .pick{flex:1;text-align:center;background:var(--panel-2);border:1px solid var(--line);border-radius:11px;padding:16px;cursor:pointer;transition:.15s}
+.who .pick:hover{border-color:var(--signal)}
+.who .pick .nm{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:16px;margin-bottom:4px}
+.who .pick .ds{font-size:12.5px;color:var(--muted);line-height:1.4}
+.rec{margin-top:14px}
+.rec .rt{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+.calls{display:flex;flex-wrap:wrap;gap:6px}
+.call{font-family:'IBM Plex Mono',monospace;font-size:12px;padding:5px 7px;border-radius:6px;border:1px solid var(--line);display:flex;gap:5px;align-items:center}
+.call .o{font-weight:600}.call .hit{color:var(--truth)}.call .no{color:var(--warn)}
+.scoregrid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:11px;overflow:hidden;margin-top:14px}
+.sc{background:var(--panel);padding:15px 16px;text-align:center}
+.sc .v{font-family:'IBM Plex Mono',monospace;font-size:26px;font-variant-numeric:tabular-nums;color:var(--signal)}
+.sc .k{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-top:6px}
+.sc .s{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.4}
+.lesson{border-left:2px solid var(--signal);padding:4px 0 4px 16px;margin-top:20px}
+.lesson h3{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:16px;margin-bottom:8px}
+.lesson p{font-size:14px;line-height:1.66;color:var(--muted)}.lesson p b{color:var(--ink);font-weight:600}
+.foot{margin-top:30px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;color:var(--faint);line-height:1.7}
+.track{height:3px;background:var(--line);border-radius:2px;overflow:hidden;margin-bottom:22px}.track>i{display:block;height:100%;background:var(--signal);transition:width .35s}
+@media (max-width:520px){h1{font-size:27px}.qtitle{font-size:19px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+/* ============================================================
+   THE WRONG SIDE OF MAYBE  \u00b7  Instrument 04
+   You cannot grade a probability by a single outcome. Only
+   calibration over many calls tells you who is any good \u2014 and
+   hedging to avoid ever looking wrong is a losing strategy.
+   ============================================================ */
+
+const SNAPS=[
+  {q:'A forecaster put the chance of the merger closing by year-end at 70%. It collapsed. How should you judge that one call?',
+   opts:['Clearly a bad forecast','Clearly a good forecast','You can\u2019t tell from a single outcome'],correct:2,
+   ex:'70% means \u201cexpect this to fail about three times in ten.\u201d One failure is completely consistent with an excellent forecast. A single resolved bet tells you almost nothing \u2014 this is the wrong-side-of-maybe fallacy.'},
+  {q:'An analyst gave a long-shot challenger a 25% chance. The challenger won. Was the analyst wrong?',
+   opts:['Yes \u2014 they called it the wrong way','No \u2014 25% things happen one time in four','Impossible to say from one race'],correct:2,
+   ex:'A 25% event happening is not a failed forecast \u2014 it should happen a quarter of the time. And one occurrence can\u2019t prove the analyst was right either. From a single outcome, in either direction, you simply cannot judge.'},
+  {q:'A pundit said the incumbent had a 90% chance of holding the seat. The incumbent held. Does that make the pundit a good forecaster?',
+   opts:['Yes \u2014 they were right','No \u2014 being right once proves nothing','It proves they were overconfident'],correct:1,
+   ex:'Being right about a single high-probability call is no evidence of skill \u2014 a stopped clock and a superforecaster both \u201ccall\u201d the obvious. Skill only shows up across many calls, when 90%-claims come true about 90% of the time.'}
+];
+
+// Two forecasters, twelve resolved calls each. p = probability assigned to the event; o = 1 if it happened.
+const HANNAH={name:'Cautious Cal',desc:'Never strays far from 50%. Almost never looks dramatically wrong.',
+  p:[.52,.48,.55,.50,.53,.47,.51,.56,.49,.54,.50,.52], o:[1,0,1,0,1,0,0,1,0,1,1,0]};
+const SAM={name:'Committed Kit',desc:'Makes bold calls \u2014 and a couple blew up spectacularly.',
+  p:[.90,.85,.20,.15,.80,.75,.10,.90,.25,.85,.70,.15], o:[1,1,0,0,0,1,0,1,1,1,1,0]};
+
+function brier(f){let s=0;for(let i=0;i<f.p.length;i++){const d=f.p[i]-f.o[i];s+=d*d;}return s/f.p.length;}
+// "confident calls that went the wrong way": p>=0.7 & o=0, or p<=0.3 & o=1
+function blowups(f){let n=0;for(let i=0;i<f.p.length;i++){if((f.p[i]>=0.7&&f.o[i]===0)||(f.p[i]<=0.3&&f.o[i]===1))n++;}return n;}
+
+let S={screen:'intro',si:0,score:0};
+const app=document.getElementById('app');
+function h(s){const t=document.createElement('template');t.innerHTML=s.trim();return t.content.firstChild;}
+function render(){app.innerHTML='';({intro:rIntro,snap:rSnap,pick:rPick,reveal:rReveal})[S.screen]();window.scrollTo&&window.scrollTo(0,0);}
+
+function rIntro(){
+  const card=h(`<div>
+    <div class="eyebrow">The Forecasting Bench \u00b7 Instrument 04</div>
+    <h1>The Wrong Side of Maybe</h1>
+    <p class="lede">\u201cYou said 70% chance of rain and it stayed dry \u2014 you were wrong!\u201d It\u2019s the most common mistake people make about forecasts, and it\u2019s itself wrong. A 70% call is <b>meant</b> to fail three times in ten. <b>A single outcome can never tell you whether a probability was any good.</b><br><br>So how do you judge a forecaster? Only by their whole record \u2014 whether their 70%s come true about 70% of the time. This instrument trains the judgement, then shows you why the forecaster who \u201cnever looks wrong\u201d is usually the one to ignore.</p>
+    <div class="actions"><button class="primary" id="go">Begin</button></div>
+    <div class="foot">Trains: reading probabilities \u00b7 calibration over many \u00b7 why hedging is a losing game.</div>
+  </div>`);
+  app.appendChild(card);card.querySelector('#go').onclick=()=>{S.screen='snap';S.si=0;S.score=0;render();};
+}
+
+function rSnap(){
+  const sn=SNAPS[S.si];
+  const card=h(`<div>
+    <div class="steprow"><span class="stepname">Snap judgement \u00b7 ${S.si+1} / ${SNAPS.length}</span><span class="module">score ${S.score}</span></div>
+    <div class="track"><i style="width:${(S.si/SNAPS.length)*100}%"></i></div>
+    <div class="card"><div class="qtitle">${sn.q}</div><div id="opts"></div><div id="fb"></div>
+      <div class="actions" id="act" style="display:none"><button class="primary" id="next">${S.si<SNAPS.length-1?'Next':'Now meet two forecasters'}</button></div></div>
+  </div>`);
+  app.appendChild(card);
+  const ow=card.querySelector('#opts'),fb=card.querySelector('#fb'),act=card.querySelector('#act');
+  sn.opts.forEach((o,i)=>{const b=h(`<button class="opt">${o}</button>`);
+    b.onclick=()=>{
+      [...ow.children].forEach((el,j)=>{el.disabled=true;if(j===sn.correct)el.classList.add('correct');else if(j===i)el.classList.add('wrong');});
+      const ok=i===sn.correct; if(ok)S.score++;
+      fb.innerHTML=`<div class="fb ${ok?'good':'miss'}"><b>${ok?'Right.':'Not quite.'}</b><span class="ex">${sn.ex}</span></div>`;
+      act.style.display='flex';
+    };
+    ow.appendChild(b);
+  });
+  card.querySelector('#next').onclick=()=>{ if(S.si<SNAPS.length-1){S.si++;render();} else {S.screen='pick';render();} };
+}
+
+function rPick(){
+  const card=h(`<div>
+    <div class="steprow"><span class="stepname">The track records</span><span class="module">who\u2019s better?</span></div>
+    <div class="card">
+      <p class="body-txt">Two forecasters each made twelve calls that have now resolved. Before you see the scores \u2014 just on reputation \u2014 who would you trust more?</p>
+      <div class="who mt">
+        <div class="pick" id="p0"><div class="nm">${HANNAH.name}</div><div class="ds">${HANNAH.desc}</div></div>
+        <div class="pick" id="p1"><div class="nm">${SAM.name}</div><div class="ds">${SAM.desc}</div></div>
+      </div>
+      <p class="body-txt mt" style="font-size:13px;color:var(--faint)">Pick one to reveal both records.</p>
+    </div>
+  </div>`);
+  app.appendChild(card);
+  card.querySelector('#p0').onclick=()=>{S.guess=0;S.screen='reveal';render();};
+  card.querySelector('#p1').onclick=()=>{S.guess=1;S.screen='reveal';render();};
+}
+
+function recordHTML(f){
+  const calls=f.p.map((p,i)=>`<span class="call"><span>${Math.round(p*100)}%</span><span class="o ${f.o[i]?'hit':'no'}">${f.o[i]?'\u2713':'\u2717'}</span></span>`).join('');
+  return `<div class="rec"><div class="rt">${f.name} \u00b7 12 calls (% assigned \u00b7 \u2713 happened / \u2717 didn\u2019t)</div><div class="calls">${calls}</div></div>`;
+}
+
+function rReveal(){
+  const bH=brier(HANNAH),bS=brier(SAM),blH=blowups(HANNAH),blS=blowups(SAM);
+  const guessedSafe = S.guess===0;
+  const card=h(`<div>
+    <div class="steprow"><span class="stepname">Reveal</span><span class="module">the scores flip it</span></div>
+    <div class="card">
+      ${recordHTML(HANNAH)}
+      ${recordHTML(SAM)}
+      <div class="scoregrid">
+        <div class="sc"><div class="v" style="color:var(--gut)">${bH.toFixed(3)}</div><div class="k">${HANNAH.name} \u00b7 Brier</div><div class="s">${blH} confident call${blH===1?'':'s'} blew up</div></div>
+        <div class="sc"><div class="v" style="color:var(--truth)">${bS.toFixed(3)}</div><div class="k">${SAM.name} \u00b7 Brier</div><div class="s">${blS} confident calls blew up</div></div>
+      </div>
+      <div class="fb ${S.guess===1?'good':'miss'} mt">
+        <b>${S.guess===1?'You backed the better forecaster.':'The reputation fooled you.'}</b>
+        <span class="ex">${SAM.name} is far better: a Brier of ${bS.toFixed(3)} against ${bH.toFixed(3)} (lower is better; 0.25 is a coin flip). Yet ${SAM.name} suffered ${blS} dramatic blow-ups while ${HANNAH.name} suffered ${blH} \u2014 because ${HANNAH.name} never commits, and so never looks badly wrong. Counting blow-ups would have you crown the useless forecaster.</span>
+      </div>
+      <div class="lesson"><h3>The lesson</h3><p>Two traps, one cure. The first: <b>you cannot judge a probability by a single outcome</b> \u2014 a 70% that fails and a 25% that lands are exactly what good calibration looks like. The second is sneakier: judging a forecaster by <b>how rarely they look wrong rewards cowardice</b>. ${HANNAH.name} hugs 50%, is almost never dramatically wrong, and is almost useless \u2014 a forecast near 50% commits to nothing. ${SAM.name} makes sharp, committed calls, eats the occasional spectacular miss, and is the one you actually want. The cure for both is the same: <b>score calibration across many calls</b> (the Brier score), and reward forecasters for being usefully decisive and well-calibrated \u2014 never for the comfort of never being caught out.</p></div>
+      <div class="actions"><button class="primary" id="again">Run it again</button></div>
+    </div>
+    <div class="foot">One outcome judges nothing \u00b7 the record judges everything \u00b7 hedging is not safety.</div>
+  </div>`);
+  app.appendChild(card);
+  card.querySelector('#again').onclick=()=>{S.screen='intro';render();};
+}
+
+render();
+</script>
+</body>
+</html>
