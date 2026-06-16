@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Reference Class</title>
+<title>The Decomposition Engine</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 :root{
@@ -17,12 +17,11 @@ html,body{background:var(--ground);color:var(--ink);font-family:'Inter',system-u
 body{min-height:100vh;display:flex;justify-content:center;padding:28px 18px 64px}
 .wrap{width:100%;max-width:680px}
 .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--signal);margin-bottom:10px}
-h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:34px;letter-spacing:-.02em;line-height:1.05;margin-bottom:14px}
+h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:33px;letter-spacing:-.02em;line-height:1.05;margin-bottom:14px}
 .lede{color:var(--muted);font-size:15px;line-height:1.62;max-width:58ch}
 .lede b{color:var(--ink);font-weight:600}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;box-shadow:0 8px 30px var(--shadow)}
 .mt{margin-top:18px}.mt-l{margin-top:26px}.hr{height:1px;background:var(--line);margin:22px 0}
-
 button.primary{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:15px;color:#15110a;background:var(--signal);border:none;padding:13px 22px;border-radius:10px;cursor:pointer;transition:.15s}
 button.primary:hover{filter:brightness(1.07)}
 button.primary:disabled{opacity:.4;cursor:not-allowed}
@@ -30,72 +29,62 @@ button.ghost{font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spaci
 button.ghost:hover{border-color:var(--faint);color:var(--ink)}
 button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
 .actions{display:flex;gap:12px;align-items:center;margin-top:24px}.actions .primary{flex:1}
-
-/* scenario menu */
 .scn{display:flex;flex-direction:column;gap:10px;margin-top:8px}
 .scn-card{text-align:left;background:var(--panel-2);border:1px solid var(--line);border-radius:11px;padding:16px 18px;cursor:pointer;transition:.15s}
 .scn-card:hover{border-color:var(--signal)}
 .scn-card .t{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:16px;margin-bottom:4px}
 .scn-card .m{font-size:13px;color:var(--muted);line-height:1.5}
 .scn-card .tag{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--signal-dim);margin-top:8px;display:inline-block}
-
-/* step header */
 .steprow{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
 .stepname{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
 .module{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--signal)}
-.qtitle{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:21px;line-height:1.32;letter-spacing:-.01em;margin-bottom:14px}
-.body-txt{font-size:14.5px;line-height:1.68;color:var(--muted)}
-.body-txt b{color:var(--ink);font-weight:600}
-
-/* probability instrument */
-.readout{font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums;font-size:50px;letter-spacing:-.02em;color:var(--signal);line-height:1;margin:20px 0 2px;text-align:center}
-.readout .pct{font-size:23px;color:var(--signal-dim)}
+.qtitle{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:21px;line-height:1.32;letter-spacing:-.01em;margin-bottom:12px}
+.body-txt{font-size:14.5px;line-height:1.66;color:var(--muted)}.body-txt b{color:var(--ink);font-weight:600}
+.formula{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--truth);background:var(--ground);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin:14px 0 4px;line-height:1.6}
+.readout{font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums;font-size:46px;letter-spacing:-.02em;color:var(--signal);line-height:1;margin:18px 0 2px;text-align:center}
 .readout-cap{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-bottom:16px}
-input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:3px;background:linear-gradient(90deg,var(--signal) var(--fill,50%),var(--line) var(--fill,50%));outline:none;cursor:pointer}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--signal);border:3px solid var(--ground);box-shadow:0 0 0 1px var(--signal),0 2px 6px var(--shadow)}
-input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--signal);border:3px solid var(--ground);box-shadow:0 0 0 1px var(--signal)}
-input[type=range]:focus-visible{outline:2px solid var(--signal);outline-offset:6px}
-.scale{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--faint);margin-top:8px}
-
-/* reference class options */
-.ref-opt{display:flex;justify-content:space-between;align-items:center;gap:14px;text-align:left;width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:14px 16px;cursor:pointer;transition:.15s;margin-bottom:10px}
-.ref-opt:hover{border-color:var(--faint)}
-.ref-opt[aria-pressed="true"]{border-color:var(--signal);background:rgba(232,176,75,.08)}
-.ref-opt .lab{font-size:14.5px;line-height:1.4}
-.ref-opt .lab .sm{display:block;font-size:12.5px;color:var(--muted);margin-top:3px}
-.ref-opt .rate{font-family:'IBM Plex Mono',monospace;font-size:22px;font-variant-numeric:tabular-nums;color:var(--signal);flex:none}
-.ref-opt .rate.hidden{color:var(--faint);font-size:15px}
-
-/* belief track */
-.tracklabel{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin:18px 0 6px}
-.legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)}
-.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
-
-/* evidence card */
-.ev{background:var(--panel-2);border:1px solid var(--line);border-left:3px solid var(--signal);border-radius:10px;padding:15px 17px;margin-bottom:4px}
-.ev .src{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:7px}
-.ev .txt{font-size:15px;line-height:1.55}
-
-/* feedback */
-.fb{border-radius:10px;padding:14px 16px;margin-top:16px;font-size:14px;line-height:1.6}
-.fb.good{background:rgba(79,179,166,.1);border:1px solid rgba(79,179,166,.4);color:var(--truth)}
-.fb.over{background:rgba(224,122,95,.1);border:1px solid rgba(224,122,95,.4);color:var(--warn)}
-.fb.noise{background:rgba(224,122,95,.1);border:1px solid rgba(224,122,95,.4);color:var(--warn)}
-.fb b{font-weight:600}
-.fb .ex{display:block;margin-top:6px;color:var(--muted)}
-.miniread{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted);margin-top:14px;text-align:center}
-.miniread b{color:var(--signal)}
-
-/* resolution */
-.resbadge{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--truth);margin-bottom:12px}
-.resbadge i{width:9px;height:9px;border-radius:50%;background:var(--truth)}
-.lesson{border-left:2px solid var(--signal);padding:4px 0 4px 16px;margin-top:18px}
-.lesson h3{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:16px;margin-bottom:8px}
-.lesson p{font-size:14px;line-height:1.66;color:var(--muted)}
-.lesson p b{color:var(--ink);font-weight:600}
-.foot{margin-top:30px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;color:var(--faint);line-height:1.7}
+.single-input{display:flex;justify-content:center;margin:8px 0}
+.single-input input{width:220px;font-family:'IBM Plex Mono',monospace;font-size:24px;font-variant-numeric:tabular-nums;color:var(--ink);background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:12px 14px;text-align:center}
+.single-input input:focus{outline:none;border-color:var(--signal)}
+.factor{background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:10px}
+.factor .flab{font-size:14px;font-weight:500;margin-bottom:3px}
+.factor .fhint{font-size:12.5px;color:var(--faint);line-height:1.45;margin-bottom:10px}
+.factor .frow{display:flex;gap:10px;align-items:center}
+.factor .fcell{flex:1}
+.factor .fcell label{display:block;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:5px}
+.factor .fcell input{width:100%;font-family:'IBM Plex Mono',monospace;font-size:17px;font-variant-numeric:tabular-nums;color:var(--ink);background:var(--ground);border:1px solid var(--line);border-radius:8px;padding:9px 11px}
+.factor .fcell input:focus{outline:none;border-color:var(--signal)}
+.factor .funit{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);text-align:right;min-width:78px}
+.factor.const{display:flex;justify-content:space-between;align-items:center;opacity:.8}
+.factor.const .flab{margin:0}
+.factor.const .cval{font-family:'IBM Plex Mono',monospace;font-size:15px;color:var(--truth)}
+.op{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--faint);margin:-4px 0 6px}
+.bigresult{text-align:center;margin:4px 0}
+.bigresult .v{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:40px;color:var(--signal);letter-spacing:-.02em}
+.bigresult .ci{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted);margin-top:6px}
+.plotcap{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin:18px 0 4px}
 svg{display:block;width:100%;height:auto}
-@media (max-width:520px){h1{font-size:27px}.qtitle{font-size:19px}.readout{font-size:42px}}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.cmp{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:11px;overflow:hidden;margin-top:18px}
+.cmp .c{background:var(--panel);padding:14px 12px;text-align:center}
+.cmp .c .k{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+.cmp .c .v{font-family:'IBM Plex Mono',monospace;font-size:18px;font-variant-numeric:tabular-nums}
+.verdict{border-radius:10px;padding:14px 16px;margin-top:16px;font-size:14px;line-height:1.6}
+.verdict.good{background:rgba(79,179,166,.1);border:1px solid rgba(79,179,166,.4);color:var(--truth)}
+.verdict.miss{background:rgba(224,122,95,.1);border:1px solid rgba(224,122,95,.4);color:var(--warn)}
+.verdict b{font-weight:600}
+.sens{margin-top:18px}
+.sens .srow{display:flex;align-items:center;gap:12px;margin-bottom:9px}
+.sens .sname{font-size:13px;color:var(--ink);width:42%;line-height:1.3}
+.sens .sbar{flex:1;height:9px;background:var(--ground);border-radius:5px;overflow:hidden}
+.sens .sbar i{display:block;height:100%;background:var(--signal);border-radius:5px}
+.sens .spct{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);width:42px;text-align:right}
+.lesson{border-left:2px solid var(--signal);padding:4px 0 4px 16px;margin-top:20px}
+.lesson h3{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:16px;margin-bottom:8px}
+.lesson p{font-size:14px;line-height:1.66;color:var(--muted)}.lesson p b{color:var(--ink);font-weight:600}
+.foot{margin-top:30px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;color:var(--faint);line-height:1.7}
+@media (max-width:520px){h1{font-size:27px}.qtitle{font-size:19px}.readout{font-size:38px}.bigresult .v{font-size:32px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -103,359 +92,307 @@ svg{display:block;width:100%;height:auto}
 <div class="wrap" id="app"></div>
 <script>
 /* ============================================================
-   THE REFERENCE CLASS
-   Outside view + base rates ("will it be different this time?")
-   and updating the right amount ("how much should I react?").
-   Good Judgment fundamentals, modules 1 and 2.
+   THE DECOMPOSITION ENGINE  \u00b7  Instrument 03
+   Fermi-isation: turn an impossible question into a product of
+   guessable ones, give each a 90% range, propagate the
+   uncertainty by Monte Carlo, and see where your doubt lives.
    ============================================================ */
 
+/* factor kinds:
+   estimate -> player gives [lo,hi] 90% interval (lognormal)
+   constant -> fixed multiplier shown for transparency
+   op: 'mul' | 'div'                                            */
 const SCENARIOS = [
   {
-    id:'spinout',
-    menuTitle:'The dazzling spinout',
-    menuBlurb:'A deep-tech founder, a hot sector, a beautiful demo. Will it still exist in five years?',
-    module:'Module 1 \u00b7 The outside view',
-    question:'Will this VC-backed university spinout still be trading in five years?',
-    caseText:'The founder is magnetic \u2014 a former postdoc with three Nature papers and a demo that visibly impresses the room. The sector is the one every fund is chasing this year. The TAM slide says \u00a340bn. Two angels have already wired money on the strength of a coffee. Sitting across from them, your gut wants to say this one is different.',
-    gutPrompt:'Your gut: how likely is it still trading in five years?',
-    classes:[
-      {label:'All newly founded businesses',sub:'survival to year five, economy-wide',rate:0.50},
-      {label:'This founder \u2014 they seem exceptional',sub:'an inside-view judgement, not a class',rate:0.85,trap:true},
-      {label:'VC-backed university deep-tech spinouts',sub:'still operating at year five',rate:0.55}
-    ],
-    bestClass:2,
-    anchor:0.55,
-    anchorNote:'Spinouts survive a little better than businesses at large \u2014 patient capital, real IP, institutional ties \u2014 but \u201cstill trading\u201d is a low bar, and many become quiet zombies. Around 55% is the honest reference point. Your gut almost certainly sat higher: that\u2019s the founder\u2019s charisma leaking into your probability.',
-    evidence:[
-      {src:'Cap table',txt:'The lead investor is a tier-1 fund with deep reserves and a track record of bridging its companies through hard rounds.',lr:1.7,kind:'up',note:'Genuinely diagnostic of survival \u2014 reserves keep companies alive. A real, moderate update upward.'},
-      {src:'Team',txt:'Eighteen months in, there is still no commercial co-founder. The founder is doing sales between lab shifts.',lr:0.55,kind:'down',note:'Diagnostic the other way. The single most common spinout failure mode is brilliant science with no one selling. Update down.'},
-      {src:'Press',txt:'A glowing TechCrunch profile calls them \u201cthe team to watch this year.\u201d',lr:1.05,kind:'noise',note:'Vivid, flattering \u2014 and almost worthless as evidence of five-year survival. Press selects for hype, not durability. The right update here is roughly none.'},
-      {src:'Commercial',txt:'They\u2019ve just signed a paid, contracted pilot with a strategic industrial partner.',lr:2.1,kind:'up',note:'The strongest signal in the set: someone is paying real money. Update up firmly.'}
-    ],
-    resolution:'Five years on, the company is still trading \u2014 but as a smaller, pivoted business serving a niche the original deck never mentioned. The science held; the first market didn\u2019t.',
-    lesson:'<b>\u201cThis time it\u2019s different\u201d is the most expensive sentence in forecasting.</b> The founder\u2019s brilliance is real, but it\u2019s already priced into the base rate of people who get funded. Start from the reference class, then let only genuinely diagnostic evidence \u2014 reserves, revenue, a missing co-founder \u2014 move you. The TechCrunch profile should have moved you almost not at all.'
+    id:'piano',
+    menuTitle:'Piano tuners in Chicago',
+    menuBlurb:'Enrico Fermi\u2019s own puzzle \u2014 the founding example of the whole method.',
+    tag:'The classic',
+    question:'How many piano tuners work in the city of Chicago?',
+    formula:'tuners = (population \u00f7 people per household) \u00d7 share with a piano \u00d7 tunings per piano a year \u00f7 tunings one tuner does a year',
+    gutPrompt:'Off the top of your head \u2014 your single best guess?',
+    truth:125, truthNote:'Commonly estimated at roughly 50\u2013150. The win here is the order of magnitude, not the exact figure.',
+    factors:[
+      {id:'pop',kind:'estimate',op:'mul',label:'Population of Chicago',hint:'The city proper, not the wider metro area.',unit:'people',lo:2000000,hi:3500000},
+      {id:'pph',kind:'estimate',op:'div',label:'People per household',hint:'Divide population by this to get households.',unit:'per home',lo:2,hi:3},
+      {id:'frac',kind:'estimate',op:'mul',label:'Share of households with a piano',hint:'A small fraction \u2014 think in percent, entered as a decimal.',unit:'(0\u20131)',lo:0.02,hi:0.1},
+      {id:'tpp',kind:'estimate',op:'mul',label:'Tunings per piano per year',hint:'A cared-for piano is tuned about once or twice a year.',unit:'per year',lo:0.5,hi:2},
+      {id:'tpt',kind:'estimate',op:'div',label:'Tunings one tuner does per year',hint:'Jobs per day \u00d7 working days. Divide by this.',unit:'per tuner',lo:600,hi:1500}
+    ]
   },
   {
-    id:'fitout',
-    menuTitle:'The twelve-week fit-out',
-    menuBlurb:'A confident contractor, a tidy Gantt chart, a simple scope. Will it finish on time?',
-    module:'Module 1 \u00b7 The planning fallacy',
-    question:'Will this office fit-out finish within the contractor\u2019s 12-week estimate?',
-    caseText:'The contractor walks you through a crisp Gantt chart. The scope looks genuinely simple \u2014 no structural work, materials \u201call standard.\u201d They\u2019re relaxed and specific, and they\u2019ve done dozens of these. Twelve weeks, they say, and you find yourself believing it.',
-    gutPrompt:'Your gut: how likely is it to finish on time?',
-    classes:[
-      {label:'How long this plan looks like it\u2019ll take',sub:'reading the schedule in front of you',rate:0.80,trap:true},
-      {label:'Building projects finishing on their original schedule',sub:'the broad outside view',rate:0.30},
-      {label:'This contractor\u2019s last ten jobs, on time',sub:'the most specific class you can get',rate:0.40}
-    ],
-    bestClass:2,
-    anchor:0.35,
-    anchorNote:'The inside view \u2014 reading the plan \u2014 is exactly the trap Kahneman named the planning fallacy. Projects overrun far more than the plan implies. A contractor\u2019s own track record (here ~40% on time) beats both the rosy plan and the generic 30%. Anchor around 35%, not 80%.',
-    evidence:[
-      {src:'Resourcing',txt:'The contractor commits a second crew to the job in writing.',lr:1.5,kind:'up',note:'A real lever on schedule. Update up modestly.'},
-      {src:'Supply chain',txt:'The specified glazing is on a six-week backorder with no substitute approved.',lr:0.45,kind:'down',note:'A concrete, schedule-killing constraint. This is the kind of specific that should move you down hard.'},
-      {src:'Impression',txt:'The project manager comes across as unusually organised and calm in the kick-off meeting.',lr:1.05,kind:'noise',note:'A feeling, not a fact about timelines. Charisma and tidiness predict overruns about as well as a coin. Don\u2019t let it move you.'},
-      {src:'Contract',txt:'There\u2019s a liquidated-damages clause that bites the contractor for late delivery.',lr:1.35,kind:'up',note:'Aligns incentives and sharpens behaviour. A modest, justified update up.'}
-    ],
-    resolution:'It overran by three weeks \u2014 the glazing, exactly as flagged. The second crew and the penalty clause helped at the margin but couldn\u2019t beat a long-lead item.',
-    lesson:'<b>The plan in front of you is the inside view, and it is almost always too optimistic.</b> The fix isn\u2019t cynicism \u2014 it\u2019s reference-class forecasting: ask how things like this have actually gone, anchor there, then adjust for the genuinely specific (a backordered long-lead item) while ignoring the merely reassuring (a calm PM).'
+    id:'cells',
+    menuTitle:'Cells in an EV battery pack',
+    menuBlurb:'How many lithium-ion cells inside a long-range electric car? Your territory.',
+    tag:'Deep tech',
+    question:'How many lithium-ion cells are in a long-range Tesla Model 3 battery pack?',
+    formula:'cells = pack energy (kWh) \u00d7 1000 \u00f7 energy per cell (Wh)',
+    gutPrompt:'Quick gut number \u2014 how many cells?',
+    truth:4400, truthNote:'The Model 3 Long Range uses roughly 4,400 cylindrical \u201c2170\u201d cells.',
+    factors:[
+      {id:'pack',kind:'estimate',op:'mul',label:'Gross pack energy',hint:'A long-range EV pack.',unit:'kWh',lo:60,hi:95},
+      {id:'k',kind:'constant',op:'mul',label:'Watt-hours per kWh',value:1000,unit:'Wh/kWh'},
+      {id:'cell',kind:'estimate',op:'div',label:'Energy per cell',hint:'A single 2170 cell. Divide by this.',unit:'Wh/cell',lo:12,hi:25}
+    ]
   },
   {
-    id:'incumbent',
-    menuTitle:'The noisy election',
-    menuBlurb:'A charismatic challenger, packed rallies, a viral moment. Does the incumbent hold on?',
-    module:'Module 2 \u00b7 How much to react',
-    question:'Will the incumbent be re-elected?',
-    caseText:'The challenger is electric \u2014 rallies overflowing, clips everywhere, an energy the incumbent plainly lacks. Your feed is wall-to-wall challenger. It feels like a change election. The temptation is to call the incumbent finished.',
-    gutPrompt:'Your gut: how likely is the incumbent to win?',
-    classes:[
-      {label:'The challenger\u2019s rallies feel unstoppable',sub:'what\u2019s loudest in your feed',rate:0.30,trap:true},
-      {label:'Incumbents seeking re-election in stable democracies',sub:'broad historical base rate',rate:0.65},
-      {label:'Incumbents running during a cost-of-living squeeze',sub:'conditioned on the actual economy',rate:0.48}
-    ],
-    bestClass:2,
-    anchor:0.48,
-    anchorNote:'Incumbency is a strong advantage in general \u2014 but the relevant class is conditioned on conditions. Running into a cost-of-living squeeze pulls that ~65% down to a near coin-flip. The packed rallies are the vivid inside view; the conditioned base rate is the discipline.',
-    evidence:[
-      {src:'Polling',txt:'A high-quality poll average puts the incumbent ahead by 4 points, stable over six weeks.',lr:1.6,kind:'up',note:'Diagnostic and stable. Polls are noisy but a steady lead is real signal. Update up.'},
-      {src:'Economy',txt:'Quarterly figures confirm the economy contracted again; real incomes are falling.',lr:0.7,kind:'down',note:'Bad for incumbents and partly baked into your conditioned base rate already \u2014 a modest further nudge down, not a lurch.'},
-      {src:'Virality',txt:'A challenger speech clip racks up 20 million views over a weekend.',lr:1.0,kind:'noise',note:'Engagement is not votes. Viral moments correlate weakly with outcomes and are visible to you precisely because they\u2019re shareable. The correct reaction is to barely move.'},
-      {src:'Approval',txt:'The incumbent\u2019s approval rating sits at 38%, near a record low for them.',lr:0.65,kind:'down',note:'Approval predicts vote share reasonably well. A genuine update down.'}
-    ],
-    resolution:'The incumbent scraped back in by a narrow margin. The rallies and the viral clip generated enormous noise and very few additional votes; the steady poll lead was the truer signal all along.',
-    lesson:'<b>Most news is louder than it is diagnostic.</b> Updating well isn\u2019t reacting to everything \u2014 it\u2019s reacting in proportion to how much a piece of evidence actually shifts the odds. A 20-million-view clip should move a serious forecast about as much as a calm PM moves a build schedule: barely. Save your updates for polls, approval, and the economy.'
+    id:'heart',
+    menuTitle:'Heartbeats in a lifetime',
+    menuBlurb:'How many times does a human heart beat across an entire life?',
+    tag:'Big number',
+    question:'How many times does an average human heart beat in a lifetime?',
+    formula:'beats = rate (per min) \u00d7 60 \u00d7 24 \u00d7 365 \u00d7 lifespan (years)',
+    gutPrompt:'Gut guess \u2014 how many beats, total?',
+    truth:2900000000, truthNote:'Around 2.5\u20133 billion beats for a typical lifespan.',
+    factors:[
+      {id:'rate',kind:'estimate',op:'mul',label:'Average heart rate',hint:'Resting plus activity, averaged over a life.',unit:'beats/min',lo:60,hi:85},
+      {id:'m',kind:'constant',op:'mul',label:'Minutes per hour',value:60,unit:'\u00d760'},
+      {id:'h',kind:'constant',op:'mul',label:'Hours per day',value:24,unit:'\u00d724'},
+      {id:'d',kind:'constant',op:'mul',label:'Days per year',value:365,unit:'\u00d7365'},
+      {id:'life',kind:'estimate',op:'mul',label:'Lifespan',hint:'An average human life.',unit:'years',lo:70,hi:90}
+    ]
   },
   {
-    id:'megaproject',
-    menuTitle:'The first-of-its-kind',
-    menuBlurb:'A novel marine-energy build, strong backing, fixed-price contract. On budget?',
-    module:'Module 1 \u00b7 Reference-class forecasting',
-    question:'Will this first-of-a-kind marine-energy project land within 15% of its budget?',
-    caseText:'The engineering is elegant and the team is credible. There\u2019s a supportive minister, a ribbon-cutting energy to it all, and a fixed-price headline number that everyone keeps repeating. First of its kind, yes \u2014 but surely this one\u2019s been planned properly.',
-    gutPrompt:'Your gut: how likely is it to land within 15% of budget?',
-    classes:[
-      {label:'It\u2019s clearly been planned more carefully than most',sub:'the inside view of this project',rate:0.65,trap:true},
-      {label:'First-of-a-kind energy megaprojects on budget',sub:'Flyvbjerg\u2019s outside view',rate:0.20},
-      {label:'Nth-of-a-kind builds of a proven design',sub:'a class this project isn\u2019t in yet',rate:0.55}
-    ],
-    bestClass:1,
-    anchor:0.22,
-    anchorNote:'First-of-a-kind infrastructure overruns the rule, not the exception \u2014 Flyvbjerg\u2019s data on megaprojects is brutal. The Nth-of-a-kind class is reassuring but it isn\u2019t the class this project belongs to. Anchor near 20%, however elegant the engineering looks.',
-    evidence:[
-      {src:'Delivery',txt:'The EPC contractor has delivered three comparable marine builds, all within 10% of budget.',lr:1.9,kind:'up',note:'The most powerful de-risker available: relevant, repeated delivery experience. Update up meaningfully.'},
-      {src:'Engineering',txt:'The seabed-foundation design is novel and has never been built at this scale.',lr:0.55,kind:'down',note:'Novelty is precisely what drives first-of-a-kind overruns. A real update down.'},
-      {src:'Politics',txt:'A cabinet minister appears at the launch and pledges full government backing.',lr:1.05,kind:'noise',note:'Political enthusiasm says nothing reliable about whether steel arrives on budget \u2014 if anything, headline projects attract scope creep. Treat as noise.'},
-      {src:'Contract',txt:'The build is on a genuine fixed-price contract with the risk sitting on the contractor.',lr:1.5,kind:'up',note:'Shifts overrun risk off the project. A solid update up \u2014 though fixed prices have a way of being renegotiated.'}
-    ],
-    resolution:'It came in 28% over budget and nine months late. The experienced contractor and fixed price softened the blow; the novel foundation, exactly as flagged, was where the money and time went.',
-    lesson:'<b>Pick the class the thing actually belongs to, not the flattering one next door.</b> \u201cNth-of-a-kind\u201d and \u201cwell-planned\u201d were the comforting reference classes; \u201cfirst-of-a-kind megaproject\u201d was the true one. The ministerial backing was pure noise. Anchor on the real class, then let delivery record and genuine novelty \u2014 not the ribbon-cutting \u2014 do the updating.'
+    id:'pool',
+    menuTitle:'Water in an Olympic pool',
+    menuBlurb:'How many litres fill a standard Olympic swimming pool?',
+    tag:'Warm-up',
+    question:'How many litres of water are in an Olympic swimming pool?',
+    formula:'litres = length \u00d7 width \u00d7 average depth \u00d7 1000',
+    gutPrompt:'Gut guess \u2014 how many litres?',
+    truth:2500000, truthNote:'A regulation pool holds about 2.5 million litres.',
+    factors:[
+      {id:'len',kind:'estimate',op:'mul',label:'Length',hint:'Olympic standard.',unit:'m',lo:40,hi:55},
+      {id:'wid',kind:'estimate',op:'mul',label:'Width',hint:'Eight to ten lanes.',unit:'m',lo:20,hi:30},
+      {id:'dep',kind:'estimate',op:'mul',label:'Average depth',hint:'Averaged across the pool.',unit:'m',lo:1.5,hi:2.5},
+      {id:'k',kind:'constant',op:'mul',label:'Litres per cubic metre',value:1000,unit:'L/m\u00b3'}
+    ]
   }
 ];
 
-const logit=p=>Math.log(p/(1-p));
-const clamp=p=>Math.max(0.02,Math.min(0.98,p));
-function bayesChain(anchor,lrs){ // returns array of posteriors after each lr, plus the anchor at [0]
-  const path=[anchor]; let o=anchor/(1-anchor);
-  lrs.forEach(lr=>{o*=lr; path.push(o/(1+o));});
-  return path;
+/* ---------- maths ---------- */
+const Z90=1.6448536; // one-sided z for a 90% central interval
+let spare=null;
+function randn(){ if(spare!==null){const s=spare;spare=null;return s;} const u=Math.random()||1e-9,v=Math.random()||1e-9; const r=Math.sqrt(-2*Math.log(u)); spare=r*Math.sin(2*Math.PI*v); return r*Math.cos(2*Math.PI*v); }
+function logParams(lo,hi){ const a=Math.log(lo),b=Math.log(hi); return {mu:(a+b)/2, sigma:Math.max((b-a)/(2*Z90),1e-9)}; }
+function fmtNum(n){
+  if(!isFinite(n)) return '\u2013';
+  if(n>=1e9) return +(n/1e9).toPrecision(2)+' bn';
+  if(n>=1e6) return +(n/1e6).toPrecision(2)+' M';
+  const s2=Number(n.toPrecision(2));
+  return s2.toLocaleString('en-GB');
+}
+function fmtPow(p){const m={0:'1',1:'10',2:'100',3:'1k',4:'10k',5:'100k',6:'1M',7:'10M',8:'100M',9:'1bn',10:'10bn'};return m[p]!==undefined?m[p]:('1e'+p);}
+
+function runMC(scn,ranges,N){
+  N=N||4000;
+  const est=scn.factors.filter(f=>f.kind==='estimate');
+  const lp={}; est.forEach(f=>{lp[f.id]=logParams(ranges[f.id].lo,ranges[f.id].hi);});
+  const finals=new Array(N);
+  for(let i=0;i<N;i++){
+    let r=1;
+    for(const f of scn.factors){
+      let v;
+      if(f.kind==='constant') v=f.value;
+      else { const p=lp[f.id]; v=Math.exp(p.mu+p.sigma*randn()); }
+      r = f.op==='div' ? r/v : r*v;
+    }
+    finals[i]=r;
+  }
+  finals.sort((a,b)=>a-b);
+  const q=t=>finals[Math.min(N-1,Math.max(0,Math.floor(t*N)))];
+  // sensitivity: share of variance of ln(result) from each estimate factor (independent)
+  let tot=0; const parts=est.map(f=>{const s=lp[f.id].sigma;return {label:f.label,v:s*s};}); parts.forEach(p=>tot+=p.v);
+  parts.forEach(p=>p.share = tot>0? p.v/tot : 0);
+  parts.sort((a,b)=>b.share-a.share);
+  return {finals, p5:q(0.05), p50:q(0.5), p95:q(0.95), p02:q(0.02), p98:q(0.98), sens:parts};
 }
 
-let S = {};
+/* ---------- histogram ---------- */
+function histogram(res, truth, gut){
+  const W=620,H=240,padL=14,padR=14,padT=14,padB=34;
+  const L=v=>Math.log10(Math.max(v,1e-12));
+  let lo=Math.min(L(res.p02), L(truth), L(gut))-0.15;
+  let hi=Math.max(L(res.p98), L(truth), L(gut))+0.15;
+  if(hi-lo<0.6){lo-=0.3;hi+=0.3;}
+  const NB=26, binW=(hi-lo)/NB, counts=new Array(NB).fill(0);
+  res.finals.forEach(f=>{let b=Math.floor((L(f)-lo)/binW); if(b<0)b=0; if(b>=NB)b=NB-1; counts[b]++;});
+  const maxC=Math.max(...counts,1);
+  const x=lv=>padL+((lv-lo)/(hi-lo))*(W-padL-padR);
+  const yTop=padT, yBase=H-padB, plotH=yBase-yTop;
+  let bars='';
+  for(let b=0;b<NB;b++){const bx=x(lo+b*binW), bw=(W-padL-padR)/NB-1.5, bh=(counts[b]/maxC)*plotH;
+    bars+=`<rect x="${bx.toFixed(1)}" y="${(yBase-bh).toFixed(1)}" width="${Math.max(bw,1).toFixed(1)}" height="${bh.toFixed(1)}" fill="rgba(232,176,75,.55)" rx="1"/>`;}
+  // axis ticks at integer powers of ten
+  let ticks='';
+  for(let p=Math.ceil(lo);p<=Math.floor(hi);p++){const tx=x(p);
+    ticks+=`<line x1="${tx}" y1="${yTop}" x2="${tx}" y2="${yBase}" stroke="var(--line)" stroke-width="1"/><text x="${tx}" y="${yBase+20}" text-anchor="middle" fill="var(--faint)" font-family="IBM Plex Mono" font-size="10.5">${fmtPow(p)}</text>;`}
+  const marker=(v,color,lab,dash)=>{const mx=x(L(v));return `<line x1="${mx}" y1="${yTop-2}" x2="${mx}" y2="${yBase}" stroke="${color}" stroke-width="2" ${dash?'stroke-dasharray="4 3"':''}/><text x="${mx}" y="${yTop+8}" text-anchor="middle" fill="${color}" font-family="IBM Plex Mono" font-size="10" transform="rotate(0)">${lab}</text>`;};
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Distribution of your estimate">
+    <line x1="${padL}" y1="${yBase}" x2="${W-padR}" y2="${yBase}" stroke="var(--line)" stroke-width="1.5"/>
+    ${ticks}${bars}
+    ${marker(gut,'var(--gut)','gut',true)}
+    ${marker(res.p50,'var(--signal)','est',false)}
+    ${marker(truth,'var(--truth)','true',false)}
+  </svg>`;
+}
+
+/* ---------- app ---------- */
+let S={screen:'intro'};
 const app=document.getElementById('app');
 function h(s){const t=document.createElement('template');t.innerHTML=s.trim();return t.content.firstChild;}
+function render(){app.innerHTML='';({intro:rIntro,menu:rMenu,gut:rGut,decompose:rDecomp,result:rResult})[S.screen]();window.scrollTo&&window.scrollTo(0,0);}
 
-function render(){app.innerHTML='';const r=({menu:renderMenu,gut:renderGut,refclass:renderRefClass,bridge:renderBridge,evidence:renderEvidence,resolve:renderResolve})[S.screen];r();window.scrollTo&&window.scrollTo(0,0);}
-
-function renderMenu(){
+function rIntro(){
   const card=h(`<div>
-    <div class="eyebrow">Forecasting Bench \u00b7 Instrument 02</div>
-    <h1>The Reference Class</h1>
-    <p class="lede">Two moves separate forecasters from pundits. First, the <b>outside view</b>: before you judge a case on its vivid particulars, ask how things <b>like it</b> usually turn out, and anchor there. Then <b>update by the right amount</b> \u2014 reacting to genuinely diagnostic news, and barely moving for the loud-but-empty kind.<br><br>Each scenario walks you through both. You\u2019ll commit a gut number first \u2014 then watch how far it was from where a disciplined forecaster would start.</p>
-    <div class="scn mt-l" id="scn"></div>
-    <div class="foot">Good Judgment\u00ae fundamentals \u2014 inside vs outside views, setting base rates, and how much to react to new information.</div>
+    <div class="eyebrow">The Forecasting Bench \u00b7 Instrument 03</div>
+    <h1>The Decomposition Engine</h1>
+    <p class="lede">Asked \u201chow many piano tuners are in Chicago?\u201d most people freeze, then blurt a number that\u2019s wrong by a factor of fifty. Enrico Fermi wouldn\u2019t. He\u2019d <b>break the impossible question into guessable pieces</b> \u2014 population, pianos, tunings \u2014 estimate each within a range, and multiply. The errors partly cancel, and the answer lands remarkably close.<br><br>This is the forecaster\u2019s most powerful move, and it\u2019s exactly how you size a market or a company metric. You\u2019ll guess once cold, then decompose \u2014 giving each piece a <b>90% range</b>, not a point \u2014 and watch the engine roll thousands of simulations to show your answer as a <b>distribution</b>, and tell you which guess your uncertainty is really hiding in.</p>
+    <div class="actions"><button class="primary" id="go">Choose a question</button></div>
+    <div class="foot">Trains: Fermi-isation \u00b7 decomposition \u00b7 propagating uncertainty \u00b7 finding the weak link.</div>
+  </div>`);
+  app.appendChild(card);card.querySelector('#go').onclick=()=>{S.screen='menu';render();};
+}
+
+function rMenu(){
+  const card=h(`<div>
+    <div class="eyebrow">Pick a question to decompose</div>
+    <h1 style="font-size:26px">Four to start</h1>
+    <div class="scn" id="scn"></div>
+    <div class="foot">Same method scales to any forecast \u2014 a market size, a conversion rate, a unit count.</div>
   </div>`);
   app.appendChild(card);
   const wrap=card.querySelector('#scn');
   SCENARIOS.forEach((s,i)=>{
-    const c=h(`<button class="scn-card"><div class="t">${s.menuTitle}</div><div class="m">${s.menuBlurb}</div><span class="tag">${s.module}</span></button>`);
-    c.onclick=()=>startScenario(i);
-    wrap.appendChild(c);
+    const c=h(`<button class="scn-card"><div class="t">${s.menuTitle}</div><div class="m">${s.menuBlurb}</div><span class="tag">${s.tag}</span></button>`);
+    c.onclick=()=>start(i); wrap.appendChild(c);
   });
 }
 
-function startScenario(i){
-  S={screen:'gut',si:i,scn:SCENARIOS[i],gut:50,chosenClass:null,playerPath:[],bayesPath:null,evIdx:0,curP:50,stepFeedback:[]};
+function start(i){
+  S={screen:'gut',si:i,scn:SCENARIOS[i],gut:'',ranges:{}};
+  S.scn.factors.forEach(f=>{ if(f.kind==='estimate') S.ranges[f.id]={lo:'',hi:''}; });
   render();
 }
 
-function instrument(value,cap,id){
-  return `<div class="readout"><span id="${id}rv">${value}</span><span class="pct">%</span></div>
-    <div class="readout-cap">${cap}</div>
-    <input type="range" id="${id}sl" min="2" max="98" step="1" value="${value}" style="--fill:${value}%">
-    <div class="scale"><span>2%</span><span>50%</span><span>98%</span></div>`;
-}
-function wireSlider(card,id,onset){
-  const sl=card.querySelector('#'+id+'sl'),rv=card.querySelector('#'+id+'rv');
-  sl.oninput=()=>{const v=+sl.value;rv.textContent=v;sl.style.setProperty('--fill',v+'%');onset(v);};
-}
-
-function renderGut(){
+function rGut(){
   const s=S.scn;
   const card=h(`<div>
-    <div class="steprow"><span class="stepname">Step 1 \u00b7 First instinct</span><span class="module">${s.module}</span></div>
+    <div class="steprow"><span class="stepname">Step 1 \u00b7 Cold guess</span><span class="module">no working allowed</span></div>
     <div class="qtitle">${s.question}</div>
     <div class="card">
-      <p class="body-txt">${s.caseText}</p>
-      ${instrument(S.gut,s.gutPrompt,'gut')}
-      <div class="actions"><button class="primary" id="next">Commit my gut</button></div>
+      <p class="body-txt">First, the honest gut number \u2014 whatever leaps to mind, before any reasoning. We\u2019ll keep it to compare against your decomposition.</p>
+      <div class="readout-cap" style="margin-top:18px">${s.gutPrompt}</div>
+      <div class="single-input"><input id="gut" type="number" inputmode="numeric" placeholder="?" value="${S.gut}"></div>
+      <div class="actions"><button class="primary" id="next" disabled>Lock it, then decompose</button></div>
     </div>
-    <div class="foot">No peeking ahead \u2014 the point is to catch your instinct before the outside view corrects it.</div>
   </div>`);
   app.appendChild(card);
-  wireSlider(card,'gut',v=>S.gut=v);
-  card.querySelector('#next').onclick=()=>{S.screen='refclass';render();};
+  const inp=card.querySelector('#gut'), next=card.querySelector('#next');
+  const check=()=>{const v=parseFloat(inp.value); next.disabled=!(v>0); S.gut=inp.value;};
+  inp.oninput=check; check();
+  next.onclick=()=>{ if(parseFloat(inp.value)>0){S.gut=parseFloat(inp.value);S.screen='decompose';render();} };
 }
 
-function renderRefClass(){
+function rDecomp(){
   const s=S.scn;
   const card=h(`<div>
-    <div class="steprow"><span class="stepname">Step 2 \u00b7 The outside view</span><span class="module">${s.module}</span></div>
-    <div class="qtitle">Which reference class should anchor you?</div>
+    <div class="steprow"><span class="stepname">Step 2 \u00b7 Decompose</span><span class="module">90% ranges</span></div>
+    <div class="qtitle">${s.question}</div>
     <div class="card">
-      <p class="body-txt">Step back from the particulars. To set a base rate you need a <b>class of similar cases</b> with a known track record \u2014 broad enough to have data, specific enough to be relevant. Pick one to reveal its rate:</p>
-      <div id="opts" class="mt"></div>
-      <div id="anchornote"></div>
-      <div class="actions"><button class="primary" id="next" disabled>Use this as my anchor</button></div>
+      <div class="formula">${s.formula}</div>
+      <p class="body-txt" style="margin:12px 0 16px">For each piece, give a <b>low</b> and <b>high</b> you\u2019re about 90% sure the true value sits between. Wide enough to be honest; narrow enough to be useful.</p>
+      <div id="factors"></div>
+      <div class="actions"><button class="primary" id="run" disabled>Run 4,000 simulations</button></div>
     </div>
   </div>`);
   app.appendChild(card);
-  const opts=card.querySelector('#opts');
-  const note=card.querySelector('#anchornote');
-  const nextBtn=card.querySelector('#next');
-  s.classes.forEach((c,i)=>{
-    const o=h(`<button class="ref-opt" aria-pressed="false">
-      <span class="lab">${c.label}<span class="sm">${c.sub}</span></span>
-      <span class="rate hidden" id="rate${i}">reveal</span>
-    </button>`);
-    o.onclick=()=>{
-      S.chosenClass=i;
-      [...opts.children].forEach((el,j)=>{
-        el.setAttribute('aria-pressed', j===i?'true':'false');
-        const r=el.querySelector('.rate');
-        r.textContent=Math.round(s.classes[j].rate*100)+'%';
-        r.classList.remove('hidden');
-      });
-      nextBtn.disabled=false;
-      const isBest=i===s.bestClass;
-      note.innerHTML=`<div class="fb ${isBest?'good':'over'}">${isBest?'\u2713 A sound choice.':'\u26a0 Careful with this one.'} ${s.classes[i].trap?'This isn\u2019t really a reference class at all \u2014 it\u2019s the inside view in disguise (a judgement about <b>this</b> case, not data about similar ones).':(isBest?'Relevant <i>and</i> backed by data.':'It\u2019s a real class, but not the one this case truly belongs to.')}</div>`;
-    };
-    opts.appendChild(o);
+  const fw=card.querySelector('#factors'), run=card.querySelector('#run');
+  s.factors.forEach(f=>{
+    if(f.kind==='constant'){
+      fw.appendChild(h(`<div class="factor const"><span class="flab">${f.label}</span><span class="cval">${f.unit||('\u00d7'+f.value)}</span></div>`));
+      return;
+    }
+    const el=h(`<div class="factor">
+      <div class="flab">${f.label}</div>
+      <div class="fhint">${f.hint||''}</div>
+      <div class="frow">
+        <div class="fcell"><label>Low</label><input data-f="${f.id}" data-b="lo" type="number" inputmode="decimal" placeholder="${f.lo}" value="${S.ranges[f.id].lo}"></div>
+        <div class="fcell"><label>High</label><input data-f="${f.id}" data-b="hi" type="number" inputmode="decimal" placeholder="${f.hi}" value="${S.ranges[f.id].hi}"></div>
+        <div class="funit">${f.unit||''}</div>
+      </div>
+    </div>`);
+    fw.appendChild(el);
   });
-  nextBtn.onclick=()=>{S.screen='bridge';render();};
-}
-
-function renderBridge(){
-  const s=S.scn;
-  const anchorPct=Math.round(s.anchor*100);
-  const gap=S.gut-anchorPct;
-  const card=h(`<div>
-    <div class="steprow"><span class="stepname">Step 3 \u00b7 Gut vs base rate</span><span class="module">${s.module}</span></div>
-    <div class="qtitle">Where the discipline starts</div>
-    <div class="card">
-      <div class="tracklabel">Your starting point, two ways</div>
-      ${beliefTrack([{p:S.gut/100,label:'gut',color:'var(--gut)'},{p:s.anchor,label:'anchor',color:'var(--signal)'}])}
-      <div class="legend"><span><i style="background:var(--gut)"></i>Your gut \u00b7 ${S.gut}%</span><span><i style="background:var(--signal)"></i>Base-rate anchor \u00b7 ${anchorPct}%</span></div>
-      <p class="body-txt mt-l">${s.anchorNote}</p>
-      ${Math.abs(gap)>=12?`<p class="body-txt mt">Your gut sat <b>${Math.abs(gap)} points ${gap>0?'above':'below'}</b> the base rate. That gap is the inside view\u2019s pull \u2014 the part of your instinct that came from this case\u2019s vivid particulars rather than from how such cases actually resolve.</p>`:`<p class="body-txt mt">Your gut landed close to the base rate \u2014 nicely done. Many people\u2019s instinct is dragged far further by the vivid details.</p>`}
-      <div class="actions"><button class="primary" id="next">Now the news arrives</button></div>
-    </div>
-  </div>`);
-  app.appendChild(card);
-  // set up bayes path now anchored at base rate
-  S.bayesPath=bayesChain(s.anchor,s.evidence.map(e=>e.lr));
-  S.playerPath=[s.anchor];
-  S.curP=Math.round(s.anchor*100);
-  S.evIdx=0; S.stepFeedback=[];
-  card.querySelector('#next').onclick=()=>{S.screen='evidence';render();};
-}
-
-function beliefTrack(markers, history){
-  const W=620,H=86,padL=18,padR=18,y=42;
-  const x=p=>padL+p*(W-padL-padR);
-  let ticks='';
-  for(let t=0;t<=100;t+=25){ticks+=`<line x1="${x(t/100)}" y1="${y-16}" x2="${x(t/100)}" y2="${y+16}" stroke="var(--line)" stroke-width="1"/><text x="${x(t/100)}" y="${y+32}" text-anchor="middle" fill="var(--faint)" font-family="IBM Plex Mono" font-size="10">${t}</text>`;}
-  let hist='';
-  if(history&&history.length>1){
-    hist='<polyline points="'+history.map(pt=>`${x(pt).toFixed(1)},${y}`).join(' ')+'" fill="none" stroke="var(--signal)" stroke-width="1.5" opacity="0.4"/>';
-  }
-  const mk=markers.map(m=>`<g><line x1="${x(m.p)}" y1="${y-20}" x2="${x(m.p)}" y2="${y+20}" stroke="${m.color}" stroke-width="2"/><circle cx="${x(m.p)}" cy="${y}" r="6" fill="${m.color}" stroke="var(--ground)" stroke-width="2"/></g>`).join('');
-  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Belief track">
-    <line x1="${x(0)}" y1="${y}" x2="${x(1)}" y2="${y}" stroke="var(--line)" stroke-width="2"/>
-    ${ticks}${hist}${mk}
-  </svg>`;
-}
-
-function renderEvidence(){
-  const s=S.scn; const i=S.evIdx; const ev=s.evidence[i];
-  const card=h(`<div>
-    <div class="steprow"><span class="stepname">Step 4 \u00b7 Update \u00b7 ${i+1} of ${s.evidence.length}</span><span class="module">Module 2 \u00b7 How much to react</span></div>
-    <div class="qtitle">${s.question}</div>
-    <div class="card">
-      <div class="ev"><div class="src">New information \u00b7 ${ev.src}</div><div class="txt">${ev.txt}</div></div>
-      <div class="tracklabel">Your belief so far</div>
-      ${beliefTrack([{p:S.playerPath[S.playerPath.length-1],label:'now',color:'var(--signal)'}],S.playerPath)}
-      ${instrument(S.curP,'where do you move to?','ev')}
-      <div class="actions"><button class="primary" id="set">Set my new probability</button></div>
-    </div>
-  </div>`);
-  app.appendChild(card);
-  wireSlider(card,'ev',v=>S.curP=v);
-  card.querySelector('#set').onclick=()=>scoreStep();
-}
-
-function scoreStep(){
-  const s=S.scn; const i=S.evIdx; const ev=s.evidence[i];
-  const prevPlayer=S.playerPath[S.playerPath.length-1];
-  const newPlayer=clamp(S.curP/100);
-  const bayesPrev=S.bayesPath[i], bayesNow=S.bayesPath[i+1];
-  const targetDelta=logit(clamp(bayesNow))-logit(clamp(bayesPrev));
-  const playerDelta=logit(newPlayer)-logit(clamp(prevPlayer));
-  S.playerPath.push(newPlayer);
-
-  let cls,head,ex;
-  const tMag=Math.abs(targetDelta), pMag=Math.abs(playerDelta);
-  const sameDir = (targetDelta===0)|| (Math.sign(targetDelta)===Math.sign(playerDelta)) || playerDelta===0;
-  if(ev.kind==='noise' || tMag<0.06){
-    if(pMag<0.12){cls='good';head='Held steady \u2014 right call.';}
-    else{cls='noise';head='You reacted to noise.';}
-  } else if(!sameDir && pMag>0.08){
-    cls='over';head='Wrong direction.';
-  } else if(pMag>tMag*2.0 && pMag>0.15){
-    cls='over';head='Over-reacted.';
-  } else if(pMag<tMag*0.45){
-    cls='over';head='Under-reacted.';
-  } else {
-    cls='good';head='Well-judged update.';
-  }
-  ex=ev.note+` <span style="color:var(--faint)">(A Bayesian starting from your anchor lands near ${Math.round(bayesNow*100)}% here; you went to ${Math.round(newPlayer*100)}%.)</span>`;
-  S.lastFeedback={cls,head,ex,bayesNow};
-  S.stepFeedback.push({kind:ev.kind,cls});
-  S.curP=Math.round(newPlayer*100);
-  renderStepFeedback();
-}
-
-function renderStepFeedback(){
-  const s=S.scn; const i=S.evIdx; const fb=S.lastFeedback;
-  const last=i===s.evidence.length-1;
-  app.innerHTML='';
-  const card=h(`<div>
-    <div class="steprow"><span class="stepname">Step 4 \u00b7 Update \u00b7 ${i+1} of ${s.evidence.length}</span><span class="module">Module 2 \u00b7 How much to react</span></div>
-    <div class="qtitle">${s.question}</div>
-    <div class="card">
-      <div class="ev"><div class="src">New information \u00b7 ${s.evidence[i].src}</div><div class="txt">${s.evidence[i].txt}</div></div>
-      <div class="fb ${fb.cls}"><b>${fb.head}</b><span class="ex">${fb.ex}</span></div>
-      <div class="tracklabel mt">Belief track \u00b7 anchor \u2192 now</div>
-      ${beliefTrack([{p:S.playerPath[S.playerPath.length-1],label:'you',color:'var(--signal)'},{p:fb.bayesNow,label:'bayes',color:'var(--truth)'}],S.playerPath)}
-      <div class="legend"><span><i style="background:var(--signal)"></i>You \u00b7 ${Math.round(S.playerPath[S.playerPath.length-1]*100)}%</span><span><i style="background:var(--truth)"></i>Bayesian \u00b7 ${Math.round(fb.bayesNow*100)}%</span></div>
-      <div class="actions"><button class="primary" id="next">${last?'See how it resolved':'Next piece of news'}</button></div>
-    </div>
-  </div>`);
-  app.appendChild(card);
-  card.querySelector('#next').onclick=()=>{
-    if(last){S.screen='resolve';render();}
-    else{S.evIdx++;S.curP=Math.round(S.playerPath[S.playerPath.length-1]*100);S.screen='evidence';render();}
+  const valid=()=>{
+    return s.factors.filter(f=>f.kind==='estimate').every(f=>{
+      const r=S.ranges[f.id]; const lo=parseFloat(r.lo), hi=parseFloat(r.hi);
+      return lo>0 && hi>0;
+    });
+  };
+  fw.querySelectorAll('input').forEach(inp=>{
+    inp.oninput=()=>{ S.ranges[inp.dataset.f][inp.dataset.b]=inp.value; run.disabled=!valid(); };
+  });
+  run.disabled=!valid();
+  run.onclick=()=>{
+    // normalise lo/hi order
+    const rngs={};
+    s.factors.filter(f=>f.kind==='estimate').forEach(f=>{
+      let lo=parseFloat(S.ranges[f.id].lo), hi=parseFloat(S.ranges[f.id].hi);
+      if(lo>hi){const t=lo;lo=hi;hi=t;}
+      rngs[f.id]={lo,hi};
+    });
+    S.res=runMC(s,rngs); S.usedRanges=rngs; S.screen='result'; render();
   };
 }
 
-function renderResolve(){
-  const s=S.scn;
-  const finalPlayer=S.playerPath[S.playerPath.length-1];
-  const finalBayes=S.bayesPath[S.bayesPath.length-1];
-  const noiseSteps=S.stepFeedback.filter(f=>f.kind==='noise');
-  const noiseHandled=noiseSteps.filter(f=>f.cls==='good').length;
-  const goodCount=S.stepFeedback.filter(f=>f.cls==='good').length;
+function rResult(){
+  const s=S.scn, res=S.res, truth=s.truth, gut=S.gut;
+  const hit = truth>=res.p5 && truth<=res.p95;
+  const estErr = res.p50>=truth ? res.p50/truth : truth/res.p50;
+  const gutErr = gut>=truth ? gut/truth : truth/gut;
+  const better = gutErr/Math.max(estErr,1e-9);
+  let verdict, vcls;
+  if(hit && estErr<2.2){ vcls='good'; verdict=`Your decomposition\u2019s median came within a factor of <b>${estErr.toFixed(1)}\u00d7</b> of the truth, and your 90% range <b>caught it</b>. Your cold guess was off by about <b>${gutErr.toFixed(1)}\u00d7</b>.`; }
+  else if(hit){ vcls='good'; verdict=`Your 90% range <b>caught the truth</b> \u2014 honest uncertainty. The median was off by ${estErr.toFixed(1)}\u00d7; your cold guess by ${gutErr.toFixed(1)}\u00d7.`; }
+  else { vcls='miss'; verdict=`The truth fell <b>outside</b> your 90% range \u2014 the classic sign the pieces were pinned too tightly. Still, the decomposition (off ${estErr.toFixed(1)}\u00d7) likely beat your cold guess (off ${gutErr.toFixed(1)}\u00d7).`; }
+  const sensTop=res.sens[0];
+  const sensRows=res.sens.map(p=>`<div class="srow"><div class="sname">${p.label}</div><div class="sbar"><i style="width:${Math.round(p.share*100)}%"></i></div><div class="spct">${Math.round(p.share*100)}%</div></div>`).join('');
   const card=h(`<div>
-    <div class="steprow"><span class="stepname">Step 5 \u00b7 Resolution</span><span class="module">${s.module}</span></div>
+    <div class="steprow"><span class="stepname">Step 3 \u00b7 The distribution</span><span class="module">${s.menuTitle}</span></div>
     <div class="qtitle">${s.question}</div>
     <div class="card">
-      <div class="resbadge"><i></i>What actually happened</div>
-      <p class="body-txt">${s.resolution}</p>
-      <div class="hr"></div>
-      <div class="tracklabel">Your whole journey \u00b7 gut \u2192 anchor \u2192 final</div>
-      ${beliefTrack([{p:S.gut/100,label:'gut',color:'var(--gut)'},{p:finalPlayer,label:'you',color:'var(--signal)'},{p:finalBayes,label:'bayes',color:'var(--truth)'}],S.playerPath)}
-      <div class="legend"><span><i style="background:var(--gut)"></i>Opening gut \u00b7 ${S.gut}%</span><span><i style="background:var(--signal)"></i>Your final \u00b7 ${Math.round(finalPlayer*100)}%</span><span><i style="background:var(--truth)"></i>Bayesian \u00b7 ${Math.round(finalBayes*100)}%</span></div>
-      <div class="miniread">You ended <b>${Math.abs(Math.round(finalPlayer*100)-Math.round(finalBayes*100))} points</b> from the Bayesian benchmark \u00b7 ${goodCount}/${s.evidence.length} updates well-judged${noiseSteps.length?` \u00b7 noise resisted ${noiseHandled}/${noiseSteps.length}`:''}</div>
-      <div class="lesson"><h3>The lesson</h3><p>${s.lesson}</p></div>
-      <div class="actions"><button class="primary" id="again">Try another scenario</button><button class="ghost" id="retry">Replay this one</button></div>
+      <div class="bigresult">
+        <div class="v">\u2248 ${fmtNum(res.p50)}</div>
+        <div class="ci">90% range &nbsp;${fmtNum(res.p5)} &nbsp;\u2013&nbsp; ${fmtNum(res.p95)}</div>
+      </div>
+      <div class="plotcap">where 4,000 simulations landed \u00b7 log scale</div>
+      ${histogram(res,truth,gut)}
+      <div class="legend"><span><i style="background:var(--gut)"></i>your gut</span><span><i style="background:var(--signal)"></i>decomposed median</span><span><i style="background:var(--truth)"></i>true answer</span></div>
+      <div class="cmp">
+        <div class="c"><div class="k">Cold gut</div><div class="v" style="color:var(--gut)">${fmtNum(gut)}</div></div>
+        <div class="c"><div class="k">Decomposed</div><div class="v" style="color:var(--signal)">${fmtNum(res.p50)}</div></div>
+        <div class="c"><div class="k">Truth</div><div class="v" style="color:var(--truth)">${fmtNum(truth)}</div></div>
+      </div>
+      <div class="verdict ${vcls}">${verdict}<span style="display:block;margin-top:7px;color:var(--faint)">${s.truthNote}</span></div>
+
+      <div class="sens">
+        <div class="plotcap" style="margin-top:0">where your uncertainty lives</div>
+        ${sensRows}
+        <p class="body-txt" style="margin-top:10px">Most of the spread in your answer comes from <b>${sensTop.label.toLowerCase()}</b> (${Math.round(sensTop.share*100)}%). If you had an hour to sharpen this forecast, that\u2019s the one number to go and research \u2014 tightening any other piece barely moves the result.</p>
+      </div>
+
+      <div class="lesson"><h3>The lesson</h3><p>A single wild guess has nowhere to hide its errors. <b>Decomposition spreads them across pieces you can actually reason about</b>, and they partly cancel \u2014 which is why a chain of rough ranges routinely beats one confident number. Two habits make it work: give every piece a <b>range, not a point</b>, so your final answer arrives as a distribution that owns its uncertainty; and read the sensitivity bars, because forecasting effort should flow to the <b>one or two pieces carrying most of the doubt</b>, not spread evenly across all of them.</p></div>
+
+      <div class="actions"><button class="primary" id="again">Decompose another</button><button class="ghost" id="retry">Retry this one</button></div>
     </div>
-    <div class="foot">Outside view first, then update in proportion to how diagnostic the news really is \u2014 the Good Judgment\u00ae core.</div>
+    <div class="foot">Break it down \u00b7 range every piece \u00b7 multiply \u00b7 attack the weak link.</div>
   </div>`);
   app.appendChild(card);
   card.querySelector('#again').onclick=()=>{S.screen='menu';render();};
-  card.querySelector('#retry').onclick=()=>startScenario(S.si);
+  card.querySelector('#retry').onclick=()=>start(S.si);
 }
 
-S={screen:'menu'};
 render();
 </script>
 </body>
