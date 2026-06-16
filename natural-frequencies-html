@@ -141,8 +141,8 @@ function rAsk(){
 
 function tree(c,k){
   const W=620,H=300;
-  const box=(x,y,w,hh,fill,stroke,title,sub)=>`<g><rect x="${x}" y="${y}" width="${w}" height="${hh}" rx="7" fill="${fill}" stroke="${stroke}" stroke-width="1.4"/><text x="${x+w/2}" y="${y+hh/2-3}" text-anchor="middle" fill="var(--ink)" font-family="IBM Plex Mono" font-size="13" font-weight="600">${title}</text><text x="${x+w/2}" y="${y+hh/2+13}" text-anchor="middle" fill="var(--muted)" font-family="Inter" font-size="10.5">${sub}</text></g>`;
-  const line=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--line)" stroke-width="1.4"/>`;
+  const box=(x,y,w,hh,fill,stroke,title,sub)=>`<g><rect x="${x}" y="${y}" width="${w}" height="${hh}" rx="7" fill="${fill}" stroke="${stroke}" stroke-width="1.4"/><text x="${x+w/2}" y="${y+hh/2-3}" text-anchor="middle" fill="#E9ECF2" font-family="IBM Plex Mono" font-size="13" font-weight="600">${title}</text><text x="${x+w/2}" y="${y+hh/2+13}" text-anchor="middle" fill="#8A95A6" font-family="Inter" font-size="10.5">${sub}</text></g>`;
+  const line=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#2B333F" stroke-width="1.4"/>`;
   // columns
   const c0x=8,c0w=120, c1x=210,c1w=150, c2x=440,c2w=172;
   const rootY=130, rootH=44;
