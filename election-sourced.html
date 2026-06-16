@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Reference Class \u2014 Sourced Edition</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+:root{
+  --ground:#0E1218;--panel:#171D27;--panel-2:#1E2530;--line:#2B333F;
+  --ink:#E9ECF2;--muted:#8A95A6;--faint:#5A6475;
+  --signal:#E8B04B;--signal-dim:#7a5e2a;--truth:#4FB3A6;--warn:#E07A5F;--gut:#8E7CC3;
+  --shadow:rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--ground);color:var(--ink);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{min-height:100vh;display:flex;justify-content:center;padding:28px 18px 64px}
+.wrap{width:100%;max-width:680px}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--signal);margin-bottom:10px}
+.badge{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--truth);border:1px solid rgba(79,179,166,.4);border-radius:999px;padding:4px 11px;margin-bottom:14px}
+h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:32px;letter-spacing:-.02em;line-height:1.06;margin-bottom:14px}
+.lede{color:var(--muted);font-size:15px;line-height:1.62;max-width:58ch}
+.lede b{color:var(--ink);font-weight:600}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;box-shadow:0 8px 30px var(--shadow)}
+.mt{margin-top:18px}.mt-l{margin-top:26px}.hr{height:1px;background:var(--line);margin:22px 0}
+button.primary{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:15px;color:#15110a;background:var(--signal);border:none;padding:13px 22px;border-radius:10px;cursor:pointer;transition:.15s}
+button.primary:hover{filter:brightness(1.07)}
+button.primary:disabled{opacity:.4;cursor:not-allowed}
+button.ghost{font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.06em;color:var(--muted);background:none;border:1px solid var(--line);padding:11px 16px;border-radius:9px;cursor:pointer;transition:.15s}
+button.ghost:hover{border-color:var(--faint);color:var(--ink)}
+button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.actions{display:flex;gap:12px;align-items:center;margin-top:24px}.actions .primary{flex:1}
+.steprow{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
+.stepname{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
+.module{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--signal)}
+.qtitle{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:21px;line-height:1.32;letter-spacing:-.01em;margin-bottom:14px}
+.body-txt{font-size:14.5px;line-height:1.68;color:var(--muted)}
+.body-txt b{color:var(--ink);font-weight:600}
+.readout{font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums;font-size:50px;letter-spacing:-.02em;color:var(--signal);line-height:1;margin:20px 0 2px;text-align:center}
+.readout .pct{font-size:23px;color:var(--signal-dim)}
+.readout-cap{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-bottom:16px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:3px;background:linear-gradient(90deg,var(--signal) var(--fill,50%),var(--line) var(--fill,50%));outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--signal);border:3px solid var(--ground);box-shadow:0 0 0 1px var(--signal),0 2px 6px var(--shadow)}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--signal);border:3px solid var(--ground);box-shadow:0 0 0 1px var(--signal)}
+input[type=range]:focus-visible{outline:2px solid var(--signal);outline-offset:6px}
+.scale{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--faint);margin-top:8px}
+.ref-opt{display:flex;justify-content:space-between;align-items:center;gap:14px;text-align:left;width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:14px 16px;cursor:pointer;transition:.15s;margin-bottom:10px}
+.ref-opt:hover{border-color:var(--faint)}
+.ref-opt[aria-pressed="true"]{border-color:var(--signal);background:rgba(232,176,75,.08)}
+.ref-opt .lab{font-size:14.5px;line-height:1.4}
+.ref-opt .lab .sm{display:block;font-size:12.5px;color:var(--muted);margin-top:3px}
+.ref-opt .rate{font-family:'IBM Plex Mono',monospace;font-size:22px;font-variant-numeric:tabular-nums;color:var(--signal);flex:none}
+.ref-opt .rate.hidden{color:var(--faint);font-size:15px}
+.tracklabel{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin:18px 0 6px}
+.legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.ev{background:var(--panel-2);border:1px solid var(--line);border-left:3px solid var(--signal);border-radius:10px;padding:15px 17px;margin-bottom:4px}
+.ev .src{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:7px}
+.ev .txt{font-size:15px;line-height:1.55}
+.fb{border-radius:10px;padding:14px 16px;margin-top:16px;font-size:14px;line-height:1.6}
+.fb.good{background:rgba(79,179,166,.1);border:1px solid rgba(79,179,166,.4);color:var(--truth)}
+.fb.over,.fb.noise{background:rgba(224,122,95,.1);border:1px solid rgba(224,122,95,.4);color:var(--warn)}
+.fb b{font-weight:600}.fb .ex{display:block;margin-top:6px;color:var(--muted)}
+/* derivation */
+details.deriv{margin-top:14px;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+details.deriv summary{cursor:pointer;list-style:none;padding:13px 16px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--truth);display:flex;justify-content:space-between;align-items:center}
+details.deriv summary::-webkit-details-marker{display:none}
+details.deriv summary::after{content:'+';font-size:16px;color:var(--faint)}
+details.deriv[open] summary::after{content:'\u2013'}
+details.deriv .dbody{padding:2px 16px 16px;font-size:13.5px;line-height:1.66;color:var(--muted);border-top:1px solid var(--line)}
+details.deriv .dbody b{color:var(--ink);font-weight:600}
+details.deriv .calc{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--signal);background:var(--ground);border:1px solid var(--line);border-radius:7px;padding:11px 13px;margin:11px 0;line-height:1.7;white-space:pre-wrap}
+details.deriv .lrtag{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink);background:rgba(232,176,75,.12);border:1px solid var(--signal-dim);border-radius:6px;padding:3px 9px;margin-top:4px}
+details.deriv .srcline{font-size:12px;color:var(--faint);margin-top:11px}
+.miniread{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted);margin-top:14px;text-align:center}
+.miniread b{color:var(--signal)}
+.resbadge{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--truth);margin-bottom:12px}
+.resbadge i{width:9px;height:9px;border-radius:50%;background:var(--truth)}
+.lesson{border-left:2px solid var(--signal);padding:4px 0 4px 16px;margin-top:18px}
+.lesson h3{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:16px;margin-bottom:8px}
+.lesson p{font-size:14px;line-height:1.66;color:var(--muted)}.lesson p b{color:var(--ink);font-weight:600}
+.sources{margin-top:22px}
+.sources h3{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-bottom:12px}
+.sources .s{font-size:13px;line-height:1.5;color:var(--muted);padding:9px 0;border-top:1px solid var(--line)}
+.sources .s b{color:var(--ink);font-weight:600}
+.caveat{background:rgba(224,122,95,.07);border:1px solid rgba(224,122,95,.3);border-radius:10px;padding:15px 17px;margin-top:18px;font-size:13.5px;line-height:1.6;color:var(--muted)}
+.caveat b{color:var(--warn);font-weight:600}
+.foot{margin-top:30px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;color:var(--faint);line-height:1.7}
+svg{display:block;width:100%;height:auto}
+@media (max-width:520px){h1{font-size:26px}.qtitle{font-size:19px}.readout{font-size:42px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+/* ============================================================
+   THE REFERENCE CLASS \u2014 SOURCED EDITION
+   The election scenario, every likelihood ratio derived from
+   published data, with the working shown. Numbers are honest
+   estimates from public sources, not a peer-reviewed model.
+   ============================================================ */
+
+const SCN = {
+  module:'Sourced \u00b7 modules 1 & 2',
+  question:'Will the incumbent be re-elected?',
+  caseText:'It\u2019s the final stretch. The challenger is electric \u2014 overflowing rallies, clips everywhere, an energy the incumbent plainly lacks. Your feed is wall-to-wall challenger and it feels like a change election. But this time, before you trust the feeling, you\u2019re going to anchor on what the data actually says and update only by amounts you can defend with a number.',
+  gutPrompt:'Your gut: how likely is the incumbent to win?',
+  classes:[
+    {label:'How unstoppable the challenger feels right now',sub:'the inside view \u2014 vivid, but not data',rate:0.30,trap:true},
+    {label:'Elected incumbents seeking re-election, polling era',sub:'7 of the last 10 US incumbents won a second term',rate:0.68},
+    {label:'All incumbent governments worldwide, any era',sub:'real data, but too broad to be the right class',rate:0.55}
+  ],
+  bestClass:1,
+  anchor:0.68,
+  anchorNote:'Since Gallup began systematic polling, ten elected US presidents have sought a second term and roughly seven won \u2014 an incumbency base rate around 68%. That\u2019s the relevant, data-backed class. The packed rallies are the vivid inside view; the base rate is the discipline. Your gut almost certainly sat well below 68%, dragged down by what\u2019s loudest in your feed.',
+  evidence:[
+    {
+      src:'Approval \u00b7 final stretch',
+      txt:'The incumbent\u2019s job-approval rating is stuck at 38% going into the final weeks.',
+      lr:0.22, kind:'down',
+      note:'This is the dominant, best-measured signal in the whole forecast \u2014 and it points hard down. Final-stretch approval in the 30s has essentially no winning precedent. A large, justified update down.',
+      deriv:{
+        body:'Approval near the election is the single most studied incumbent predictor. Across the ten elected presidents who sought re-election in the polling era, <b>every winner finished at roughly 48% or above</b> (the floor being George W. Bush at 48% in 2004), while incumbents who finished <b>in the 30s lost</b> \u2014 George H.W. Bush (~34%) and Carter (mid-30s). To turn that into a likelihood ratio for an approval reading around 38%:',
+        calc:'P(approve \u224838% | won)  \u2248 0 of ~7 winners\n   \u2192 with small-sample smoothing \u2248 0.12\nP(approve \u224838% | lost)  \u2248 2 of ~4 losers in the 30s \u2248 0.50\n\nLR = 0.12 / 0.50 \u2248 0.22',
+        lr:'LR \u2248 0.22   (plausible range 0.10 \u2013 0.35)',
+        src:'Source: Gallup, historical presidential job-approval and re-election record (2024).'
+      }
+    },
+    {
+      src:'Economy \u00b7 national accounts',
+      txt:'Fresh figures confirm the economy contracted again; real incomes are falling.',
+      lr:0.85, kind:'down',
+      note:'The trap. A recession genuinely hurts incumbents \u2014 but most of that damage is already inside the 38% approval you just updated on. Multiplying in the full standalone effect would double-count. The honest residual is a small further nudge down.',
+      deriv:{
+        body:'Sociotropic economic voting is real: incumbents running into recessions do worse. Taken <b>alone</b>, a contraction might justify a likelihood ratio around 0.5\u20130.6. But the economy and approval are not independent \u2014 economic pain is a <b>primary cause</b> of low approval, so much of the recession\u2019s signal is already priced into the 38%. Election forecasters find economy-only \u201cfundamentals\u201d models explain under half the variance and underperform models that also use approval and polls.',
+        calc:'Standalone economic LR   \u2248 0.55  (would double-count)\nResidual, given approval   \u2248 0.85  \u2190 use this',
+        lr:'Residual LR \u2248 0.85   (range 0.75 \u2013 1.0)',
+        src:'Source: Ellis & Ura, Social Science Quarterly (2025) on economic voting; FiveThirtyEight on fundamentals-model performance.'
+      }
+    },
+    {
+      src:'Polling \u00b7 head-to-head',
+      txt:'A high-quality poll average puts the incumbent 4 points ahead, stable over six weeks.',
+      lr:1.4, kind:'up',
+      note:'A genuine positive \u2014 final-stretch polls are the best single predictor of the result. But they measure the same standing as approval, so they\u2019re partly redundant. Update up, but modestly, not to the full strength a poll lead would carry on its own.',
+      deriv:{
+        body:'A stable final-stretch polling lead is strongly favourable: head-to-head polls late in the race are the most accurate single predictor of the outcome. The catch is correlation \u2014 polls and approval both measure the incumbent\u2019s standing, so a lead is partly telling you what the 38% already told you. The genuinely <b>new</b> information is head-to-head / candidate-quality: you can be unpopular yet still ahead of a weaker opponent (Clinton beat a weak 1996 field comfortably despite ordinary approval).',
+        calc:'Standalone poll-lead LR  \u2248 1.8\u20132.2  (would double-count)\nResidual, given approval  \u2248 1.4  \u2190 use this',
+        lr:'Residual LR \u2248 1.4   (range 1.1 \u2013 1.8)',
+        src:'Source: polling-accuracy literature; FiveThirtyEight (polls + fundamentals beat either alone).'
+      }
+    },
+    {
+      src:'Social \u00b7 virality',
+      txt:'A challenger speech clip racks up 20 million views over a weekend.',
+      lr:1.0, kind:'noise',
+      note:'Noise. Online popularity has a long, well-documented record of failing to predict vote share. The right reaction is to barely move \u2014 if at all.',
+      deriv:{
+        body:'Viral reach feels enormous and forecasts almost nothing. Studies find online popularity does <b>not</b> correlate with vote share, and systematic attempts to predict elections from social-media activity have a long history of failure. Where a link appears, it\u2019s usually <b>confounded</b>: better-run, better-funded campaigns both go viral and win, so virality is a symptom of a strong campaign, not an independent cause of votes. A single clip\u2019s view count is close to non-diagnostic.',
+        calc:'P(clip goes viral | won)  \u2248  P(clip goes viral | lost)\n   \u2192 ratio \u2248 1',
+        lr:'LR \u2248 1.0   (range 0.9 \u2013 1.1)',
+        src:'Source: Vaccari & Nielsen (2013); Gayo-Avello (2013) on social-media election prediction; NPR (2026) on influencer-led campaigns under-performing at the ballot box.'
+      }
+    }
+  ],
+  resolution:'The incumbent lost narrowly \u2014 the modal outcome at a model probability near 36%. But 36% is not 0%: roughly two times in five, an incumbent in this position holds on. Truman in 1948 and George W. Bush in 2004 are exactly those cases. The number was a probability, not a prophecy, and a loss confirms it without vindicating overconfidence in either direction.',
+  lesson:'<b>A sourced forecast differs from a vibe in two ways.</b> First, every move traces to a number you can defend \u2014 and here almost all the work is done by <b>one</b> well-evidenced signal, the approval rating, because that\u2019s where the data is strongest. Second, and this is the part even careful forecasters miss: your signals are <b>not independent</b>. The recession, the approval rating and the poll lead are three windows onto the same underlying standing. Multiply their standalone likelihood ratios as if they were separate and you manufacture false certainty. The disciplined move is to let the dominant, best-measured signal carry the update, then add only the <b>residual</b> information each correlated signal genuinely brings \u2014 and the viral clip brings none. Sourcing the likelihood ratio is half the craft; respecting the correlations between your sources is the other half.',
+  caveat:'<b>Read the error bars.</b> The whole approval record rests on roughly ten elections \u2014 the likelihood ratios here are order-of-magnitude estimates, not precise constants. The residual ratios for the economy and polls are sized by judgement to avoid double-counting correlated evidence; that\u2019s a defensible call, not a formula. Everything is drawn from US presidential data and from public sources rather than a peer-reviewed model. The point is the method \u2014 derive, source, and de-correlate \u2014 not these exact numbers.',
+  sources:[
+    ['Gallup','Historical presidential job approval and its relationship to re-election; the record that no post-war incumbent has won with final approval below ~48%.'],
+    ['FiveThirtyEight','On the limited accuracy of \u201cfundamentals\u201d (economy-only) election models and why polls plus fundamentals outperform either alone.'],
+    ['Ellis & Ura, Social Science Quarterly (2021/2025)','On economic voting in US presidential elections and how polarization has attenuated it.'],
+    ['Vaccari & Nielsen (2013); Gayo-Avello (2013)','On the weak-to-absent link between social-media popularity and vote share, and the repeated failure of social-media election forecasting.']
+  ]
+};
+
+const logit=p=>Math.log(p/(1-p));
+const clamp=p=>Math.max(0.02,Math.min(0.98,p));
+function bayesChain(anchor,lrs){const path=[anchor];let o=anchor/(1-anchor);lrs.forEach(lr=>{o*=lr;path.push(o/(1+o));});return path;}
+
+let S={};
+const app=document.getElementById('app');
+function h(s){const t=document.createElement('template');t.innerHTML=s.trim();return t.content.firstChild;}
+function render(){app.innerHTML='';({intro:rIntro,gut:rGut,refclass:rRef,bridge:rBridge,evidence:rEv,resolve:rResolve})[S.screen]();window.scrollTo&&window.scrollTo(0,0);}
+
+function instrument(v,cap,id){return `<div class="readout"><span id="${id}rv">${v}</span><span class="pct">%</span></div><div class="readout-cap">${cap}</div><input type="range" id="${id}sl" min="2" max="98" step="1" value="${v}" style="--fill:${v}%"><div class="scale"><span>2%</span><span>50%</span><span>98%</span></div>`;}
+function wire(card,id,set){const sl=card.querySelector('#'+id+'sl'),rv=card.querySelector('#'+id+'rv');sl.oninput=()=>{const v=+sl.value;rv.textContent=v;sl.style.setProperty('--fill',v+'%');set(v);};}
+function beliefTrack(markers,history){
+  const W=620,H=86,padL=18,padR=18,y=42;const x=p=>padL+p*(W-padL-padR);
+  let ticks='';for(let t=0;t<=100;t+=25){ticks+=`<line x1="${x(t/100)}" y1="${y-16}" x2="${x(t/100)}" y2="${y+16}" stroke="var(--line)" stroke-width="1"/><text x="${x(t/100)}" y="${y+32}" text-anchor="middle" fill="var(--faint)" font-family="IBM Plex Mono" font-size="10">${t}</text>`;}
+  let hist='';if(history&&history.length>1){hist='<polyline points="'+history.map(p=>`${x(p).toFixed(1)},${y}`).join(' ')+'" fill="none" stroke="var(--signal)" stroke-width="1.5" opacity="0.4"/>';}
+  const mk=markers.map(m=>`<g><line x1="${x(m.p)}" y1="${y-20}" x2="${x(m.p)}" y2="${y+20}" stroke="${m.color}" stroke-width="2"/><circle cx="${x(m.p)}" cy="${y}" r="6" fill="${m.color}" stroke="var(--ground)" stroke-width="2"/></g>`).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Belief track"><line x1="${x(0)}" y1="${y}" x2="${x(1)}" y2="${y}" stroke="var(--line)" stroke-width="2"/>${ticks}${hist}${mk}</svg>`;
+}
+function derivHTML(d){return `<details class="deriv"><summary>Show the derivation</summary><div class="dbody"><p>${d.body}</p><div class="calc">${d.calc}</div><span class="lrtag">${d.lr}</span><div class="srcline">${d.src}</div></div></details>`;}
+
+function rIntro(){
+  const card=h(`<div>
+    <div class="eyebrow">The Forecasting Bench \u00b7 Sourced Edition</div>
+    <span class="badge">\u25c9 every likelihood ratio is derived from data</span>
+    <h1>The noisy election,<br>done properly.</h1>
+    <p class="lede">Same scenario as the training version \u2014 but this time nothing is invented. Each piece of evidence carries a likelihood ratio <b>derived from published numbers</b>, with the working shown on every card, and a sources-and-caveats section at the end. It also does the thing the quick version skips: it refuses to treat correlated evidence as independent. Watch what that costs your certainty.</p>
+    <div class="card mt-l">
+      <p class="body-txt">You\u2019ll commit a gut number, anchor on a real base rate, then update through four pieces of news \u2014 approval, the economy, the polls, and a viral moment. Open the derivation under each to see exactly where its number came from.</p>
+      <div class="actions"><button class="primary" id="go">Begin</button></div>
+    </div>
+    <div class="foot">Honest estimates from public sources \u00b7 not a peer-reviewed model \u00b7 US presidential data.</div>
+  </div>`);
+  app.appendChild(card);
+  card.querySelector('#go').onclick=()=>{S.screen='gut';render();};
+}
+
+function rGut(){
+  const card=h(`<div>
+    <div class="steprow"><span class="stepname">Step 1 \u00b7 First instinct</span><span class="module">${SCN.module}</span></div>
+    <div class="qtitle">${SCN.question}</div>
+    <div class="card"><p class="body-txt">${SCN.caseText}</p>${instrument(S.gut,SCN.gutPrompt,'gut')}<div class="actions"><button class="primary" id="next">Commit my gut</button></div></div>
+  </div>`);
+  app.appendChild(card);wire(card,'gut',v=>S.gut=v);
+  card.querySelector('#next').onclick=()=>{S.screen='refclass';render();};
+}
+
+function rRef(){
+  const card=h(`<div>
+    <div class="steprow"><span class="stepname">Step 2 \u00b7 The outside view</span><span class="module">${SCN.module}</span></div>
+    <div class="qtitle">Which reference class should anchor you?</div>
+    <div class="card"><p class="body-txt">Step back from the rallies. Pick the class that is both <b>relevant</b> and <b>backed by data</b> \u2014 tap to reveal each rate:</p>
+      <div id="opts" class="mt"></div><div id="note"></div>
+      <div class="actions"><button class="primary" id="next" disabled>Use this as my anchor</button></div></div>
+  </div>`);
+  app.appendChild(card);
+  const opts=card.querySelector('#opts'),note=card.querySelector('#note'),next=card.querySelector('#next');
+  SCN.classes.forEach((c,i)=>{
+    const o=h(`<button class="ref-opt" aria-pressed="false"><span class="lab">${c.label}<span class="sm">${c.sub}</span></span><span class="rate hidden" id="r${i}">reveal</span></button>`);
+    o.onclick=()=>{
+      S.chosen=i;
+      [...opts.children].forEach((el,j)=>{el.setAttribute('aria-pressed',j===i?'true':'false');const r=el.querySelector('.rate');r.textContent=Math.round(SCN.classes[j].rate*100)+'%';r.classList.remove('hidden');});
+      next.disabled=false;
+      const best=i===SCN.bestClass;
+      note.innerHTML=`<div class="fb ${best?'good':'over'}">${best?'\u2713 The right class \u2014 relevant and data-backed.':'\u26a0 Careful.'} ${SCN.classes[i].trap?'This isn\u2019t a reference class at all \u2014 it\u2019s the inside view in disguise, a feeling about <b>this</b> race rather than data about similar ones.':(best?'':'A real class, but not the one this case truly belongs to.')}</div>`;
+    };
+    opts.appendChild(o);
+  });
+  next.onclick=()=>{S.screen='bridge';render();};
+}
+
+function rBridge(){
+  const aPct=Math.round(SCN.anchor*100),gap=S.gut-aPct;
+  const card=h(`<div>
+    <div class="steprow"><span class="stepname">Step 3 \u00b7 Gut vs base rate</span><span class="module">${SCN.module}</span></div>
+    <div class="qtitle">Where the discipline starts</div>
+    <div class="card">
+      <div class="tracklabel">Your starting point, two ways</div>
+      ${beliefTrack([{p:S.gut/100,color:'var(--gut)'},{p:SCN.anchor,color:'var(--signal)'}])}
+      <div class="legend"><span><i style="background:var(--gut)"></i>Your gut \u00b7 ${S.gut}%</span><span><i style="background:var(--signal)"></i>Base-rate anchor \u00b7 ${aPct}%</span></div>
+      <p class="body-txt mt-l">${SCN.anchorNote}</p>
+      ${Math.abs(gap)>=12?`<p class="body-txt mt">Your gut sat <b>${Math.abs(gap)} points ${gap>0?'above':'below'}</b> the base rate \u2014 that gap is the inside view\u2019s pull.</p>`:`<p class="body-txt mt">Your gut landed close to the base rate \u2014 well done resisting the rallies.</p>`}
+      <div class="actions"><button class="primary" id="next">Now the news arrives</button></div>
+    </div>
+  </div>`);
+  app.appendChild(card);
+  S.bayes=bayesChain(SCN.anchor,SCN.evidence.map(e=>e.lr));
+  S.path=[SCN.anchor];S.cur=Math.round(SCN.anchor*100);S.i=0;S.fb=[];
+  card.querySelector('#next').onclick=()=>{S.screen='evidence';render();};
+}
+
+function rEv(){
+  const e=SCN.evidence[S.i];
+  const card=h(`<div>
+    <div class="steprow"><span class="stepname">Step 4 \u00b7 Update \u00b7 ${S.i+1} of ${SCN.evidence.length}</span><span class="module">how much to react</span></div>
+    <div class="qtitle">${SCN.question}</div>
+    <div class="card">
+      <div class="ev"><div class="src">New information \u00b7 ${e.src}</div><div class="txt">${e.txt}</div></div>
+      <div class="tracklabel">Your belief so far</div>
+      ${beliefTrack([{p:S.path[S.path.length-1],color:'var(--signal)'}],S.path)}
+      ${instrument(S.cur,'where do you move to?','ev')}
+      <div class="actions"><button class="primary" id="set">Set my new probability</button></div>
+    </div>
+  </div>`);
+  app.appendChild(card);wire(card,'ev',v=>S.cur=v);
+  card.querySelector('#set').onclick=score;
+}
+
+function score(){
+  const e=SCN.evidence[S.i];
+  const prev=S.path[S.path.length-1],now=clamp(S.cur/100);
+  const bPrev=S.bayes[S.i],bNow=S.bayes[S.i+1];
+  const tD=logit(clamp(bNow))-logit(clamp(bPrev)),pD=logit(now)-logit(clamp(prev));
+  S.path.push(now);
+  const tM=Math.abs(tD),pM=Math.abs(pD),sameDir=(tD===0)||Math.sign(tD)===Math.sign(pD)||pD===0;
+  let cls,head;
+  if(e.kind==='noise'||tM<0.06){if(pM<0.12){cls='good';head='Held steady \u2014 right call.';}else{cls='noise';head='You reacted to noise.';}}
+  else if(!sameDir&&pM>0.08){cls='over';head='Wrong direction.';}
+  else if(pM>tM*2.0&&pM>0.15){cls='over';head='Over-reacted.';}
+  else if(pM<tM*0.45){cls='over';head='Under-reacted.';}
+  else{cls='good';head='Well-judged update.';}
+  S.last={cls,head,ex:e.note+` <span style="color:var(--faint)">(A Bayesian on these sourced ratios lands near ${Math.round(bNow*100)}% here; you went to ${Math.round(now*100)}%.)</span>`,bNow,deriv:e.deriv};
+  S.fb.push({kind:e.kind,cls});S.cur=Math.round(now*100);
+  showFb();
+}
+
+function showFb(){
+  const e=SCN.evidence[S.i],fb=S.last,last=S.i===SCN.evidence.length-1;
+  app.innerHTML='';
+  const card=h(`<div>
+    <div class="steprow"><span class="stepname">Step 4 \u00b7 Update \u00b7 ${S.i+1} of ${SCN.evidence.length}</span><span class="module">how much to react</span></div>
+    <div class="qtitle">${SCN.question}</div>
+    <div class="card">
+      <div class="ev"><div class="src">New information \u00b7 ${e.src}</div><div class="txt">${e.txt}</div></div>
+      <div class="fb ${fb.cls}"><b>${fb.head}</b><span class="ex">${fb.ex}</span></div>
+      ${derivHTML(fb.deriv)}
+      <div class="tracklabel mt">Belief track \u00b7 anchor \u2192 now</div>
+      ${beliefTrack([{p:S.path[S.path.length-1],color:'var(--signal)'},{p:fb.bNow,color:'var(--truth)'}],S.path)}
+      <div class="legend"><span><i style="background:var(--signal)"></i>You \u00b7 ${Math.round(S.path[S.path.length-1]*100)}%</span><span><i style="background:var(--truth)"></i>Bayesian \u00b7 ${Math.round(fb.bNow*100)}%</span></div>
+      <div class="actions"><button class="primary" id="next">${last?'See how it resolved':'Next piece of news'}</button></div>
+    </div>
+  </div>`);
+  app.appendChild(card);
+  card.querySelector('#next').onclick=()=>{if(last){S.screen='resolve';render();}else{S.i++;S.cur=Math.round(S.path[S.path.length-1]*100);S.screen='evidence';render();}};
+}
+
+function rResolve(){
+  const fP=S.path[S.path.length-1],fB=S.bayes[S.bayes.length-1];
+  const noise=S.fb.filter(f=>f.kind==='noise'),noiseOK=noise.filter(f=>f.cls==='good').length;
+  const good=S.fb.filter(f=>f.cls==='good').length;
+  const srcRows=SCN.sources.map(s=>`<div class="s"><b>${s[0]}.</b> ${s[1]}</div>`).join('');
+  const card=h(`<div>
+    <div class="steprow"><span class="stepname">Step 5 \u00b7 Resolution</span><span class="module">${SCN.module}</span></div>
+    <div class="qtitle">${SCN.question}</div>
+    <div class="card">
+      <div class="resbadge"><i></i>What actually happened</div>
+      <p class="body-txt">${SCN.resolution}</p>
+      <div class="hr"></div>
+      <div class="tracklabel">Your whole journey \u00b7 gut \u2192 anchor \u2192 final</div>
+      ${beliefTrack([{p:S.gut/100,color:'var(--gut)'},{p:fP,color:'var(--signal)'},{p:fB,color:'var(--truth)'}],S.path)}
+      <div class="legend"><span><i style="background:var(--gut)"></i>Gut \u00b7 ${S.gut}%</span><span><i style="background:var(--signal)"></i>Your final \u00b7 ${Math.round(fP*100)}%</span><span><i style="background:var(--truth)"></i>Bayesian \u00b7 ${Math.round(fB*100)}%</span></div>
+      <div class="miniread">You ended <b>${Math.abs(Math.round(fP*100)-Math.round(fB*100))} points</b> from the sourced benchmark \u00b7 ${good}/${SCN.evidence.length} updates well-judged${noise.length?` \u00b7 noise resisted ${noiseOK}/${noise.length}`:''}</div>
+      <div class="lesson"><h3>The lesson</h3><p>${SCN.lesson}</p></div>
+      <div class="caveat">${SCN.caveat}</div>
+      <div class="sources"><h3>Sources &amp; method</h3>${srcRows}</div>
+      <div class="actions"><button class="primary" id="again">Replay</button></div>
+    </div>
+    <div class="foot">Derive the ratio, source the ratio, de-correlate your sources \u2014 then update.</div>
+  </div>`);
+  app.appendChild(card);
+  card.querySelector('#again').onclick=()=>{S={screen:'gut',gut:50};render();};
+}
+
+S={screen:'intro',gut:50};
+render();
+</script>
+</body>
+</html>
