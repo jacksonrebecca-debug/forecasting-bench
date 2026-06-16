@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Weighbridge \u00b7 Forecasting Bench</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+:root{
+  --ground:#0E1218;--panel:#171D27;--panel-2:#1E2530;--line:#2B333F;--line-2:#3A4654;
+  --ink:#E9ECF2;--muted:#8A95A6;--faint:#5A6475;
+  --signal:#E8B04B;--truth:#4FB3A6;--warn:#E07A5F;--gut:#8E7CC3;
+  --shadow:rgba(0,0,0,.4);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--ground);color:var(--ink);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{min-height:100vh;display:flex;justify-content:center;padding:28px 18px 70px}
+.wrap{width:100%;max-width:680px}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--signal);margin-bottom:12px}
+h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(30px,6vw,44px);letter-spacing:-.02em;line-height:1.02;margin-bottom:16px}
+.lede{color:var(--muted);font-size:15.5px;line-height:1.62}
+.lede b{color:var(--ink);font-weight:600}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:22px;box-shadow:0 10px 30px var(--shadow);margin-top:20px}
+.mt-l{margin-top:22px}
+.back{display:inline-flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);text-decoration:none;margin-bottom:18px}
+.steprow{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
+.stepname{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+.module{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--signal)}
+.track{height:3px;background:var(--line);border-radius:2px;overflow:hidden;margin-bottom:18px}
+.track i{display:block;height:100%;background:var(--signal)}
+.qtitle{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:20px;line-height:1.25;margin-bottom:6px}
+.body-txt{color:var(--muted);font-size:14.5px;line-height:1.6}
+.body-txt b{color:var(--ink);font-weight:600}
+.priorbox{display:flex;align-items:center;gap:14px;background:var(--panel-2);border:1px solid var(--line);border-radius:11px;padding:13px 16px;margin:16px 0}
+.priorbox .pp{font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:600;color:var(--gut)}
+.priorbox .pl{font-size:13px;color:var(--muted);line-height:1.4}
+.evbox{background:rgba(232,176,75,.07);border:1px solid rgba(232,176,75,.3);border-radius:11px;padding:13px 16px;margin:14px 0;font-size:14px;line-height:1.55;color:var(--ink)}
+.evbox .lr{font-family:'IBM Plex Mono',monospace;color:var(--signal);font-weight:600}
+.readout{font-family:'IBM Plex Mono',monospace;font-weight:600;text-align:center;margin-top:8px}
+.readout .pv{font-size:40px;color:var(--truth)}.readout .pct{font-size:20px;color:var(--muted)}
+.readout-cap{text-align:center;font-size:12.5px;color:var(--faint);margin-bottom:4px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:3px;background:linear-gradient(90deg,var(--truth) var(--fill,50%),var(--line) var(--fill,50%));outline:none;cursor:pointer;margin:8px 0;touch-action:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--truth);border:3px solid var(--ground);box-shadow:0 0 0 1px var(--truth),0 2px 6px var(--shadow);cursor:grab}
+input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--truth);border:3px solid var(--ground);box-shadow:0 0 0 1px var(--truth);cursor:grab}
+input[type=range]:focus-visible{outline:2px solid var(--truth);outline-offset:6px}
+.scale{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--faint)}
+.actions{margin-top:20px;display:flex;gap:10px;flex-wrap:wrap}
+button.primary{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;background:var(--signal);color:#1a1205;border:none;border-radius:10px;padding:13px 22px;cursor:pointer;transition:.15s}
+button.primary:hover{filter:brightness(1.07)}
+button.ghost{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:14px;background:transparent;color:var(--muted);border:1px solid var(--line);border-radius:10px;padding:13px 18px;cursor:pointer}
+button.ghost:hover{border-color:var(--line-2);color:var(--ink)}
+svg{display:block;width:100%;height:auto}
+.curvewrap{background:var(--panel-2);border:1px solid var(--line);border-radius:11px;padding:8px 6px 4px;margin:16px 0}
+.verdict{border-radius:11px;padding:14px 16px;margin-top:4px;font-size:14px;line-height:1.55}
+.verdict.tight{background:rgba(79,179,166,.1);border:1px solid rgba(79,179,166,.34)}
+.verdict.off{background:rgba(224,122,95,.1);border:1px solid rgba(224,122,95,.34)}
+.verdict b{color:var(--ink)}
+.kpis{display:flex;gap:10px;margin:14px 0}
+.kpi{flex:1;background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:11px 12px;text-align:center}
+.kpi .v{font-family:'IBM Plex Mono',monospace;font-size:19px;font-weight:600}
+.kpi .k{font-size:11px;color:var(--faint);margin-top:3px;line-height:1.3}
+.lesson li{color:var(--muted);font-size:14.5px;line-height:1.6;margin-bottom:12px;list-style:none;padding-left:18px;position:relative}
+.lesson li::before{content:'';position:absolute;left:0;top:9px;width:7px;height:7px;border-radius:50%;background:var(--signal)}
+.lesson li b{color:var(--ink);font-weight:600}
+.foot{margin-top:20px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--faint);text-align:center}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+const app=document.getElementById('app');
+function h(s){const t=document.createElement('template');t.innerHTML=s.trim();return t.content.firstChild;}
+const logit=p=>Math.log(p/(1-p));
+const sig=x=>1/(1+Math.exp(-x));
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const pct=p=>Math.round(p*100);
+
+/* ---- rounds ---- */
+const ROUNDS=[
+ {id:'A',prior:0.50,lr:1.7,
+  title:'A signed pilot',
+  ev:'A customer signs a paid pilot \u2014 someone is spending real money. Traction like this is <span class="lr">about 1.7\u00d7</span> more likely for a company that survives than one that folds.',
+  note:r=>`From an even 50/50, that weight lands you at <b>${pct(r.post)}%</b> \u2014 a <b>${pct(r.post)-50}-point</b> jump. Hold that number in mind; we\u2019re about to apply the very same evidence somewhere else.`},
+ {id:'B',prior:0.80,lr:1.7,
+  title:'The same signal, near the top',
+  ev:'Exactly the same paid-pilot evidence \u2014 <span class="lr">1.7\u00d7</span> \u2014 but this time you already believed the company was 80% likely to make it.',
+  note:r=>`Identical weight to round A. Yet A moved you 13 points and this moved you only <b>${pct(r.post)-80}</b> (80\u2192${pct(r.post)}%). Same evidence, smaller jump \u2014 the belief curve is simply flatter up here. This is the ceiling effect.`},
+ {id:'C',prior:0.05,lr:1.7,
+  title:'The same signal, near the floor',
+  ev:'Once more the same <span class="lr">1.7\u00d7</span> pilot, but starting from a near-dismissed 5%.',
+  note:r=>`A 5% prior barely twitches to <b>${pct(r.post)}%</b>. The arrow is the same length as in rounds A and B \u2014 the curve is just as flat down here as up at the top. Evidence does its loudest work in the uncertain middle.`},
+ {id:'D',prior:0.50,lr:9,
+  title:'A decisive test',
+  ev:'A near-conclusive result \u2014 <span class="lr">about 9\u00d7</span> more likely if true than if false.',
+  note:r=>`Now the arrow is long \u2014 a heavy weight \u2014 and from 50/50 it carries you to <b>${pct(r.post)}%</b>. Strong evidence in the middle moves you a long way; the same evidence at the edges would not.`},
+ {id:'E',prior:0.50,lrs:[2,2,2],
+  title:'Three independent tells',
+  ev:'Three <b>separate, unrelated</b> signals, each <span class="lr">2\u00d7</span> \u2014 a good investor, real revenue, a strong team. Because they\u2019re independent, their weights simply add.',
+  note:r=>`Each 2\u00d7 is the same-length arrow, laid end to end: 2\u00d72\u00d72 = 8\u00d7 total, carrying 50% to <b>${pct(r.post)}%</b>. Weight of evidence <b>adds up</b> on this scale \u2014 but only because the three tells are independent. If they were the same fact in three disguises, you\u2019d be stacking arrows you hadn\u2019t earned.`}
+];
+
+let S={screen:'intro',i:0,guess:50,preds:[]};
+function steps(r){return r.lrs?r.lrs:[r.lr];}
+function finalPost(r){let o=logit(r.prior);steps(r).forEach(lr=>o+=Math.log(lr));return sig(o);}
+
+function render(){app.innerHTML='';({intro:rIntro,round:rRound,reveal:rReveal,done:rDone})[S.screen]();window.scrollTo&&window.scrollTo(0,0);}
+
+function rIntro(){
+  app.appendChild(h(`<div>
+    <a class="back" href="index.html">&larr; The Forecasting Bench</a>
+    <div class="eyebrow">Forecasting Bench \u00b7 Instrument 09</div>
+    <h1>The Weighbridge</h1>
+    <p class="lede">Here is a sentence that should bother you: <b>a move from 50% to 63% and a move from 80% to 87% can be exactly the same strength of evidence.</b> One looks twice the size of the other. In percentage points your intuition is being lied to.<br><br>The honest ruler is <b>odds</b> \u2014 and better still, <b>log-odds</b>, where every piece of evidence adds a fixed <b>weight</b> regardless of where you start. This instrument lets you feel the gap between the two rulers. You\u2019ll guess where evidence lands you; the belief curve will show you why your percentage instinct keeps missing.</p>
+    <div class="card">
+      <p class="body-txt">Five short rounds. Each gives you a starting belief and one piece of evidence, written as a <b>likelihood ratio</b> \u2014 how much more likely that evidence is if the claim is true than if it\u2019s false. You drag to predict the new belief; the curve reveals the truth.</p>
+      <div class="actions"><button class="primary" id="go">Step onto the bridge</button></div>
+    </div>
+    <div class="foot">weight is measured in odds \u00b7 not in percentages</div>
+  </div>`));
+  document.getElementById('go').onclick=()=>{S.screen='round';S.i=0;S.guess=Math.round(ROUNDS[0].prior*100);S.preds=[];render();};
+}
+
+function rRound(){
+  const r=ROUNDS[S.i];
+  const card=h(`<div>
+    <a class="back" href="index.html">&larr; The Forecasting Bench</a>
+    <div class="steprow"><span class="stepname">Round ${S.i+1} / ${ROUNDS.length} \u00b7 ${r.title}</span><span class="module">predict the posterior</span></div>
+    <div class="track"><i style="width:${(S.i/ROUNDS.length)*100}%"></i></div>
+    <div class="card">
+      <div class="priorbox"><span class="pp">${pct(r.prior)}%</span><span class="pl">your belief <b style="color:var(--ink)">before</b> this evidence<br>(the prior)</span></div>
+      <div class="evbox">${r.ev}</div>
+      <div class="readout-cap">drag to where you think it lands now</div>
+      <div class="readout"><span class="pv" id="pv">${S.guess}</span><span class="pct">%</span></div>
+      <input type="range" id="sl" min="1" max="99" value="${S.guess}" style="--fill:${S.guess}%">
+      <div class="scale"><span>1%</span><span>50%</span><span>99%</span></div>
+      <div class="actions"><button class="primary" id="lock">Lock in my guess</button></div>
+    </div>
+  </div>`);
+  app.appendChild(card);
+  const sl=card.querySelector('#sl'),pv=card.querySelector('#pv');
+  sl.oninput=()=>{S.guess=+sl.value;pv.textContent=S.guess;sl.style.setProperty('--fill',S.guess+'%');};
+  card.querySelector('#lock').onclick=()=>{S.screen='reveal';render();};
+}
+
+/* ---- belief-curve visual ---- */
+function curve(prior, lrs){
+  const W=620,H=330,pad=40, xmin=-5,xmax=5;
+  const xp=L=>pad+((clamp(L,xmin,xmax)-xmin)/(xmax-xmin))*(W-2*pad);
+  const yp=p=>H-pad-p*(H-2*pad);
+  let g='';
+  // horizontal gridlines + prob labels
+  [0,.25,.5,.75,1].forEach(p=>{
+    g+=`<line x1="${pad}" y1="${yp(p)}" x2="${W-pad}" y2="${yp(p)}" stroke="#2B333F" stroke-width="1"/>`;
+    g+=`<text x="${pad-8}" y="${yp(p)+4}" text-anchor="end" fill="#5A6475" font-family="IBM Plex Mono" font-size="11">${pct(p)}</text>`;
+  });
+  // sigmoid curve
+  let pts=[];
+  for(let i=0;i<=120;i++){const L=xmin+(i/120)*(xmax-xmin);pts.push(`${xp(L)},${yp(sig(L))}`);}
+  g+=`<polyline points="${pts.join(' ')}" fill="none" stroke="#3A4654" stroke-width="2"/>`;
+  // cumulative steps
+  let L=logit(prior), priorL=L;
+  const stepGeo=[];
+  lrs.forEach(lr=>{const from=L; L+=Math.log(lr); stepGeo.push([from,L]);});
+  const postL=L, post=sig(postL);
+  // prior & posterior guide lines
+  const guide=(Lx,p,col)=>`<line x1="${xp(Lx)}" y1="${yp(p)}" x2="${pad}" y2="${yp(p)}" stroke="${col}" stroke-width="1.2" stroke-dasharray="3 3" opacity=".8"/><line x1="${xp(Lx)}" y1="${yp(p)}" x2="${xp(Lx)}" y2="${H-pad}" stroke="${col}" stroke-width="1.2" stroke-dasharray="3 3" opacity=".55"/>`;
+  g+=guide(priorL,prior,'#8E7CC3');
+  g+=guide(postL,post,'#4FB3A6');
+  // evidence arrows along a band near the bottom
+  const ay=H-pad-14;
+  stepGeo.forEach(([a,b],k)=>{
+    const x1=xp(a),x2=xp(b);
+    g+=`<line x1="${x1}" y1="${ay}" x2="${x2}" y2="${ay}" stroke="#E8B04B" stroke-width="3"/>`;
+    g+=`<polygon points="${x2},${ay} ${x2-7},${ay-4} ${x2-7},${ay+4}" fill="#E8B04B"/>`;
+    if(stepGeo.length>1) g+=`<text x="${(x1+x2)/2}" y="${ay-7}" text-anchor="middle" fill="#E8B04B" font-family="IBM Plex Mono" font-size="10">+w</text>`;
+  });
+  // markers
+  g+=`<circle cx="${xp(priorL)}" cy="${yp(prior)}" r="6" fill="#8E7CC3" stroke="#0E1218" stroke-width="2"/>`;
+  g+=`<circle cx="${xp(postL)}" cy="${yp(post)}" r="6" fill="#4FB3A6" stroke="#0E1218" stroke-width="2"/>`;
+  // axis captions
+  g+=`<text x="${W/2}" y="${H-6}" text-anchor="middle" fill="#5A6475" font-family="IBM Plex Mono" font-size="10.5">log-odds (evidence is a fixed step on this axis) \u2192</text>`;
+  g+=`<text x="14" y="${H/2}" text-anchor="middle" fill="#5A6475" font-family="IBM Plex Mono" font-size="10.5" transform="rotate(-90 14 ${H/2})">probability %</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Belief curve showing evidence as a step in log-odds">${g}</svg>`;
+}
+
+function rReveal(){
+  const r=ROUNDS[S.i];
+  const post=finalPost(r), postP=pct(post);
+  const err=Math.abs(S.guess-postP);
+  const tight=err<=5;
+  S.preds[S.i]={guess:S.guess,truth:postP,signed:S.guess-postP,prior:pct(r.prior)};
+  const last=S.i===ROUNDS.length-1;
+  const totalW=steps(r).reduce((a,lr)=>a+Math.log(lr),0);
+  const card=h(`<div>
+    <a class="back" href="index.html">&larr; The Forecasting Bench</a>
+    <div class="steprow"><span class="stepname">Round ${S.i+1} \u00b7 the reading</span><span class="module">${r.title}</span></div>
+    <div class="card">
+      <div class="curvewrap">${curve(r.prior, steps(r))}</div>
+      <div class="kpis">
+        <div class="kpi"><div class="v" style="color:var(--gut)">${pct(r.prior)}%</div><div class="k">prior</div></div>
+        <div class="kpi"><div class="v" style="color:var(--signal)">+${totalW.toFixed(2)}</div><div class="k">weight added<br>(log-odds)</div></div>
+        <div class="kpi"><div class="v" style="color:var(--truth)">${postP}%</div><div class="k">posterior</div></div>
+      </div>
+      <div class="verdict ${tight?'tight':'off'}">
+        <b>${tight?'Close read.':'Off by '+err+' points.'}</b> You guessed ${S.guess}%; a Bayesian lands at ${postP}%. ${r.note({post})}
+      </div>
+      <div class="actions"><button class="primary" id="next">${last?'See the lesson':'Next round'}</button></div>
+    </div>
+  </div>`);
+  app.appendChild(card);
+  card.querySelector('#next').onclick=()=>{
+    if(last){S.screen='done';render();}
+    else{S.i++;S.guess=Math.round(ROUNDS[S.i].prior*100);S.screen='round';render();}
+  };
+}
+
+function rDone(){
+  // bias read: signed error in the middle vs at the edges
+  const mid=S.preds.filter(p=>p.prior>=40&&p.prior<=60);
+  const edge=S.preds.filter(p=>p.prior<40||p.prior>60);
+  const avg=a=>a.length?Math.round(a.reduce((s,x)=>s+x.signed,0)/a.length):0;
+  const midBias=avg(mid), edgeBias=avg(edge);
+  const read = (Math.abs(midBias)<4&&Math.abs(edgeBias)<4)
+    ? 'Your guesses tracked the curve closely \u2014 you\u2019re already reasoning in something like odds.'
+    : `In the middle you leaned ${midBias<0?'low (under-updating)':midBias>0?'high (over-updating)':'about right'}; near the edges you leaned ${edgeBias>0?'high \u2014 expecting more movement than the flat curve allows':edgeBias<0?'low':'about right'}. That split is the percentage illusion at work.`;
+  app.appendChild(h(`<div>
+    <a class="back" href="index.html">&larr; The Forecasting Bench</a>
+    <div class="eyebrow">Forecasting Bench \u00b7 Instrument 09 \u00b7 Reading</div>
+    <h1>Weight, not percentage points.</h1>
+    <div class="card">
+      <p class="body-txt" style="margin-bottom:6px">${read}</p>
+    </div>
+    <div class="card">
+      <ul class="lesson">
+        <li><b>Evidence has a fixed weight.</b> A likelihood ratio is a multiplier on the odds, and the same multiplier is the same length of arrow on the log-odds axis wherever you stand. That weight \u2014 log of the likelihood ratio \u2014 is the honest measure of how much you\u2019ve learned. Turing\u2019s codebreakers literally added it up in units they called decibans.</li>
+        <li><b>Percentages compress at the edges.</b> The belief curve is steep in the middle and flat near 0% and 100%. So one fixed weight buys a 13-point jump at 50/50, ~7 near 80%, ~3 near 5%. The evidence never changed; the ruler did.</li>
+        <li><b>Confident priors are sticky \u2014 for better and worse.</b> Out near the edges it takes a mountain of weight to shift you. That\u2019s rational when the prior is well-earned, and dangerous when it isn\u2019t: a wrong, confident starting point resists correction. It\u2019s why the reference class you choose does so much of the work.</li>
+        <li><b>Independent weights add; correlated ones don\u2019t.</b> Three unrelated 2\u00d7 tells stack to 8\u00d7. But three reports of the <b>same</b> fact are one weight wearing three coats \u2014 stack them and you manufacture confidence you never earned. The arithmetic only works when the evidence is genuinely separate.</li>
+        <li><b>So calibrate in odds.</b> If you judge evidence by how many percentage points it moves you, you\u2019ll misread its strength every time you\u2019re away from 50/50. Think in odds, and an 8-point move and a 13-point move can be revealed as exactly the same weight.</li>
+      </ul>
+      <div class="actions">
+        <button class="primary" id="again">Run it again</button>
+        <a href="index.html"><button class="ghost">Back to the bench</button></a>
+      </div>
+    </div>
+    <div class="foot">an 8-point move and a 13-point move can be identical \u00b7 in odds</div>
+  </div>`));
+  document.getElementById('again').onclick=()=>{S.screen='intro';render();};
+}
+
+render();
+</script>
+</body>
+</html>
