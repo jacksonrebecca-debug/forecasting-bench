@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Natural Frequencies Clinic</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+:root{--ground:#0E1218;--panel:#171D27;--panel-2:#1E2530;--line:#2B333F;--ink:#E9ECF2;--muted:#8A95A6;--faint:#5A6475;--signal:#E8B04B;--signal-dim:#7a5e2a;--truth:#4FB3A6;--warn:#E07A5F;--gut:#8E7CC3;--shadow:rgba(0,0,0,.35)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--ground);color:var(--ink);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{min-height:100vh;display:flex;justify-content:center;padding:28px 18px 64px}
+.wrap{width:100%;max-width:680px}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--signal);margin-bottom:10px}
+h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:33px;letter-spacing:-.02em;line-height:1.05;margin-bottom:14px}
+.lede{color:var(--muted);font-size:15px;line-height:1.62;max-width:58ch}.lede b{color:var(--ink);font-weight:600}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;box-shadow:0 8px 30px var(--shadow)}
+.mt{margin-top:18px}.mt-l{margin-top:26px}.hr{height:1px;background:var(--line);margin:22px 0}
+button.primary{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:15px;color:#15110a;background:var(--signal);border:none;padding:13px 22px;border-radius:10px;cursor:pointer;transition:.15s}
+button.primary:hover{filter:brightness(1.07)}button.primary:disabled{opacity:.4;cursor:not-allowed}
+button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.actions{display:flex;gap:12px;align-items:center;margin-top:24px}.actions .primary{flex:1}
+.steprow{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
+.stepname{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
+.module{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--signal)}
+.qtitle{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:20px;line-height:1.34;letter-spacing:-.01em;margin-bottom:12px}
+.body-txt{font-size:14.5px;line-height:1.66;color:var(--muted)}.body-txt b{color:var(--ink);font-weight:600}
+.facts{background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:14px 0;font-size:14px;line-height:1.8}
+.facts .fr{display:flex;justify-content:space-between;gap:12px}
+.facts .fk{color:var(--muted)}.facts .fv{font-family:'IBM Plex Mono',monospace;color:var(--ink)}
+.readout{font-family:'IBM Plex Mono',monospace;font-weight:600;font-variant-numeric:tabular-nums;font-size:48px;color:var(--signal);line-height:1;margin:18px 0 2px;text-align:center}
+.readout .pct{font-size:23px;color:var(--signal-dim)}
+.readout-cap{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:16px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:3px;background:linear-gradient(90deg,var(--signal) var(--fill,50%),var(--line) var(--fill,50%));outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--signal);border:3px solid var(--ground);box-shadow:0 0 0 1px var(--signal)}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--signal);border:3px solid var(--ground)}
+.scale{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--faint);margin-top:8px}
+.verdict{border-radius:10px;padding:14px 16px;margin:8px 0 4px;font-size:14px;line-height:1.6}
+.verdict.good{background:rgba(79,179,166,.1);border:1px solid rgba(79,179,166,.4);color:var(--truth)}
+.verdict.miss{background:rgba(224,122,95,.1);border:1px solid rgba(224,122,95,.4);color:var(--warn)}
+.verdict b{font-weight:600}
+.treecap{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin:16px 0 4px}
+svg{display:block;width:100%;height:auto}
+.answerline{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--ink);background:var(--ground);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-top:12px;line-height:1.7}
+.answerline b{color:var(--signal)}
+.lesson{border-left:2px solid var(--signal);padding:4px 0 4px 16px;margin-top:18px}
+.lesson h3{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:16px;margin-bottom:8px}
+.lesson p{font-size:14px;line-height:1.66;color:var(--muted)}.lesson p b{color:var(--ink);font-weight:600}
+.foot{margin-top:30px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;color:var(--faint);line-height:1.7}
+.track{height:3px;background:var(--line);border-radius:2px;overflow:hidden;margin-bottom:22px}.track>i{display:block;height:100%;background:var(--signal);transition:width .35s}
+@media (max-width:520px){h1{font-size:27px}.qtitle{font-size:18px}.readout{font-size:40px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+/* ============================================================
+   THE NATURAL FREQUENCIES CLINIC  \u00b7  Instrument 05
+   The base-rate trap: a 90%-accurate test for a rare condition
+   gives a positive result that's usually wrong. The cure is to
+   stop thinking in percentages and count people.
+   ============================================================ */
+
+const CASES=[
+  {id:'disease',N:1000,prev:0.01,sens:0.90,fpr:0.09,
+   title:'A screening test for a rare disease',
+   setup:'About 1 in 100 people in a population have a certain disease. A screening test detects 90% of people who have it. But it also wrongly flags 9% of healthy people. Someone picked at random tests positive.',
+   ask:'How likely is it they actually have the disease?',
+   cond:'have the disease',pos:'test positive',
+   note:'The test is genuinely good \u2014 yet a positive result is wrong about nine times in ten, because the disease is rare. The flood of false positives from the huge healthy majority swamps the few true cases.'},
+  {id:'drug',N:1000,prev:0.05,sens:0.95,fpr:0.05,
+   title:'A workplace drug test',
+   setup:'Suppose 5% of employees use a banned substance. The test catches 95% of genuine users, and falsely flags 5% of clean employees. An employee tests positive.',
+   ask:'How likely is it they really are a user?',
+   cond:'are a user',pos:'test positive',
+   note:'Even a 95%-accurate test lands at a coin-flip here, because users are a small minority. Half of everyone flagged is innocent \u2014 which is why a single positive should trigger a confirmatory test, not a sacking.'},
+  {id:'airport',N:10000,prev:0.001,sens:0.99,fpr:0.01,
+   title:'A security screening flag',
+   setup:'Imagine 1 traveller in 1,000 is actually a genuine threat. A screening system flags 99% of real threats and wrongly flags just 1% of innocent travellers. Someone gets flagged.',
+   ask:'How likely is it they are a genuine threat?',
+   cond:'are a genuine threat',pos:'are flagged',
+   note:'A 99%-accurate system, and a flag still means roughly a 9% chance of a real threat. When the base rate is tiny, even a superb test produces far more false alarms than hits \u2014 the maths behind why mass screening overwhelms its operators.'},
+  {id:'symptom',N:1000,prev:0.30,sens:0.90,fpr:0.10,
+   title:'A test on someone already symptomatic',
+   setup:'Now the person already has symptoms, so the relevant base rate is much higher \u2014 say 30% of such patients have the condition. The same test detects 90% of cases and flags 10% of those without. The patient tests positive.',
+   ask:'How likely is it they have the condition?',
+   cond:'have the condition',pos:'test positive',
+   note:'Same test, completely different meaning. Once the base rate is high, a positive result is genuinely informative (~79%). The test didn\u2019t change \u2014 the base rate did. That\u2019s the whole lesson in one comparison.'}
+];
+
+function counts(c){
+  const has=Math.round(c.N*c.prev), no=c.N-has;
+  const tp=Math.round(has*c.sens), fn=has-tp;
+  const fp=Math.round(no*c.fpr), tn=no-fp;
+  const ppv=tp/(tp+fp);
+  return {has,no,tp,fn,fp,tn,ppv};
+}
+function fmt(n){return n.toLocaleString('en-GB');}
+
+let S={screen:'intro',ci:0,p:20,scores:[]};
+const app=document.getElementById('app');
+function h(s){const t=document.createElement('template');t.innerHTML=s.trim();return t.content.firstChild;}
+function render(){app.innerHTML='';({intro:rIntro,ask:rAsk,reveal:rReveal,done:rDone})[S.screen]();window.scrollTo&&window.scrollTo(0,0);}
+
+function rIntro(){
+  const card=h(`<div>
+    <div class="eyebrow">The Forecasting Bench \u00b7 Instrument 05</div>
+    <h1>The Natural Frequencies Clinic</h1>
+    <p class="lede">Here\u2019s the question that fools almost everyone, doctors included. A disease affects 1 in 100. A test catches 90% of cases and false-flags 9% of healthy people. You test positive. <b>How worried should you be?</b> Most people say \u201cabout 90%.\u201d The real answer is closer to <b>9%</b>.<br><br>The fix is a single mental move: stop juggling percentages and <b>count people</b>. \u201cOut of 1,000\u2026\u201d makes the answer obvious. This clinic drills that move across four cases \u2014 and shows you the one thing that decides everything: the base rate.</p>
+    <div class="actions"><button class="primary" id="go">Enter the clinic</button></div>
+    <div class="foot">Trains: base-rate neglect \u00b7 the false-positive trap \u00b7 Bayesian reasoning in natural frequencies.</div>
+  </div>`);
+  app.appendChild(card);card.querySelector('#go').onclick=()=>{S.screen='ask';S.ci=0;S.scores=[];S.p=20;render();};
+}
+
+function rAsk(){
+  const c=CASES[S.ci];
+  const card=h(`<div>
+    <div class="steprow"><span class="stepname">Case ${S.ci+1} / ${CASES.length}</span><span class="module">${c.title}</span></div>
+    <div class="track"><i style="width:${(S.ci/CASES.length)*100}%"></i></div>
+    <div class="card">
+      <div class="qtitle">${c.setup}</div>
+      <div class="facts">
+        <div class="fr"><span class="fk">Base rate (who really ${c.cond})</span><span class="fv">${Math.round(c.prev*1000)/10}%</span></div>
+        <div class="fr"><span class="fk">Test catches true cases</span><span class="fv">${Math.round(c.sens*100)}%</span></div>
+        <div class="fr"><span class="fk">Test false-alarm rate</span><span class="fv">${Math.round(c.fpr*100)}%</span></div>
+      </div>
+      <div class="readout"><span id="pv">${S.p}</span><span class="pct">%</span></div>
+      <div class="readout-cap">if they ${c.pos}, chance they ${c.cond}</div>
+      <input type="range" id="sl" min="0" max="100" step="1" value="${S.p}" style="--fill:${S.p}%">
+      <div class="scale"><span>0%</span><span>50%</span><span>100%</span></div>
+      <div class="actions"><button class="primary" id="next">Reveal the answer</button></div>
+    </div>
+  </div>`);
+  app.appendChild(card);
+  const sl=card.querySelector('#sl'),pv=card.querySelector('#pv');
+  sl.oninput=()=>{S.p=+sl.value;pv.textContent=S.p;sl.style.setProperty('--fill',S.p+'%');};
+  card.querySelector('#next').onclick=()=>{S.screen='reveal';render();};
+}
+
+function tree(c,k){
+  const W=620,H=300;
+  const box=(x,y,w,hh,fill,stroke,title,sub)=>`<g><rect x="${x}" y="${y}" width="${w}" height="${hh}" rx="7" fill="${fill}" stroke="${stroke}" stroke-width="1.4"/><text x="${x+w/2}" y="${y+hh/2-3}" text-anchor="middle" fill="var(--ink)" font-family="IBM Plex Mono" font-size="13" font-weight="600">${title}</text><text x="${x+w/2}" y="${y+hh/2+13}" text-anchor="middle" fill="var(--muted)" font-family="Inter" font-size="10.5">${sub}</text></g>`;
+  const line=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--line)" stroke-width="1.4"/>`;
+  // columns
+  const c0x=8,c0w=120, c1x=210,c1w=150, c2x=440,c2w=172;
+  const rootY=130, rootH=44;
+  const hasY=44, noY=210, branchH=44;
+  const tpY=8, fnY=66, fpY=176, tnY=234, leafH=42;
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Natural frequency tree">
+    ${line(c0x+c0w,rootY+rootH/2,c1x,hasY+branchH/2)}
+    ${line(c0x+c0w,rootY+rootH/2,c1x,noY+branchH/2)}
+    ${line(c1x+c1w,hasY+branchH/2,c2x,tpY+leafH/2)}
+    ${line(c1x+c1w,hasY+branchH/2,c2x,fnY+leafH/2)}
+    ${line(c1x+c1w,noY+branchH/2,c2x,fpY+leafH/2)}
+    ${line(c1x+c1w,noY+branchH/2,c2x,tnY+leafH/2)}
+    ${box(c0x,rootY,c0w,rootH,'var(--panel-2)','var(--line)',fmt(c.N),'people')}
+    ${box(c1x,hasY,c1w,branchH,'var(--panel-2)','var(--line)',fmt(k.has),c.cond)}
+    ${box(c1x,noY,c1w,branchH,'var(--panel-2)','var(--line)',fmt(k.no),'do not')}
+    ${box(c2x,tpY,c2w,leafH,'rgba(79,179,166,.14)','var(--truth)',fmt(k.tp),'positive \u00b7 true case')}
+    ${box(c2x,fnY,c2w,leafH,'var(--panel-2)','var(--line)',fmt(k.fn),'negative \u00b7 missed')}
+    ${box(c2x,fpY,c2w,leafH,'rgba(224,122,95,.14)','var(--warn)',fmt(k.fp),'positive \u00b7 FALSE alarm')}
+    ${box(c2x,tnY,c2w,leafH,'var(--panel-2)','var(--line)',fmt(k.tn),'negative \u00b7 correct')}
+  </svg>`;
+}
+
+function rReveal(){
+  const c=CASES[S.ci], k=counts(c), truth=Math.round(k.ppv*100);
+  const err=Math.abs(S.p-truth), close=err<=8;
+  S.scores[S.ci]=err;
+  const last=S.ci===CASES.length-1;
+  const card=h(`<div>
+    <div class="steprow"><span class="stepname">Case ${S.ci+1} \u00b7 the answer</span><span class="module">${c.title}</span></div>
+    <div class="card">
+      <div class="verdict ${close?'good':'miss'}"><b>You said ${S.p}%. The answer is about ${truth}%.</b> ${close?'Close \u2014 you felt the base rate pulling the number down.':'A long way off \u2014 the classic pull of the test\u2019s accuracy over the base rate.'}</div>
+      <div class="treecap">count people, not percentages \u00b7 out of ${fmt(c.N)}</div>
+      ${tree(c,k)}
+      <div class="answerline">Of everyone who ${c.pos} \u2014 that\u2019s <b>${fmt(k.tp)} + ${fmt(k.fp)} = ${fmt(k.tp+k.fp)}</b> people \u2014 only <b>${fmt(k.tp)}</b> truly ${c.cond}. So the chance is ${fmt(k.tp)} \u00f7 ${fmt(k.tp+k.fp)} \u2248 <b>${truth}%</b>.</div>
+      <p class="body-txt mt">${c.note}</p>
+      <div class="actions"><button class="primary" id="next">${last?'See the clinic\u2019s verdict':'Next case'}</button></div>
+    </div>
+  </div>`);
+  app.appendChild(card);
+  card.querySelector('#next').onclick=()=>{ if(last){S.screen='done';render();} else {S.ci++;S.p=20;S.screen='ask';render();} };
+}
+
+function rDone(){
+  const good=S.scores.filter(e=>e<=8).length;
+  const card=h(`<div>
+    <div class="steprow"><span class="stepname">Clinic complete</span><span class="module">${good}/${CASES.length} within 8 points</span></div>
+    <div class="card">
+      <div class="lesson" style="margin-top:0"><h3>The lesson</h3><p>The probability that a positive result is real depends far more on <b>how common the condition is</b> than on how accurate the test is. Our intuition fixates on the headline accuracy and forgets the base rate \u2014 so we read a positive as near-certain when it\u2019s often a coin flip or worse. The repair is mechanical: <b>stop thinking in percentages and count out of a population.</b> \u201cOf 1,000 people, how many test positive, and how many of those truly have it?\u201d turns a problem almost everyone gets wrong into one almost everyone gets right. The same move \u2014 anchor on the base rate first, then let the evidence adjust it \u2014 is exactly the Bayesian update the Reference Class instrument trains; this is its visual, undeniable form.</p></div>
+      <div class="actions"><button class="primary" id="again">Run the clinic again</button></div>
+    </div>
+    <div class="foot">Base rate first \u00b7 count people, not percentages \u00b7 a positive is only as good as what\u2019s rare.</div>
+  </div>`);
+  app.appendChild(card);
+  card.querySelector('#again').onclick=()=>{S.screen='intro';render();};
+}
+
+render();
+</script>
+</body>
+</html>
