@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Coherence Trap</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+:root{--ground:#0E1218;--panel:#171D27;--panel-2:#1E2530;--line:#2B333F;--ink:#E9ECF2;--muted:#8A95A6;--faint:#5A6475;--signal:#E8B04B;--signal-dim:#7a5e2a;--truth:#4FB3A6;--warn:#E07A5F;--gut:#8E7CC3;--shadow:rgba(0,0,0,.35)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--ground);color:var(--ink);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{min-height:100vh;display:flex;justify-content:center;padding:28px 18px 64px}
+.wrap{width:100%;max-width:680px}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--signal);margin-bottom:10px}
+h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:33px;letter-spacing:-.02em;line-height:1.05;margin-bottom:14px}
+.lede{color:var(--muted);font-size:15px;line-height:1.62;max-width:58ch}.lede b{color:var(--ink);font-weight:600}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;box-shadow:0 8px 30px var(--shadow)}
+.mt{margin-top:18px}.mt-l{margin-top:26px}.hr{height:1px;background:var(--line);margin:22px 0}
+button.primary{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:15px;color:#15110a;background:var(--signal);border:none;padding:13px 22px;border-radius:10px;cursor:pointer;transition:.15s}
+button.primary:hover{filter:brightness(1.07)}button.primary:disabled{opacity:.4;cursor:not-allowed}
+button:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+.actions{display:flex;gap:12px;align-items:center;margin-top:24px}.actions .primary{flex:1}
+.steprow{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
+.stepname{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
+.module{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--signal)}
+.qtitle{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:20px;line-height:1.34;letter-spacing:-.01em;margin-bottom:8px}
+.intro-txt{font-size:14px;line-height:1.6;color:var(--muted);margin-bottom:8px}
+.body-txt{font-size:14.5px;line-height:1.66;color:var(--muted)}.body-txt b{color:var(--ink);font-weight:600}
+.slab{margin-top:16px}
+.slab .sl-lab{font-size:14px;line-height:1.45;margin-bottom:8px;color:var(--ink)}
+.slab .sl-row{display:flex;align-items:center;gap:14px}
+.slab .sl-val{font-family:'IBM Plex Mono',monospace;font-size:20px;font-variant-numeric:tabular-nums;color:var(--signal);min-width:54px;text-align:right}
+input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:4px;border-radius:3px;background:linear-gradient(90deg,var(--signal) var(--fill,50%),var(--line) var(--fill,50%));outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--signal);border:3px solid var(--ground);box-shadow:0 0 0 1px var(--signal)}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--signal);border:3px solid var(--ground)}
+.sumline{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--muted);text-align:right;margin-top:12px}
+.sumline b{color:var(--ink)}
+.verdict{border-radius:10px;padding:14px 16px;margin-top:8px;font-size:14px;line-height:1.62}
+.verdict.good{background:rgba(79,179,166,.1);border:1px solid rgba(79,179,166,.4);color:var(--truth)}
+.verdict.bad{background:rgba(224,122,95,.1);border:1px solid rgba(224,122,95,.4);color:var(--warn)}
+.verdict b{font-weight:600}.verdict .ex{display:block;margin-top:6px;color:var(--muted)}
+.lesson{border-left:2px solid var(--signal);padding:4px 0 4px 16px;margin-top:20px}
+.lesson h3{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:16px;margin-bottom:8px}
+.lesson p{font-size:14px;line-height:1.66;color:var(--muted)}.lesson p b{color:var(--ink);font-weight:600}
+.foot{margin-top:30px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;color:var(--faint);line-height:1.7}
+.track{height:3px;background:var(--line);border-radius:2px;overflow:hidden;margin-bottom:22px}.track>i{display:block;height:100%;background:var(--signal);transition:width .35s}
+@media (max-width:520px){h1{font-size:27px}.qtitle{font-size:18px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+/* ============================================================
+   THE COHERENCE TRAP  \u00b7  Instrument 06
+   Probabilities must obey laws. Break one and you're not just
+   wrong \u2014 you're offering a stranger a guaranteed profit (a
+   "Dutch book"). This catches the four commonest breaks.
+   ============================================================ */
+
+const ROUNDS=[
+  {type:'conj',
+   title:'The marine biologist',
+   intro:'Sam trained as a marine biologist and spends every spare weekend volunteering for ocean-conservation charities.',
+   items:[{key:'a',label:'Sam works at a public aquarium.'},
+          {key:'b',label:'Sam works at a public aquarium AND still volunteers for ocean charities.'}],
+   check:v=>{const ok=v.b<=v.a+1; return {ok,
+     msg: ok?'Coherent. You kept the detailed version no higher than the simple one.':'Incoherent \u2014 the conjunction fallacy.',
+     ex: ok?'P(A and B) can never exceed P(A): adding a second condition can only shrink the set of worlds where it\u2019s true. The vivid back-story tempts people to rate the richer story higher \u2014 you resisted.'
+            :`You rated \u201caquarium AND volunteers\u201d (${v.b}%) higher than \u201caquarium\u201d alone (${v.a}%). But every world where both are true is already a world where the first is true \u2014 so the combined claim must be \u2264 the single one. The fitting detail made it feel more likely; that\u2019s vividness impersonating probability.`};}},
+  {type:'conj',
+   title:'The hot Series A',
+   intro:'A startup has just raised a large Series A into the most fashionable corner of AI.',
+   items:[{key:'a',label:'The company is still operating in three years.'},
+          {key:'b',label:'The company is still operating in three years AND has turned profitable.'}],
+   check:v=>{const ok=v.b<=v.a+1; return {ok,
+     msg: ok?'Coherent.':'Incoherent \u2014 the conjunction fallacy again.',
+     ex: ok?'\u201cAlive and profitable\u201d is a subset of \u201calive,\u201d so it must be no more likely. The extra detail (profitable) makes a tidier story but a smaller probability.'
+            :`\u201cAlive AND profitable\u201d (${v.b}%) can\u2019t beat \u201calive\u201d (${v.a}%) \u2014 profitability is an extra hurdle on top of survival, not a help. The plausible narrative pulled you over the line.`};}},
+  {type:'sum',
+   title:'The four-horse by-election',
+   intro:'A by-election has exactly four candidates, and one of them must win. Give each one\u2019s chance of winning.',
+   items:[{key:'a',label:'Candidate A'},{key:'b',label:'Candidate B'},{key:'c',label:'Candidate C'},{key:'d',label:'Candidate D'}],
+   showSum:true,
+   check:v=>{const s=v.a+v.b+v.c+v.d; const ok=Math.abs(s-100)<=8; return {ok,sum:s,
+     msg: ok?`Coherent \u2014 your four chances sum to ${s}%.`:`Incoherent \u2014 they sum to ${s}%.`,
+     ex: ok?'Across a set of outcomes where exactly one must happen, the probabilities have to add to 100%. Yours do (near enough).'
+        : s>100 ? `They add to ${s}%, over 100%. That\u2019s a sure-loss book: a bookmaker could sell you a bet on every candidate at your own odds, pocket the stakes, and pay out on the single winner for a guaranteed profit \u2014 you lose whoever wins. Exhaustive outcomes must total 100%.`
+                : `They add to ${s}%, under 100%. Now the leak runs the other way: someone could lay all four bets against you at your odds and lock in a profit. Exhaustive outcomes must total exactly 100%.`};}},
+  {type:'comp',
+   title:'Rain, and not-rain',
+   intro:'Two quick judgements about tomorrow in London. Answer each as it feels right \u2014 don\u2019t do arithmetic.',
+   items:[{key:'a',label:'It rains tomorrow.'},{key:'b',label:'It does NOT rain tomorrow.'}],
+   showSum:true,
+   check:v=>{const s=v.a+v.b; const ok=Math.abs(s-100)<=6; return {ok,sum:s,
+     msg: ok?`Coherent \u2014 ${v.a}% and ${v.b}% sum to ${s}%.`:`Incoherent \u2014 they sum to ${s}%.`,
+     ex: ok?'An event and its negation are exhaustive and exclusive, so P(rain) and P(no rain) must sum to exactly 100%. Asked separately, people routinely produce numbers that don\u2019t \u2014 you didn\u2019t.'
+            :`P(rain) and P(not rain) must sum to 100% \u2014 yours make ${s}%. Asked about the two sides separately, most people\u2019s numbers drift apart, because each is judged on its own vividness rather than as one of a pair. Always sanity-check that an event and its complement close to 100%.`};}},
+  {type:'disj',
+   title:'The market, or the pound',
+   intro:'Two claims about tomorrow\u2019s markets.',
+   items:[{key:'a',label:'The FTSE 100 closes up.'},{key:'b',label:'The FTSE 100 closes up, OR the pound strengthens against the dollar (or both).'}],
+   check:v=>{const ok=v.b>=v.a-1; return {ok,
+     msg: ok?'Coherent. The broader \u201ceither/or\u201d claim is at least as likely as the narrow one.':'Incoherent \u2014 a disjunction error.',
+     ex: ok?'P(A or B) \u2265 P(A): adding an extra way to be right can only enlarge the set of winning worlds. You kept the \u201ceither\u201d claim no lower than the single one.'
+            :`You rated \u201cFTSE up OR pound strengthens\u201d (${v.b}%) below \u201cFTSE up\u201d (${v.a}%). But the broader claim wins in every world the narrow one does, plus more \u2014 so it can never be less likely. \u201cOr\u201d only ever adds room.`};}}
+];
+
+let S={screen:'intro',ri:0,score:0};
+const app=document.getElementById('app');
+function h(s){const t=document.createElement('template');t.innerHTML=s.trim();return t.content.firstChild;}
+function render(){app.innerHTML='';({intro:rIntro,round:rRound,done:rDone})[S.screen]();window.scrollTo&&window.scrollTo(0,0);}
+
+function rIntro(){
+  const card=h(`<div>
+    <div class="eyebrow">The Forecasting Bench \u00b7 Instrument 06</div>
+    <h1>The Coherence Trap</h1>
+    <p class="lede">Before a forecast can be accurate, it has to be <b>coherent</b> \u2014 it has to obey the basic arithmetic of probability. Rate \u201cA and B\u201d as more likely than \u201cA\u201d, or let a set of outcomes add to 120%, and you\u2019ve done something worse than guess wrong: you\u2019ve offered a stranger a set of bets that profits <b>whatever happens</b>. That\u2019s called a Dutch book.<br><br>Five quick rounds. Move the sliders as your judgement says, then see whether the laws of probability caught you out.</p>
+    <div class="actions"><button class="primary" id="go">Begin</button></div>
+    <div class="foot">Trains: the conjunction fallacy \u00b7 summing to one \u00b7 complements \u00b7 coherence and the Dutch book.</div>
+  </div>`);
+  app.appendChild(card);card.querySelector('#go').onclick=()=>{S.screen='round';S.ri=0;S.score=0;render();};
+}
+
+function rRound(){
+  const r=ROUNDS[S.ri];
+  const vals={}; r.items.forEach(it=>vals[it.key]=50);
+  S.vals=vals;
+  const slabs=r.items.map(it=>`
+    <div class="slab">
+      <div class="sl-lab">${it.label}</div>
+      <div class="sl-row"><input type="range" data-k="${it.key}" min="0" max="100" step="1" value="50" style="--fill:50%"><span class="sl-val" id="v-${it.key}">50%</span></div>
+    </div>`).join('');
+  const card=h(`<div>
+    <div class="steprow"><span class="stepname">Round ${S.ri+1} / ${ROUNDS.length}</span><span class="module">score ${S.score}</span></div>
+    <div class="track"><i style="width:${(S.ri/ROUNDS.length)*100}%"></i></div>
+    <div class="card">
+      <div class="qtitle">${r.title}</div>
+      <div class="intro-txt">${r.intro}</div>
+      ${slabs}
+      ${r.showSum?'<div class="sumline">sum: <b id="sum">200</b>%</div>':''}
+      <div id="fb"></div>
+      <div class="actions"><button class="primary" id="check">Check coherence</button></div>
+    </div>
+  </div>`);
+  app.appendChild(card);
+  const upd=()=>{ if(r.showSum){const s=r.items.reduce((a,it)=>a+S.vals[it.key],0);card.querySelector('#sum').textContent=s;} };
+  card.querySelectorAll('input').forEach(inp=>{
+    inp.oninput=()=>{const k=inp.dataset.k;S.vals[k]=+inp.value;inp.style.setProperty('--fill',inp.value+'%');card.querySelector('#v-'+k).textContent=inp.value+'%';upd();};
+  });
+  upd();
+  const fb=card.querySelector('#fb'), btn=card.querySelector('#check');
+  btn.onclick=()=>{
+    const res=r.check(S.vals);
+    if(res.ok)S.score++;
+    fb.innerHTML=`<div class="verdict ${res.ok?'good':'bad'}"><b>${res.msg}</b><span class="ex">${res.ex}</span></div>`;
+    card.querySelectorAll('input').forEach(i=>i.disabled=true);
+    btn.textContent = S.ri<ROUNDS.length-1?'Next round':'See your verdict';
+    btn.onclick=()=>{ if(S.ri<ROUNDS.length-1){S.ri++;render();} else {S.screen='done';render();} };
+  };
+}
+
+function rDone(){
+  const card=h(`<div>
+    <div class="steprow"><span class="stepname">Complete</span><span class="module">${S.score}/${ROUNDS.length} coherent</span></div>
+    <div class="card">
+      <div class="lesson" style="margin-top:0"><h3>The lesson</h3><p>Coherence is the floor beneath accuracy. Three rules carry most of it: a conjunction (\u201cA <b>and</b> B\u201d) is never more likely than its parts, a disjunction (\u201cA <b>or</b> B\u201d) is never less likely, and a set of outcomes that covers all possibilities must sum to exactly 100%. The reason these aren\u2019t just pedantry is the <b>Dutch book</b>: any violation lets someone construct a set of bets at your own stated odds that wins money off you no matter what happens. Most incoherence comes from judging each claim in isolation, on its vividness, instead of as part of a system that has to balance. The habit that fixes it is simple \u2014 whenever you put a number on something, glance at its complement and its siblings and ask whether they all still add up.</p></div>
+      <div class="actions"><button class="primary" id="again">Run it again</button></div>
+    </div>
+    <div class="foot">Coherent before accurate \u00b7 check the complement \u00b7 don\u2019t hand out free money.</div>
+  </div>`);
+  app.appendChild(card);
+  card.querySelector('#again').onclick=()=>{S.screen='intro';render();};
+}
+
+render();
+</script>
+</body>
+</html>
