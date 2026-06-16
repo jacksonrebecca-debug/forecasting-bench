@@ -6,39 +6,33 @@
 <title>The Forecasting Bench</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
-:root{
-  --ground:#0E1218;--panel:#171D27;--panel-2:#1E2530;--line:#2B333F;
-  --ink:#E9ECF2;--muted:#8A95A6;--faint:#5A6475;
-  --signal:#E8B04B;--signal-dim:#7a5e2a;--truth:#4FB3A6;
-  --shadow:rgba(0,0,0,.35);
-}
+:root{--ground:#0E1218;--panel:#171D27;--panel-2:#1E2530;--line:#2B333F;--ink:#E9ECF2;--muted:#8A95A6;--faint:#5A6475;--signal:#E8B04B;--signal-dim:#7a5e2a;--truth:#4FB3A6;--shadow:rgba(0,0,0,.35)}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:var(--ground);color:var(--ink);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 body{min-height:100vh;display:flex;justify-content:center;padding:46px 18px 70px}
-.wrap{width:100%;max-width:700px}
-
+.wrap{width:100%;max-width:720px}
 .hero{display:flex;gap:26px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
 .hero-text{flex:1;min-width:260px}
 .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--signal);margin-bottom:14px}
 h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:42px;letter-spacing:-.025em;line-height:1;margin-bottom:18px}
-.thesis{color:var(--muted);font-size:16px;line-height:1.6;max-width:48ch}
-.thesis b{color:var(--ink);font-weight:600}
+.thesis{color:var(--muted);font-size:16px;line-height:1.6;max-width:50ch}.thesis b{color:var(--ink);font-weight:600}
 .sigil{flex:none}
-
-.cards{margin-top:40px;display:flex;flex-direction:column;gap:16px}
-a.inst{display:block;text-decoration:none;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px 26px;transition:.18s;box-shadow:0 8px 30px var(--shadow)}
+.sec{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);margin:38px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.cards{display:flex;flex-direction:column;gap:12px}
+a.inst{display:block;text-decoration:none;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:18px 20px;transition:.18s;box-shadow:0 6px 22px var(--shadow)}
 a.inst:hover{border-color:var(--signal);transform:translateY(-2px)}
 a.inst:focus-visible{outline:2px solid var(--signal);outline-offset:3px}
-.inst-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
-.inst-no{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.24em;color:var(--signal-dim)}
-.inst-go{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.1em;color:var(--signal);text-transform:uppercase}
-.inst h2{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:23px;letter-spacing:-.01em;margin-bottom:8px}
-.inst p{font-size:14.5px;line-height:1.6;color:var(--muted);max-width:54ch}
-.trains{margin-top:14px;display:flex;flex-wrap:wrap;gap:7px}
-.trains span{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.04em;color:var(--muted);background:var(--panel-2);border:1px solid var(--line);padding:5px 10px;border-radius:999px}
-
-.note{margin-top:34px;font-size:14px;line-height:1.65;color:var(--faint)}
-.note b{color:var(--muted);font-weight:600}
+a.inst.sourced:hover{border-color:var(--truth)}
+.inst-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
+.inst-no{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.22em;color:var(--signal-dim)}
+.inst.sourced .inst-no{color:var(--truth)}
+.inst-go{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.1em;color:var(--signal);text-transform:uppercase}
+.inst.sourced .inst-go{color:var(--truth)}
+.inst h2{font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:20px;letter-spacing:-.01em;margin-bottom:6px}
+.inst p{font-size:14px;line-height:1.55;color:var(--muted);max-width:58ch}
+.trains{margin-top:11px;display:flex;flex-wrap:wrap;gap:6px}
+.trains span{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.03em;color:var(--muted);background:var(--panel-2);border:1px solid var(--line);padding:4px 9px;border-radius:999px}
+.note{margin-top:34px;font-size:14px;line-height:1.65;color:var(--faint)}.note b{color:var(--muted);font-weight:600}
 .foot{margin-top:18px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;color:var(--faint);text-transform:lowercase}
 @media (max-width:560px){h1{font-size:34px}.sigil{display:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -51,7 +45,7 @@ a.inst:focus-visible{outline:2px solid var(--signal);outline-offset:3px}
     <div class="hero-text">
       <div class="eyebrow">The Forecasting Bench</div>
       <h1>Forecasting is<br>a trainable skill.</h1>
-      <p class="thesis">Not a gift, not a gut feeling \u2014 a set of <b>specific moves</b> you can drill until they\u2019re instinct. Set a base rate before you judge the particulars. React to news in proportion to how much it actually shifts the odds. Make your confidence match reality. Two instruments for putting in the reps.</p>
+      <p class="thesis">Not a gift, not a gut feeling &mdash; a set of <b>specific moves</b> you can drill until they&rsquo;re instinct. Eight instruments, each built around one move that separates forecasters from pundits, on the Good Judgment&reg; fundamentals.</p>
     </div>
     <svg class="sigil" width="116" height="116" viewBox="0 0 116 116" role="img" aria-label="Calibration motif">
       <rect x="8" y="8" width="100" height="100" rx="8" fill="none" stroke="var(--line)" stroke-width="1.5"/>
@@ -62,24 +56,88 @@ a.inst:focus-visible{outline:2px solid var(--signal);outline-offset:3px}
     </svg>
   </div>
 
+  <div class="sec">The instruments</div>
   <div class="cards">
+
     <a class="inst" href="calibration-range.html">
-      <div class="inst-top"><span class="inst-no">INSTRUMENT 01</span><span class="inst-go">Open \u2192</span></div>
+      <div class="inst-top"><span class="inst-no">01</span><span class="inst-go">Open &rarr;</span></div>
       <h2>The Calibration Range</h2>
-      <p>When you say 70%, is it true 70% of the time? Answer claims and estimate quantities, then watch a calibration curve build across every round you play \u2014 the instrument tells you plainly whether you\u2019re over- or under-confident.</p>
-      <div class="trains"><span>probabilistic reasoning</span><span>calibration</span><span>over- &amp; under-confidence</span></div>
+      <p>When you say 70%, is it true 70% of the time? Answer claims and estimate quantities; a calibration curve builds across every round and tells you if you&rsquo;re over- or under-confident.</p>
+      <div class="trains"><span>calibration</span><span>probabilistic reasoning</span><span>over/under-confidence</span></div>
     </a>
 
     <a class="inst" href="reference-class.html">
-      <div class="inst-top"><span class="inst-no">INSTRUMENT 02</span><span class="inst-go">Open \u2192</span></div>
+      <div class="inst-top"><span class="inst-no">02</span><span class="inst-go">Open &rarr;</span></div>
       <h2>The Reference Class</h2>
-      <p>Commit a gut number, then see how far it sat from the base rate \u2014 the inside view\u2019s pull made visible. Update as news arrives, scored against a Bayesian benchmark that flags when you over-react, under-react, or fall for vivid-but-empty noise.</p>
-      <div class="trains"><span>inside vs outside view</span><span>setting base rates</span><span>how much to react</span></div>
+      <p>Commit a gut number, see how far it sat from the base rate, then update on news scored against a Bayesian benchmark that flags over-reaction, under-reaction, and vivid-but-empty noise.</p>
+      <div class="trains"><span>outside view</span><span>base rates</span><span>how much to react</span></div>
     </a>
+
+    <a class="inst" href="decomposition-engine.html">
+      <div class="inst-top"><span class="inst-no">03</span><span class="inst-go">Open &rarr;</span></div>
+      <h2>The Decomposition Engine</h2>
+      <p>Turn an impossible question into a product of guessable ones. Give each piece a range, watch 4,000 simulations draw the answer as a distribution, and see which guess your uncertainty is hiding in.</p>
+      <div class="trains"><span>Fermi-isation</span><span>decomposition</span><span>propagating uncertainty</span></div>
+    </a>
+
+    <a class="inst" href="wrong-side-of-maybe.html">
+      <div class="inst-top"><span class="inst-no">04</span><span class="inst-go">Open &rarr;</span></div>
+      <h2>The Wrong Side of Maybe</h2>
+      <p>A single outcome can never grade a probability. Judge forecasters by their whole record &mdash; and discover why the one who &ldquo;never looks wrong&rdquo; is usually the one to ignore.</p>
+      <div class="trains"><span>reading probabilities</span><span>calibration over many</span><span>why hedging loses</span></div>
+    </a>
+
+    <a class="inst" href="natural-frequencies.html">
+      <div class="inst-top"><span class="inst-no">05</span><span class="inst-go">Open &rarr;</span></div>
+      <h2>The Natural Frequencies Clinic</h2>
+      <p>A 90%-accurate test for a rare condition gives a positive that&rsquo;s usually wrong. Stop juggling percentages, count people, and watch the base rate decide everything.</p>
+      <div class="trains"><span>base-rate neglect</span><span>the false-positive trap</span><span>Bayesian intuition</span></div>
+    </a>
+
+    <a class="inst" href="coherence-trap.html">
+      <div class="inst-top"><span class="inst-no">06</span><span class="inst-go">Open &rarr;</span></div>
+      <h2>The Coherence Trap</h2>
+      <p>Before a forecast can be accurate it must be coherent. Break a law of probability and you&rsquo;ve offered a stranger a set of bets that profits whatever happens &mdash; a Dutch book.</p>
+      <div class="trains"><span>conjunction fallacy</span><span>summing to one</span><span>coherence</span></div>
+    </a>
+
+    <a class="inst" href="time-machine.html">
+      <div class="inst-top"><span class="inst-no">07</span><span class="inst-go">Open &rarr;</span></div>
+      <h2>The Time Machine</h2>
+      <p>Probabilities don&rsquo;t add across years, they compound. Extend a steady annual chance to other horizons the right way, and feel how small risks become near-certainties over time.</p>
+      <div class="trains"><span>scope sensitivity</span><span>hazard rates</span><span>compounding not adding</span></div>
+    </a>
+
+    <a class="inst" href="aggregator.html">
+      <div class="inst-top"><span class="inst-no">08</span><span class="inst-go">Open &rarr;</span></div>
+      <h2>The Aggregator</h2>
+      <p>A crowd of diverse, independent forecasters beats almost any member. Combine a panel, then meet the simple average, the extremized average, and the truth.</p>
+      <div class="trains"><span>wisdom of crowds</span><span>diversity</span><span>extremizing</span></div>
+    </a>
+
   </div>
 
-  <p class="note">Built on the <b>Good Judgment\u00ae</b> Superforecasting fundamentals \u2014 the same moves the project\u2019s top forecasters drill. Your calibration history is saved on your own device; nothing leaves the browser.</p>
-  <div class="foot">no ads \u00b7 no logins \u00b7 just the reps</div>
+  <div class="sec">Worked examples &middot; sourced</div>
+  <div class="cards">
+
+    <a class="inst sourced" href="election-sourced.html">
+      <div class="inst-top"><span class="inst-no">&#9673; SOURCED</span><span class="inst-go">Open &rarr;</span></div>
+      <h2>The Noisy Election</h2>
+      <p>Instrument 02 run on real data: every likelihood ratio derived from published figures, the working shown on each card, and the trap of treating correlated evidence as independent laid bare.</p>
+      <div class="trains"><span>derived likelihood ratios</span><span>correlated evidence</span><span>error bars</span></div>
+    </a>
+
+    <a class="inst sourced" href="spinout-sourced.html">
+      <div class="inst-top"><span class="inst-no">&#9673; SOURCED</span><span class="inst-go">Open &rarr;</span></div>
+      <h2>The Dazzling Spinout</h2>
+      <p>The same method on softer ground: spinout-survival data is patchier, one signal is openly contested, and you&rsquo;re allowed to correctly hold steady when the evidence won&rsquo;t commit.</p>
+      <div class="trains"><span>messy evidence</span><span>contested signals</span><span>holding loosely</span></div>
+    </a>
+
+  </div>
+
+  <p class="note">Built on the <b>Good Judgment&reg;</b> Superforecasting fundamentals. Your calibration history (instrument 01) is saved on your own device; nothing leaves the browser.</p>
+  <div class="foot">no ads &middot; no logins &middot; just the reps</div>
 
 </div>
 </body>
