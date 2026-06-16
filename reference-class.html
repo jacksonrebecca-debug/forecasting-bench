@@ -343,14 +343,14 @@ function beliefTrack(markers, history){
   const W=620,H=86,padL=18,padR=18,y=42;
   const x=p=>padL+p*(W-padL-padR);
   let ticks='';
-  for(let t=0;t<=100;t+=25){ticks+=`<line x1="${x(t/100)}" y1="${y-16}" x2="${x(t/100)}" y2="${y+16}" stroke="var(--line)" stroke-width="1"/><text x="${x(t/100)}" y="${y+32}" text-anchor="middle" fill="var(--faint)" font-family="IBM Plex Mono" font-size="10">${t}</text>`;}
+  for(let t=0;t<=100;t+=25){ticks+=`<line x1="${x(t/100)}" y1="${y-16}" x2="${x(t/100)}" y2="${y+16}" stroke="#2B333F" stroke-width="1"/><text x="${x(t/100)}" y="${y+32}" text-anchor="middle" fill="#5A6475" font-family="IBM Plex Mono" font-size="10">${t}</text>`;}
   let hist='';
   if(history&&history.length>1){
-    hist='<polyline points="'+history.map(pt=>`${x(pt).toFixed(1)},${y}`).join(' ')+'" fill="none" stroke="var(--signal)" stroke-width="1.5" opacity="0.4"/>';
+    hist='<polyline points="'+history.map(pt=>`${x(pt).toFixed(1)},${y}`).join(' ')+'" fill="none" stroke="#E8B04B" stroke-width="1.5" opacity="0.4"/>';
   }
-  const mk=markers.map(m=>`<g><line x1="${x(m.p)}" y1="${y-20}" x2="${x(m.p)}" y2="${y+20}" stroke="${m.color}" stroke-width="2"/><circle cx="${x(m.p)}" cy="${y}" r="6" fill="${m.color}" stroke="var(--ground)" stroke-width="2"/></g>`).join('');
+  const mk=markers.map(m=>`<g><line x1="${x(m.p)}" y1="${y-20}" x2="${x(m.p)}" y2="${y+20}" stroke="${m.color}" stroke-width="2"/><circle cx="${x(m.p)}" cy="${y}" r="6" fill="${m.color}" stroke="#0E1218" stroke-width="2"/></g>`).join('');
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Belief track">
-    <line x1="${x(0)}" y1="${y}" x2="${x(1)}" y2="${y}" stroke="var(--line)" stroke-width="2"/>
+    <line x1="${x(0)}" y1="${y}" x2="${x(1)}" y2="${y}" stroke="#2B333F" stroke-width="2"/>
     ${ticks}${hist}${mk}
   </svg>`;
 }
